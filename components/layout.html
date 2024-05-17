@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Servicios</title>
+    {% load static %}
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
+    />
+    <link rel="stylesheet" href="{% static 'css/layout.css' %}">
+    
+    <script src="{% static 'js/layout.js' %}" defer></script>
+    
+  </head>
+  <body>
+    <nav >
+      <div class="sidebar-header">
+        <a class="link toggle"><button>
+          <img
+          class="menu-svgrepo-com-1-1"
+          alt=""
+          src="
+          {% static 'public/menusvgrepocom-1-1.svg' %}"
+        />
+      </button></a>
+      <div class="sidebar-links">
+        <a class="logo-wrapper">
+          <img
+          class="mt-icon"
+          alt=""
+          src="{% static 'public/b5e40eca56544ebca1371dd02fd0ca93removebgpreview-2-1@2x.png' %}"
+        />
+      </a>
+      
+    </div>
+
+
+    <div class="sidebar-links">
+      <a class="link">
+          <img
+          class="clients-1-icon"
+          alt=""
+          src="{% static 'public/clients-1.svg' %}"
+        />
+        <span class="hidden">Clientes</span>
+      </a>
+      <a class="link">
+          <img
+          class="ventas-1-icon"
+          alt=""
+          src="{% static 'public/ventas-1.svg' %}"
+        />
+        <span class="hidden">Ventas</span>
+      </a>
+      <a class="link">
+          <img
+          class="vuesaxoutlinemessages-2-icon"
+          alt=""
+          src="{% static 'public/preventas-1.svg' %}"
+        />
+        <span class="hidden">Preventas</span>
+      </a>
+      </li>
+      <a class="link">
+          <img
+          class="vendedores-1-icon"
+          alt=""
+          src="{% static 'public/vendedores-1.svg' %}"
+        />
+        <span class="hidden">Vendedores</span>
+      </a>
+      <a class="link">
+          <img
+          class="vuesaxlinearmenu-icon"
+          alt=""
+          src="{% static 'public/servicios-1.svg' %}"
+        />
+        <span class="hidden">Servicios</span>
+      </a>
+      <a class="link">
+          <img
+          class="vuesaxlinearlogout-icon"
+          alt=""
+          src="{% static 'public/cerrarsesion-1.svg' %}"
+        />
+        <span class="hidden">Cerrar Sesión</span>
+      </a>
+    </div>
+      </div>
+    </nav>
+
+    <main>
+      {% block content %}
+      
+      {% endblock %}
+  </main>
+  </body>
+</html>

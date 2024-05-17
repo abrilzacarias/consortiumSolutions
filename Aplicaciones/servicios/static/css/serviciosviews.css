@@ -1,0 +1,82 @@
+#searchbar {
+  padding-top: 30px;
+  padding-bottom: 60px;
+}
+
+body {
+  background-color: #d9d9d9;
+}
+.navbar {
+  padding: 15px;
+  display:block;
+  border-radius: 16px;
+}
+
+.form-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-inline .form-control {
+  margin-right: 20px; /* Ajusta el valor según sea necesario */
+}
+
+.input-search, .input-search:focus, .input-search:active{
+  background-color: #424242;
+  color: #fff;
+  border: none;
+}
+
+
+.btn-outline-dark:hover {
+  background-color: #424242;
+}     
+
+.accordion {
+  background-color: #212529;
+  padding: 30px;
+  border-radius: 10px;
+  width: 100%;
+}
+
+.titulo {
+  color: white;
+  padding-bottom: 20px;
+}
+
+.accordion-item {
+  width: 100%;
+}
+
+.accordion-button {
+  width: calc(100% - 40px); /* Resta 1px para evitar el desbordamiento horizontal */
+}
+
+.accordion-body {
+  width: 100%;
+  
+}
+
+.btn-agregar {
+  margin: 10px;
+  color: white !important;
+}
+
+.bg-personalizado {
+  background-color: #363838;
+}
+
+.btn-eliminar:hover, .btn-modificar:hover {
+  background-color: #424242;
+  border: none;
+}
+
+.group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-categoria {
+  margin-bottom: 30px;
+}

@@ -1,0 +1,249 @@
+{% extends 'layout.html' %} {% block content %}
+
+<head>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/serviciosviews.css' %}">
+</head>
+<div class="container" id="searchbar">
+  <div class="navbar bg-dark">
+    <form class="form-inline" action="{% url 'buscar_servicio_categoria' %}" method="GET">
+      <input class="input-search form-control mr-sm-2" name="buscar" type="search" placeholder="Buscar categoría o servicio" aria-label="Search">
+      <button class="btn btn-outline-dark" type="submit">
+        <img
+          class="menu-svgrepo-com-1-1"
+          alt=""
+          src="{% static 'public/search.svg' %}"
+        />
+      </button>
+    </form>
+  </div>
+</div>
+
+{% if serviciosBusqueda or categoriasBusqueda %}
+    <h3>Resultados de la búsqueda:</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tipo</th>
+                <th>Nombre</th>
+                <th>¿Requiere pago?</th>
+                <th>Categoria</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servicio in serviciosBusqueda %}
+                <tr>  
+                  <td>{{ servicio.id_servicio }}</td>
+                    <td>Servicio</td>
+                    <td>{{ servicio.nombre_servicio }}</td>
+                    <td>{% if servicio.requiere_pago_servicio %}
+                      Sí
+                    {% else %}
+                      No
+                    {% endif %}</td>
+                    <td>{{ servicio.id_categoria_servicio.nombre_categoria_servicio }}</td>
+                </tr>
+            {% endfor %}
+            {% for categoria in categoriasBusqueda %}
+                <tr>
+                    <td>{{ categoria.id_categoria_servicio }}</td>
+                    <td>Categoría</td>
+                    <td>{{ categoria.nombre_categoria_servicio }}</td>
+                    <td>-</td>
+                    <td>-</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% elif serviciosBusqueda or categoriasBusqueda is not None %}
+    <!-- Si hay una búsqueda pero no hay resultados -->
+    <p>No se encontraron resultados.</p>
+{% endif %}
+
+{% if not serviciosBusqueda or categoriasBusqueda %}
+<div class="accordion" id="accordionPanelsStayOpenExample">
+  <div class="group">
+    <h2 class="titulo">Categoría de Servicios</h2>
+  <!-- Button trigger modal -->
+<button type="button" class="btn btn-success btn-categoria btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarCategoriaModal">
+  Agregar Categoría
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="agregarCategoriaModal" tabindex="-1" aria-labelledby="agregarCategoriaModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Agregar Categoría de Servicio</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body bg-dark text-light">
+        <form action="agregarCategoria/" method="POST"> {% csrf_token %}
+          <div class="form-group row mb-3">
+            <label for="categoria" class="col-sm-3 col-form-label">Nombre de la categoría:</label>
+            <div class="col-sm-9 d-flex align-items-center"> 
+              <input type="text" class="form-control" id="categoria" name="categoria" placeholder="Ingrese la categoría" minlength="4" required>
+            </div>
+          </div>
+          <div class="modal-footer bg-dark text-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            <button type="submit" class="btn btn-success">Agregar categoría</button>
+          </div>
+        </form>
+      </div>
+      
+    </div>
+  </div>
+</div>
+
+  </div>
+  {% for categoria in categorias %}
+  <div class="accordion-item bg-transparent">
+    <h2 class="accordion-header" id="panelsStayOpen-heading{{ categoria.id_categoria_servicio }}">
+      <button id="bg-btn" class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" style="background-color: #000000; color: #ffffff !important;">
+        {{ categoria.nombre_categoria_servicio }}
+      </button>
+    </h2>
+    <div id="panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" class="accordion-collapse bg-personalizado collapse {% if forloop.first %}show{% endif %}" aria-labelledby="panelsStayOpen-heading{{ categoria.id_categoria_servicio }}">
+      <button type="button" class="btn btn-success btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarServicioModal">
+        Agregar Servicio a {{ categoria.nombre_categoria_servicio}}
+      </button>
+
+      <!-- Modal -->
+      <div class="modal fade" id="agregarServicioModal" tabindex="-1" aria-labelledby="agregarServicioModal" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header bg-dark text-light">
+              <h5 class="modal-title" id="exampleModalLabel">Agregar Servicio a {{ categoria.nombre_categoria_servicio}}</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body bg-dark text-light">
+              <form action="agregarServicio/" method="POST"> {% csrf_token %}
+                <div class="form-group row mb-3">
+                  <label for="categoria" class="col-sm-3 col-form-label">Nombre del Servicio:</label>
+                  <div class="col-sm-9 d-flex align-items-center"> 
+                    <input type="text" class="form-control" id="nombre_servicio" name="nombre_servicio" placeholder="Ingrese el nombre" minlength="4" required>
+                  </div>
+                </div>
+                <div class="form-group">
+                  <label for="requiere_pago">¿Requiere pago?</label>
+                  <select class="form-control bg-dark text-light" id="requiere_pago" name="requiere_pago" required>
+                    <option value="1">Sí</option>
+                    <option value="0">No</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="categoria_servicio">Categoría de servicio:</label>
+                  <input type="text" class="form-control" id="categoria_servicio" name="categoria_servicio" value="{{ categoria.nombre_categoria_servicio }}" readonly>
+                  <!-- Este campo oculto se utiliza para enviar el ID de la categoría al servidor -->
+                  <input type="hidden" name="categoria_id" value="{{ categoria.id_categoria_servicio }}">
+                </div>
+                <div class="modal-footer bg-dark text-light">
+                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                  <button type="submit" class="btn btn-success">Agregar categoría</button>
+                </div>
+              </form>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+
+      <a class="btn btn-danger btn-agregar" href="eliminarCategoria/{{categoria.id_categoria_servicio}}" onclick="return confirm('¿Está seguro de que desea eliminar esta categoría?');">Eliminar Categoría de {{categoria.nombre_categoria_servicio}}</a>
+      <div class="accordion-body">
+        <table class="table table-dark">
+          <thead>
+              <tr>
+                  <th scope="col">ID</th>
+                  <th scope="col">Nombre</th>
+                  <th scope="col">¿Requiere pago?</th>
+                  <th scope="col">Acciones</th>
+              </tr>
+          </thead>
+          <tbody id="tabla-resultados">
+            {% for servicio in categoria.servicio_set.all %}
+              <tr>
+                  <td>{{ servicio.id_servicio }}</td>
+                  <td>{{ servicio.nombre_servicio }}</td>
+                  <td> {% if servicio.requiere_pago_servicio %}
+                    Sí
+                  {% else %}
+                    No
+                  {% endif %}</td>
+                  <td>
+                    
+                    <!-- Actualiza el data-bs-target para apuntar al modal único -->
+<button type="button" class="btn btn-modificar" data-id="{{ servicio.id_servicio }}" data-categoria="{{ servicio.categoria.id_categoria_servicio }}" data-bs-toggle="modal" data-bs-target="#modificarServicioModal{{ servicio.id_servicio }}">
+                      <img class="edit icon" alt="" src="{% static 'public/edit.svg' %}" />
+                  </button>
+                  
+                  <!-- Modal editar -->
+                  <!-- Cambia el ID del modal a algo único -->
+<div class="modal fade" id="modificarServicioModal{{ servicio.id_servicio }}" tabindex="-1" aria-labelledby="modificarServicioModal{{ servicio.id_servicio }}" aria-hidden="true">
+                      <div class="modal-dialog">
+                          <div class="modal-content">
+                              <div class="modal-header bg-dark text-light">
+                                  <h5 class="modal-title" id="exampleModalLabel">Modificar Servicio de {{ servicio.nombre_servicio }}</h5>
+                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                  
+                              </div>
+                              <div class="modal-body bg-dark text-light">
+                                  <form action="{% url 'editar_servicio' servicio.id_servicio %}" method="POST">
+                                      {% csrf_token %}
+                                      <div class="form-group row mb-3">
+                                          <label for="nombre_servicio" class="col-sm-3 col-form-label">Nombre del Servicio:</label>
+                                          <div class="col-sm-9">
+                                              <input value="{{ servicio.nombre_servicio }}" type="text" class="form-control" id="nombre_servicio" name="nombre_servicio" placeholder="Ingrese el nombre" minlength="4" required>
+                                          </div>
+                                      </div>
+                                      <div class="form-group row mb-3">
+                                          <label for="requiere_pago" class="col-sm-3 col-form-label">¿Requiere pago?</label>
+                                          <div class="col-sm-9">
+                                              <select class="form-control" id="requiere_pago" name="requiere_pago" required>
+                                                  <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
+                                                  <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="form-group row mb-3">
+                                          <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
+                                          <div class="col-sm-9">
+                                              <select class="form-control" id="categoria_servicio" name="categoria_servicio" required>
+                                                  {% for categoria in categorias %}
+                                                      <option value="{{ categoria.id_categoria_servicio }}" {% if categoria.id_categoria_servicio == servicio.categoria.id_categoria_servicio %} selected {% endif %}>{{ categoria.nombre_categoria_servicio }}</option>
+                                                  {% endfor %}
+                                              </select>
+                                          </div>
+                                      </div>
+                                      <div class="modal-footer bg-dark text-light">
+                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                          <button type="submit" class="btn btn-success">Editar Servicio</button>
+                                      </div>
+                                  </form>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+                      
+                      <a class="btn btn-eliminar" data-id="{{ servicio.id_servicio }}" href="eliminarServicio/{{servicio.id_servicio}}" onclick="return confirm('¿Está seguro de que desea eliminar este servicio?');">
+                        <img
+          class="delete"
+          alt=""
+          src="{% static 'public/delete.svg' %}"
+        />
+                      </a>
+                  </td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>  
+{% endif %}
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+{% endblock %}
