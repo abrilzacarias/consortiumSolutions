@@ -19,7 +19,6 @@ def home(request):
             }
             for contacto in contactos
         ]
-    #print("Diccionario de contactos para el vendedor:", vendedor['contactos'])
     return render(request, 'vendedoresviews.html', {'vendedores': vendedores})
 
 
@@ -49,11 +48,10 @@ def agregarVendedor(request):
 
         vendedor = Vendedor()
 
-        # Verificar si el vendedor ya existe
         if vendedor.vendedorExiste(cuitl_persona):
             messages.error(request, 'El vendedor ya existe.')
         else: 
-            # Si el vendedor no existe, proceder con la inserción
+
             id_vendedor = vendedor.agregarVendedor(
                 nombre_persona, apellido_persona, cuitl_persona,
                 direccion_persona, fecha_alta_vendedor, fecha_baja_vendedor,
@@ -61,7 +59,7 @@ def agregarVendedor(request):
             )
             if id_vendedor:
                 messages.success(request, 'El vendedor se agregó correctamente.')
-                return redirect('/vendedores/')  # Redirigir a la página de vendedores si la inserción fue exitosa
+                return redirect('/vendedores/')  
             else:
                 messages.error(request, 'El vendedor se agregó correctamente.')
     return redirect('/vendedores/')
@@ -85,9 +83,9 @@ def editarVendedor(request, id_vendedor):
                     'descripcion_contacto': descripcion_contacto
                 })
 
-            elif key.startswith('nuevo_contacto_tipo_'):  # New contacts
+            elif key.startswith('nuevo_contacto_tipo_'):  
                 tipo_contacto_id = value.split('_')[-1]
-                unique_id = key.split('_')[-1]  # Extract unique ID
+                unique_id = key.split('_')[-1]  
                 descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
                 contactos_data.append({
                 'id_contacto': None,
@@ -115,7 +113,6 @@ def eliminarContacto(request, id_contacto):
     except Contacto.DoesNotExist:
       return JsonResponse({'error': 'El contacto con ID especificado no existe.'}, status=404)
     except Exception as e:
-      # Handle other potential errors (optional)
       return JsonResponse({'error': 'Error al eliminar el contacto.'}, status=500)
   else:
-    return HttpResponse(status=405)  # Method not allowed (only DELETE requests accepted)
+    return HttpResponse(status=405) 

@@ -1,9 +1,8 @@
 from django.shortcuts import render
 from .models import Actividades
 from django.http import HttpResponse, HttpResponseNotAllowed
-# Create your views here.
+
 def listarActividades(request):
-    
     actividades = Actividades()
     listaActividades = actividades.listarActividades()
     act_modificadas = []

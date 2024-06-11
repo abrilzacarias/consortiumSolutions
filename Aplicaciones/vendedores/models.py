@@ -1,8 +1,6 @@
 from django.db import models, connection
 from django.utils import timezone
 
-
-# Obtener la fecha y hora actual en la zona horaria local
 current_datetime = timezone.localtime(timezone.now())
 
 def dictfetchall(cursor):
@@ -72,7 +70,6 @@ class Vendedor(models.Model):
                 WHERE p.cuitl_persona = %s
             """, [cuitl_persona])
             result = cursor.fetchone()
-            #print("Resultado de la consulta:", result)
         return result is not None
 
     def agregarVendedor(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_vendedor, fecha_baja_vendedor, listaContactos):
@@ -110,7 +107,6 @@ class Vendedor(models.Model):
                 print("El vendedor ya existe.")
                 return False
         except Exception as e:
-            # Manejo de la excepción
             print("Error: El vendedor ya existe en la base de datos.")
             return False
 
@@ -136,7 +132,6 @@ class Vendedor(models.Model):
             """)
             vendedores = dictfetchall(cursor)
             
-            #print(vendedores)
             return vendedores
 
         
@@ -149,7 +144,6 @@ class Vendedor(models.Model):
             """, [nombre_persona, apellido_persona, cuitl_persona, direccion_persona])
             idPersona = cursor.lastrowid
 
-            # Insertar nuevo Vendedor
             cursor.execute("""
                 INSERT INTO vendedor (fecha_alta_vendedor, fecha_baja_vendedor, id_persona)
                 VALUES (%s, %s, %s)
@@ -159,8 +153,6 @@ class Vendedor(models.Model):
                     sqlInsertarContacto = "INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) VALUES (%s, %s, %s);"
                     cursor.execute(sqlInsertarContacto, [contacto, tipoContacto, idPersona])
                     connection.commit()
-
-            #Establecer como NULL a id_usuario de tabla Vendedor
 
     def editarVendedor(self, idVendedor, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, contactos_data):
         with connection.cursor() as cursor:
@@ -181,7 +173,6 @@ class Vendedor(models.Model):
             """, [nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_persona])
 
             # Actualizar o crear contactos
-            #print(contactos_data)
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
                 tipo_contacto_id = contacto_data.get('tipo_contacto_id')
@@ -203,7 +194,6 @@ class Vendedor(models.Model):
 
     def eliminarVendedor(self, idVendedor):
         with connection.cursor() as cursor:
-            # Obtener el id_persona asociado con el id_vendedor
             cursor.execute("""
                 SELECT id_persona FROM vendedor WHERE id_vendedor = %s;
             """, [idVendedor])
@@ -213,6 +203,5 @@ class Vendedor(models.Model):
                 UPDATE vendedor SET fecha_baja_vendedor = %s WHERE id_vendedor = %s;
             """, [current_datetime, idVendedor])
 
-            # Commit para hacer efectivos los cambios
             connection.commit()
 

@@ -1,4 +1,4 @@
-// In your Javascript (external .js resource or <script> tag)
+
 $(document).ready(function() {
   $('.js-example-basic-single').select2({
     width: '100%', // need to override the changed default
@@ -7,7 +7,6 @@ $(document).ready(function() {
 });
 
 document.addEventListener("DOMContentLoaded", () => {
-    // Function to create a new contact input group for adding a new vendor
   const createContactInputGroupAdd = () => {
     const newContactAdd = document.createElement('div');
     newContactAdd.className = 'input-group mb-3';
@@ -23,7 +22,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <button type="button" class="btn btn-danger remove-contact-btn">-</button>
     `;
 
-    // Add event listener to the remove button
     newContactAdd.querySelector('.remove-contact-btn').addEventListener('click', () => {
       newContactAdd.parentElement.removeChild(newContactAdd);
     });
@@ -31,7 +29,6 @@ document.addEventListener("DOMContentLoaded", () => {
     return newContactAdd;
   };
 
-  // Event listener to add a new contact input group for adding a new vendor
   const addContactBtnAdd = document.getElementById('addContactBtnAdd');
   const contactsContainerAdd = document.getElementById('contactsContainerAdd');
   addContactBtnAdd.addEventListener('click', () => {

@@ -9,9 +9,6 @@ from django.utils import timezone
 # Obtener la fecha y hora actual en la zona horaria local
 current_datetime = timezone.localtime(timezone.now())
 
-# Imprimir la fecha y hora actual en formato de fecha y hora
-
-
 class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
     cuitl_persona = models.CharField(max_length=11, blank=True, null=True)
@@ -58,7 +55,6 @@ class Clientes():
                     SELECT * FROM vista_detallada_clientes;
                     """
             cursor.execute(sqlListarClientes)
-            # Guardar en la variable resultados todos los resultados devueltos por la consulta.
             resultados = cursor.fetchall()
         return resultados
     
@@ -73,27 +69,25 @@ class Clientes():
             with connection.cursor() as cursor:
                 sqlInsertarPersona = "INSERT INTO persona (nombre_persona, apellido_persona, cuitl_persona, direccion_persona) VALUES (%s, %s, %s, %s);"
                 cursor.execute(sqlInsertarPersona, [nombre, apellido, cuitl_cliente, direccion_cliente])
-                idPersona = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idPersona = cursor.lastrowid  
                 connection.commit()
 
                 sqlInsertarMatricula = "INSERT INTO matricula (numero_matricula, vencimiento_matricula) VALUES (%s, %s);"
                 cursor.execute(sqlInsertarMatricula, [numero_matricula, vencimiento_matricula])
-                idMatricula = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idMatricula = cursor.lastrowid  
                 connection.commit()
 
                 sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
                 cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
-                idCliente = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idCliente = cursor.lastrowid  
                 connection.commit()
 
                 for tipo_contacto, contacto in lista_contactos:
                     sqlInsertarContacto = "INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) VALUES (%s, %s, %s);"
                     cursor.execute(sqlInsertarContacto, [contacto, tipo_contacto, idPersona])
                     connection.commit()
-                # Verificar si el vendedor actual es nulo para permitir la edición del vendedor asignado
-                # Actualizar la tabla designacion
+
                 if vendedor_asignado is not None:
-                    # Llama al método agregarDesignacionVendedor con los IDs del vendedor y el cliente
                     if self.agregarDesignacionVendedor(vendedor_asignado, idCliente):
                         print("Designación de vendedor agregada exitosamente.")
                     else:
@@ -107,7 +101,6 @@ class Clientes():
         
     def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
         with connection.cursor() as cursor:
-            # Obtener el id_persona relacionado con el id_cliente
             cursor.execute("""
                 SELECT id_persona, id_matricula FROM cliente WHERE id_cliente = %s;
             """, [id_cliente])
@@ -116,7 +109,6 @@ class Clientes():
                 raise ValueError("No se encontró un cliente con el id_cliente proporcionado.")
             id_persona, id_matricula = cliente_row
 
-            # Actualizar la tabla persona
             cursor.execute("""
                 UPDATE persona SET 
                     nombre_persona = %s,
@@ -126,7 +118,6 @@ class Clientes():
                 WHERE id_persona = %s;
             """, [nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_persona])
 
-            # Actualizar la tabla matricula
             cursor.execute("""
                 UPDATE matricula SET 
                     numero_matricula = %s,
@@ -141,7 +132,6 @@ class Clientes():
                 WHERE id_cliente = %s;
             """, [clave_afgip_cliente, tipo_cliente, id_cliente])
 
-            # Actualizar los contactos del cliente
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
                 tipo_contacto_id = contacto_data.get('tipo_contacto_id')
@@ -160,10 +150,8 @@ class Clientes():
                         VALUES (%s, %s, %s);
                     """, [descripcion_contacto, tipo_contacto_id, id_persona])
 
-            # Guardar los cambios en la base de datos
             connection.commit()
 
-            # Retornar True si la edición fue exitosa
             return True
         
     def eliminarCliente(self, id_cliente):
@@ -174,10 +162,8 @@ class Clientes():
             id_persona = cursor.fetchone()[0]
 
             cursor.execute("DELETE FROM edificio WHERE id_cliente = %s;", [id_cliente])
-            # Eliminar el vendedor de la tabla 'vendedor'
             cursor.execute("DELETE FROM cliente WHERE id_cliente = %s;", [id_cliente])
             cursor.execute("DELETE FROM contacto WHERE id_persona = %s;", [id_persona])
-            # Ahora que el vendedor ha sido eliminado, podemos eliminar la persona asociada
             cursor.execute("DELETE FROM persona WHERE id_persona = %s;", [id_persona])
     
     def agregarEdificio(self, nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio, id_cliente):
@@ -185,7 +171,7 @@ class Clientes():
             with connection.cursor() as cursor:
                 sqlInsertarEdificio = "INSERT INTO edificio (nombre_edificio, direccion_edificio, cuit_edificio, id_tipo_edificio, id_cliente) VALUES (%s, %s, %s, %s, %s);"
                 cursor.execute(sqlInsertarEdificio, [nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio, id_cliente])
-                idEdificio = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idEdificio = cursor.lastrowid  
                 connection.commit()
 
                 return idEdificio
@@ -214,12 +200,9 @@ class Clientes():
                 """
                 # Ejecuta la consulta SQL con los parámetros proporcionados
                 cursor.execute(sql_insert, [id_vendedor, id_cliente, current_datetime])
-                # Guarda los cambios en la base de datos
                 connection.commit()
-                # Retorna True si la inserción fue exitosa
                 return True
         except Exception as e:
-            # En caso de error, imprime el mensaje de error y retorna False
             print("Error al insertar designación de vendedor:", str(e))
             return False
         
@@ -245,7 +228,7 @@ class Clientes():
             with connection.cursor() as cursor:
                 sqlInsertarObservacionCliente = "INSERT INTO observacion (descripcion_observacion, fecha_hora_observacion, id_cliente, id_detalle_presupuesto, id_detalle_venta) VALUES (%s, %s, %s, NULL, NULL);"
                 cursor.execute(sqlInsertarObservacionCliente, [descripcion_observacion, current_datetime, id_cliente])
-                idObservacion = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idObservacion = cursor.lastrowid  
                 connection.commit()
                 return idObservacion
         except Exception as e:
@@ -265,13 +248,11 @@ class Clientes():
                 columns = [col[0] for col in cursor.description]
                 cliente = dict(zip(columns, row))
 
-                print(f"Datos del cliente antes de formatear contactos: {cliente}")  # Agregar impresión para depuración
+                #print(f"Datos del cliente antes de formatear contactos: {cliente}")  
 
-                # Guardar los valores de vendedor antes de formatear los contactos
                 vendedor_asignado = cliente.get('vendedor_asignado')
                 id_vendedor_asignado = cliente.get('id_vendedor_asignado')
 
-                # Obtener los contactos del cliente desde el modelo Contacto
                 contactos = Contacto.objects.filter(id_persona=idpersona)
 
                 # Formatear los contactos en un diccionario
@@ -288,8 +269,6 @@ class Clientes():
                 # Restaurar los valores de vendedor
                 cliente['vendedor_asignado'] = vendedor_asignado
                 cliente['id_vendedor_asignado'] = id_vendedor_asignado
-
-                print(f"Datos del cliente después de formatear contactos: {cliente}")  # Agregar impresión para depuración
 
             return cliente
 

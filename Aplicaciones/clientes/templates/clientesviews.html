@@ -18,7 +18,7 @@
 
 <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-      <div class="modal-content bg-white"> <!-- Eliminamos la clase bg-success y agregamos bg-white para el fondo blanco -->
+      <div class="modal-content bg-white"> 
           <div class="modal-header">
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -27,9 +27,9 @@
                   {% if messages %}
                       {% for message in messages %}
                           {% if message.error %}
-                              <div class="message text-danger">{{ message }}</div> <!-- Agregamos la clase text-danger para el color del texto rojo -->
+                              <div class="message text-danger">{{ message }}</div> 
                           {% else %}
-                              <div class="message text-success">{{ message }}</div> <!-- Agregamos la clase text-success para el color del texto verde -->
+                              <div class="message text-success">{{ message }}</div> 
                           {% endif %}
                       {% endfor %}
                   {% endif %}
@@ -43,7 +43,6 @@
 <div class="container">
   <div class="group pb-3">
     <h2 class="text-light m-0">Clientes</h2>
-    <!-- Button trigger modal -->
     <div class="btn-group" role="group" aria-label="Tipo de Cliente">
       <button type="button" class="btn btn-secondary btn-filtro" data-tipo-cliente="todos">Todos</button>
       <button type="button" class="btn btn-secondary btn-filtro" data-tipo-cliente="1">Clientes</button>

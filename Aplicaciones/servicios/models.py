@@ -16,7 +16,7 @@ class CategoriaServicio(models.Model):
             with connection.cursor() as cursor:
                 sqlconsulta = "INSERT INTO categoria_servicio (nombre_categoria_servicio) VALUES (%s);"
                 cursor.execute(sqlconsulta, [categoria])
-                idCategoria = cursor.lastrowid  # Esto obtiene el ID en la mayoría de las bases de datos
+                idCategoria = cursor.lastrowid  
                 connection.commit()
                 return idCategoria
         except Exception as e:

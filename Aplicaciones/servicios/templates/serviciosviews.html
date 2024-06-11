@@ -12,12 +12,12 @@
 
   <style>
     .form-group {
-        margin-bottom: 2rem; /* Ajustar el margen inferior para más espacio entre grupos */
+        margin-bottom: 2rem; 
     }
     .invalid-feedback {
         display: none;
         color: red;
-        margin-top: 0.5rem; /* Añadir margen superior para separarlo del input */
+        margin-top: 0.5rem; 
     }
     .is-invalid ~ .invalid-feedback {
         display: block;
@@ -35,7 +35,7 @@
 
 <div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-      <div class="modal-content bg-success text-white"> <!-- Agregamos las clases bg-success para el fondo verde y text-white para el texto blanco -->
+      <div class="modal-content bg-success text-white"> 
           <div class="modal-header">
               <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
@@ -43,7 +43,7 @@
               <div id="messages-container">
                   {% if messages %}
                       {% for message in messages %}
-                          <div class="message text-success">{{ message }}</div> <!-- Agregamos la clase text-success para el color del texto verde -->
+                          <div class="message text-success">{{ message }}</div>
                       {% endfor %}
                   {% endif %}
               </div>
@@ -104,7 +104,6 @@
         </tbody>
     </table>
 {% elif serviciosBusqueda or categoriasBusqueda is not None %}
-    <!-- Si hay una búsqueda pero no hay resultados -->
     <p>No se encontraron resultados.</p>
 {% endif %}
 
@@ -112,7 +111,6 @@
 <div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
   <div class="group">
     <h2 class="text-light">Categoría de Servicios</h2>
-    <!-- Button trigger modal -->
     <div class="btn-group" role="group" aria-label="Botones de acción">
       <button type="button" class="btn btn-success btn-categoria btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarCategoriaModal">
         Agregar Categoría
@@ -124,8 +122,6 @@
   </div>
 </div>
 
-
-<!-- Modal -->
 <div class="modal fade" id="agregarCategoriaModal" tabindex="-1" aria-labelledby="agregarCategoriaModalLabel" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -152,7 +148,6 @@
   </div>
 </div>
 
-<!-- Modal -->
 <div class="modal fade" id="aumentarPrecioModal" tabindex="-1" aria-labelledby="aumentarPrecioModalLabel" aria-hidden="true">
   <div class="modal-dialog">
       <div class="modal-content">
@@ -202,7 +197,6 @@
         Agregar Servicio a {{ categoria.nombre_categoria_servicio}}
       </button>
 
-      <!-- Modal -->
       <div class="modal fade" id="agregarServicioModal{{ categoria.id_categoria_servicio }}" tabindex="-1" aria-labelledby="agregarServicioModalLabel" aria-hidden="true">
         <div class="modal-dialog">
           <div class="modal-content">
@@ -276,14 +270,11 @@
                   <td>{{ servicio.precio_base_servicio|default:"-"  }}</td>
                   <td>
                     
-                    
-                    <!-- Actualiza el data-bs-target para apuntar al modal único -->
+                  
 <button type="button" class="btn btn-modificar" data-id="{{ servicio.id_servicio }}" data-categoria="{{ servicio.categoria.id_categoria_servicio }}" data-bs-toggle="modal" data-bs-target="#modificarServicioModal{{ servicio.id_servicio }}">
                       <img class="edit icon" alt="" src="{% static 'public/edit.svg' %}" />
                   </button>
                   
-                  <!-- Modal editar -->
-                  <!-- Cambia el ID del modal a algo único -->
 <div class="modal fade" id="modificarServicioModal{{ servicio.id_servicio }}" tabindex="-1" aria-labelledby="modificarServicioModal{{ servicio.id_servicio }}" aria-hidden="true">
                       <div class="modal-dialog">
                           <div class="modal-content">
@@ -379,7 +370,6 @@
       // Verifica si hay mensajes para mostrar
       var messages = document.querySelectorAll('.message');
       if (messages.length > 0) {
-          // Recorre todos los mensajes y los muestra uno por uno
           messages.forEach(function(message) {
               showMessage(message.textContent);
           });

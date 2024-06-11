@@ -3,7 +3,6 @@ document.addEventListener("DOMContentLoaded", function() {
         return /\d/.test(str);
     }
 
-    // Función para mostrar un mensaje de validación
     function showValidationMessage(input, message) {
         let errorElement = input.nextElementSibling;
         if (!errorElement || !errorElement.classList.contains("invalid-feedback")) {
@@ -15,7 +14,6 @@ document.addEventListener("DOMContentLoaded", function() {
         input.classList.add("is-invalid");
     }
 
-    // Función para ocultar un mensaje de validación
     function hideValidationMessage(input) {
         let errorElement = input.nextElementSibling;
         if (errorElement && errorElement.classList.contains("invalid-feedback")) {

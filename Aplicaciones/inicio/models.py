@@ -1,6 +1,6 @@
 from django.db import models
 from django.db import connection
-# Create your models here.
+
 class Actividades(): 
     def listarActividades(self):
         with connection.cursor() as cursor:
@@ -55,7 +55,7 @@ class Actividades():
                     fecha_actividad DESC;
                     """
             cursor.execute(sqlListarActividades)
-            # Guardar en la variable resultados todos los resultados devueltos por la consulta.
+
             actividades = cursor.fetchall()
 
         return actividades

@@ -17,7 +17,7 @@ main {
 }
 
 body.active main {
-  transform: translateX(150px); /* Ajusta el valor según el ancho de tu barra lateral */
+  transform: translateX(150px);
 }
 
 button,
@@ -126,7 +126,6 @@ body.active .hidden {
   transition: transform 0.25s ease;
 }
 
-/* Oculta la barra de navegación en pantallas pequeñas */
 nav {
   display: flex;
 }
@@ -139,16 +138,16 @@ nav {
 
 @media (min-width: 600px) {
   main {
-    margin-left: 100px; /* Ancho del menú lateral */
+    margin-left: 100px; 
   }
 }
 
 body main {
-  margin-right: 50px; /* Ajusta el valor según el ancho de tu barra lateral */
+  margin-right: 50px; 
 }
 
 body.active main {
-  margin-right: 250px; /* Ajusta el valor según el ancho de tu barra lateral */
+  margin-right: 250px; 
 }
 
 
