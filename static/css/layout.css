@@ -33,7 +33,7 @@ nav {
   position: fixed;
   width: 53px;
   height: calc(100vh );
-  background-color: #363838;
+  background-color: #212529;
   padding: 1rem 0rem 1rem 0rem;
   display: flex;
   flex-direction: column;
@@ -46,7 +46,6 @@ body.active nav {
 
 .sidebar-header,
 .sidebar-links {
-
   justify-content: center;
   align-items: center;
   overflow: hidden;
@@ -106,7 +105,7 @@ body.active .hidden {
 
 .link:hover,
 .link.active:hover {
-    background-color: #242424;
+    background-color: #272d32;
     border-left: 6px solid #3956A6;
 }
 
@@ -121,7 +120,7 @@ body.active .hidden {
 }
 
 .toggle {
-  background-color: #363838;
+  background-color: #212529;
   display: flex;
   align-items: center;
   transition: transform 0.25s ease;
@@ -145,14 +144,11 @@ nav {
 }
 
 body main {
-  margin-right: 300px; /* Ajusta el valor según el ancho de tu barra lateral */
+  margin-right: 50px; /* Ajusta el valor según el ancho de tu barra lateral */
 }
 
 body.active main {
   margin-right: 250px; /* Ajusta el valor según el ancho de tu barra lateral */
 }
-
-
-
 
 

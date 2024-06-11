@@ -1,0 +1,45 @@
+body {
+  margin: 0;
+  line-height: normal;
+  background-color: #d9d9d9;
+}
+
+.container {
+  padding-top: 30px;
+  background-color: #212529;
+  border-radius: 10px;
+  
+}
+
+.vertical-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+.group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+label, option, div.dt-layout-cell.dt-start, div.dt-container .dt-length, div.dt-container .dt-search, div.dt-container .dt-info, div.dt-container .dt-processing, div.dt-container .dt-paging, div.dt-container .dt-paging .dt-paging-button.disabled, div.dt-container .dt-paging .dt-paging-button.disabled:hover, div.dt-container .dt-paging .dt-paging-button.disabled:active {
+color: white;
+}
+
+option, dt-input {
+background-color: #212529;
+}
+
+
+.link-opacity-100 {
+  color: #4F6EC3 !important;
+  text-decoration: underline !important;
+}
+.link-opacity-100:hover, .hovericon:hover {
+  color: #4965b4 !important;
+}
+
+.btns {
+  padding-top: 15px;
+}

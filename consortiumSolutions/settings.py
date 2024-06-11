@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'Aplicaciones.servicios',
+    'Aplicaciones.inicio',
+    'Aplicaciones.login',
+    'Aplicaciones.vendedores',
+    'Aplicaciones.clientes',
 ]
 
 MIDDLEWARE = [
@@ -71,14 +75,22 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'consortiumSolutions.wsgi.application'
 
+AUTH_USER_MODEL = 'login.MyUser'
+
+AUTHENTICATION_BACKENDS = [
+    'Aplicaciones.login.backends.MiUsuarioBackend', 
+    'django.contrib.auth.backends.ModelBackend',
+]
+
+
 
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.mysql',  # ENGINE es motor de BD
-        'NAME': 'servicios_bd',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'consorciosmt',
                 'USER': 'root',
                 'PASSWORD': '',
                 'HOST': '127.0.0.1',
@@ -111,7 +123,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'es-es'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Buenos_Aires'
 
 USE_I18N = True
 
@@ -127,8 +139,19 @@ if not DEBUG:
     
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
+    BASE_DIR / 'Aplicaciones/vendedores/static',
+    BASE_DIR / 'Aplicaciones/clientes/static',
+    BASE_DIR / 'Aplicaciones/login/static',
 ]
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' 
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'consortiumsolutionsarg@gmail.com'
+EMAIL_HOST_PASSWORD = 'ypqc mowx oqfy delw'
+

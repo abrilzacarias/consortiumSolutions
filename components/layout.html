@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Servicios</title>
     {% load static %}
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap"
     />
     <link rel="stylesheet" href="{% static 'css/layout.css' %}">
-    
+    <script src="https://cdn.jsdelivr.net/npm/js-cookie@rc/dist/js.cookie.min.js"></script>
+    <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
     <script src="{% static 'js/layout.js' %}" defer></script>
     
   </head>
@@ -21,12 +23,11 @@
           <img
           class="menu-svgrepo-com-1-1"
           alt=""
-          src="
-          {% static 'public/menusvgrepocom-1-1.svg' %}"
+          src="{% static 'public/menusvgrepocom-1-1.svg' %}"
         />
       </button></a>
       <div class="sidebar-links">
-        <a class="logo-wrapper">
+        <a class="logo-wrapper" href="{% url 'inicio:listarActividades' %}">
           <img
           class="mt-icon"
           alt=""
@@ -36,9 +37,8 @@
       
     </div>
 
-
     <div class="sidebar-links">
-      <a class="link">
+      <a class="link" href="{% url 'clientes:listarClientes' %}">
           <img
           class="clients-1-icon"
           alt=""
@@ -60,10 +60,10 @@
           alt=""
           src="{% static 'public/preventas-1.svg' %}"
         />
-        <span class="hidden">Preventas</span>
+        <span class="hidden">Presupuestos</span>
       </a>
       </li>
-      <a class="link">
+      <a class="link" href="{% url 'vendedores:home' %}">
           <img
           class="vendedores-1-icon"
           alt=""
@@ -71,7 +71,7 @@
         />
         <span class="hidden">Vendedores</span>
       </a>
-      <a class="link">
+      <a class="link" href="{% url 'servicios:home' %}">
           <img
           class="vuesaxlinearmenu-icon"
           alt=""
@@ -79,7 +79,7 @@
         />
         <span class="hidden">Servicios</span>
       </a>
-      <a class="link">
+      <a class="link" href="{% url 'logout' %}">
           <img
           class="vuesaxlinearlogout-icon"
           alt=""
@@ -90,11 +90,9 @@
     </div>
       </div>
     </nav>
-
     <main>
       {% block content %}
-      
       {% endblock %}
-  </main>
+    </main>
   </body>
 </html>
