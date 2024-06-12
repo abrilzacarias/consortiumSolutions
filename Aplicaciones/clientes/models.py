@@ -91,7 +91,9 @@ class Clientes():
                     cursor.execute(sqlInsertarContacto, [contacto, tipo_contacto, idPersona])
                     connection.commit()
                 # Verificar si el vendedor actual es nulo para permitir la edición del vendedor asignado
-                # Actualizar la tabla designacion
+                if vendedor_asignado == '':
+                    vendedor_asignado = None
+                    
                 if vendedor_asignado is not None:
                     # Llama al método agregarDesignacionVendedor con los IDs del vendedor y el cliente
                     if self.agregarDesignacionVendedor(vendedor_asignado, idCliente):
