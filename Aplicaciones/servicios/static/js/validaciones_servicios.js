@@ -1,11 +1,8 @@
 document.addEventListener("DOMContentLoaded", function() {
-
-    // Función para validar si un string contiene números
     function containsNumbers(str) {
         return /\d/.test(str);
     }
 
-    // Función para mostrar un mensaje de validación
     function showValidationMessage(input, message) {
         let errorElement = input.nextElementSibling;
         if (!errorElement || !errorElement.classList.contains("invalid-feedback")) {
@@ -18,7 +15,6 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log(`Validation message shown: ${message}`);
     }
 
-    // Función para ocultar un mensaje de validación
     function hideValidationMessage(input) {
         let errorElement = input.nextElementSibling;
         if (errorElement && errorElement.classList.contains("invalid-feedback")) {
@@ -30,7 +26,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const agregarForm = document.querySelector("#agregarCategoriaForm");
     if (agregarForm) {
-        const categoriaInputAgregar = document.querySelector("#categoria"); // Movido fuera del bloque if
+        const categoriaInputAgregar = document.querySelector("#categoria"); 
         console.log("Agregar form found");
 
         agregarForm.addEventListener("submit", function(event) {

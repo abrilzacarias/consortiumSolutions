@@ -23,7 +23,7 @@ body {
 }
 
 .form-inline .form-control {
-  margin-right: 20px; /* Ajusta el valor según sea necesario */
+  margin-right: 20px; 
 }
 
 .input-search, .input-search:focus, .input-search:active{
@@ -40,8 +40,8 @@ body {
 .accordion {
   background-color: #212529;
   padding: 20px 20px 10px 20px;
-  border-top-left-radius: 10px; /* Redondear la esquina superior izquierda */
-  border-top-right-radius: 10px; /* Redondear la esquina superior derecha */
+  border-top-left-radius: 10px; 
+  border-top-right-radius: 10px; 
   width: 100%;
 }
 .accordion-item {
@@ -49,7 +49,7 @@ body {
 }
 
 .accordion-button {
-  width: calc(100% - 39px); /* Resta 1px para evitar el desbordamiento horizontal */
+  width: calc(100% - 39px); 
 }
 
 .accordion-body {

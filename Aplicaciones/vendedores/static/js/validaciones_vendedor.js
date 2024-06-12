@@ -29,7 +29,6 @@ document.addEventListener("DOMContentLoaded", function() {
         console.log("Validation message hidden");
     }
 
-    // Agregar Vendedor
     const agregarForm = document.querySelector("#agregarVendedorForm");
     if (agregarForm) {
         console.log("Agregar form found");
@@ -97,8 +96,6 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-       
-    // Editar Vendedor
     document.querySelectorAll('.editarVendedorModal').forEach(modal => {
         modal.addEventListener('shown.bs.modal', function() {
             const id = modal.getAttribute('id').replace('editarVendedorModal', '');

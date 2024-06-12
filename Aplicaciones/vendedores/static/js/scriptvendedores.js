@@ -10,12 +10,10 @@ $(document).ready(function() {
     },
   });
 
-  
-  // Function to create a new contact input group for adding a new vendor
   const createContactInputGroupAdd = () => {
     const newContactAdd = document.createElement('div');
     newContactAdd.className = 'input-group mb-3';
-    const uniqueId = Math.random().toString(36).substring(2, 15); // Generate a unique ID
+    const uniqueId = Math.random().toString(36).substring(2, 15); 
 
     newContactAdd.innerHTML = `
       <select class="form-control bg-dark text-light" name="tipo_contacto[]">
@@ -27,7 +25,6 @@ $(document).ready(function() {
       <button type="button" class="btn btn-danger remove-contact-btn">-</button>
     `;
 
-    // Add event listener to the remove button
     newContactAdd.querySelector('.remove-contact-btn').addEventListener('click', () => {
       newContactAdd.parentElement.removeChild(newContactAdd);
     });
@@ -35,7 +32,6 @@ $(document).ready(function() {
     return newContactAdd;
   };
 
-  // Event listener to add a new contact input group for adding a new vendor
   const addContactBtnAdd = document.getElementById('addContactBtnAdd');
   const contactsContainerAdd = document.getElementById('contactsContainerAdd');
   addContactBtnAdd.addEventListener('click', () => {
@@ -43,7 +39,7 @@ $(document).ready(function() {
     contactsContainerAdd.appendChild(newContact);
   });
 
-  // Function to create a new contact input group for editing a vendor
+
   const createContactInputGroupEdit = (modalId) => {
     const newContactEdit = document.createElement('div');
     newContactEdit.className = 'input-group mb-3';
@@ -67,7 +63,6 @@ $(document).ready(function() {
     return newContactEdit;
   };
 
-  // Event delegation for dynamically added elements
   document.addEventListener('click', (event) => {
     if (event.target && event.target.classList.contains('addContactBtnEdit')) {
       const modalId = event.target.closest('.modal').id;
@@ -85,7 +80,6 @@ function getCookie(name) {
     var cookies = document.cookie.split(';');
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
       if (cookie.substring(0, name.length + 1) === (name + '=')) {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
@@ -116,9 +110,9 @@ function eliminarContactoDirecto(buttonElement) {
         successMessage.classList.add('alert', 'alert-success');
         successMessage.textContent = 'Contacto eliminado exitosamente.';
         modalBody.appendChild(successMessage);
-        setTimeout(() => successMessage.remove(), 2000); // Remove message after 2 seconds
+        setTimeout(() => successMessage.remove(), 2000); 
       } else {
-        // Handle error response
+
       }
     })
     .catch(error => {

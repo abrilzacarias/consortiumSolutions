@@ -10,8 +10,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 inputElement.setAttribute('disabled', 'disabled');
             }
         });
-
-        // Inicializar el estado del campo de entrada
         if (selectElement.value === '1') {
             inputElement.removeAttribute('disabled');
         } else {
@@ -19,7 +17,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    // Configurar el comportamiento para los modales de agregar y editar
     setupToggle('requiere_pago_agregar', 'precio_base_agregar');
     setupToggle('requiere_pago_editar', 'precio_base_editar');
 });

@@ -1,11 +1,11 @@
-// In your Javascript (external .js resource or <script> tag)
+
 $(document).ready(function() {
   $('.js-example-basic-single').select2({
-    width: '100%', // need to override the changed default
+    width: '100%', 
     height: '100%'
   });
 });
-// Function to create a new contact input group for editing a vendor
+
  const createContactInputGroupEdit = () => {
     const newContactEdit = document.createElement('div');
     newContactEdit.className = 'input-group mb-3';
@@ -21,7 +21,6 @@ $(document).ready(function() {
       <button type="button" class="btn btn-danger remove-contact-btn">-</button>
     `;
 
-    // Add event listener to the remove button
     newContactEdit.querySelector('.remove-contact-btn').addEventListener('click', () => {
       newContactEdit.parentElement.removeChild(newContactEdit);
     });
@@ -29,7 +28,6 @@ $(document).ready(function() {
     return newContactEdit;
   };
 
-  // Event delegation for dynamically added elements
   document.addEventListener('click', (event) => {
     if (event.target && event.target.classList.contains('addContactBtnEdit')) {
       const contactsContainerEdit = document.querySelector('.contactsContainerEdit');
@@ -46,7 +44,6 @@ function getCookie(name) {
     var cookies = document.cookie.split(';');
     for (var i = 0; i < cookies.length; i++) {
       var cookie = cookies[i].trim();
-      // Does this cookie string begin with the name we want?
       if (cookie.substring(0, name.length + 1) === (name + '=')) {
         cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
         break;
@@ -56,7 +53,6 @@ function getCookie(name) {
   return cookieValue;
 }
 
-// Function to delete contact directly
 function eliminarContactoDirecto(buttonElement) {
   const contactoId = buttonElement.getAttribute('data-contacto-id');
   var csrftoken = getCookie('csrftoken');
@@ -77,9 +73,9 @@ function eliminarContactoDirecto(buttonElement) {
         successMessage.classList.add('alert', 'alert-success');
         successMessage.textContent = 'Contacto eliminado exitosamente.';
         modalBody.appendChild(successMessage);
-        setTimeout(() => successMessage.remove(), 2000); // Remove message after 2 seconds
+        setTimeout(() => successMessage.remove(), 2000); 
       } else {
-        // Handle error response
+
       }
     })
     .catch(error => {
