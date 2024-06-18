@@ -1,6 +1,6 @@
 # Consortium Solutions - Sistema de Gestión Integral
 ## Descripción del Proyecto
-MT Soluciones Integrales presenta un sistema integral diseñado para gestionar, facilitar y optimizar el manejo de clientes, prospectos, vendedores, servicios, presupuestos y ventas. Este sistema está especialmente dirigido a empresas que ofrecen servicios a administradores de consorcios de edificios.
+Consortium Solutions presenta un sistema integral diseñado para gestionar, facilitar y optimizar el manejo de clientes, prospectos, vendedores, servicios, presupuestos y ventas.
 
 ## Características Principales
 ### Gestión de Vendedores y Prospectos
