@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', function() {
         var selectElement = document.getElementById(selectId);
         var inputElement = document.getElementById(inputId);
 
+<<<<<<< HEAD
         function togglePrecioBase() {
             if (selectElement.value === '1') {
                 inputElement.removeAttribute('disabled');
@@ -41,4 +42,22 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     });
+=======
+        selectElement.addEventListener('change', function() {
+            if (this.value === '1') {
+                inputElement.removeAttribute('disabled');
+            } else {
+                inputElement.setAttribute('disabled', 'disabled');
+            }
+        });
+        if (selectElement.value === '1') {
+            inputElement.removeAttribute('disabled');
+        } else {
+            inputElement.setAttribute('disabled', 'disabled');
+        }
+    }
+
+    setupToggle('requiere_pago_agregar', 'precio_base_agregar');
+    setupToggle('requiere_pago_editar', 'precio_base_editar');
+>>>>>>> d53db1686a5aaa6cc42bddccc8f232efe52407f8
 });
