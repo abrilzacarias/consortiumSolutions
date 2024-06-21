@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Establecer Nueva Contraseña</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/formNuevaContrasenia.css' %}">
+</head>
+<body>
+    <div class="reset-form">
+        <h2>Establecer Nueva Contraseña</h2>
+        <form method="post" id="reset-form">
+            {% csrf_token %}
+            <label for="new_password1">Nueva contraseña:</label>
+            <input type="password" id="new_password1" name="new_password1" required placeholder="Ingrese su nueva contraseña">
+            <div id="error-new_password1" class="error-message"></div>
+
+            <label for="new_password2">Confirmar nueva contraseña:</label>
+            <input type="password" id="new_password2" name="new_password2" required placeholder="Repita su nueva contraseña">
+            <div id="error-new_password2" class="error-message"></div>
+
+            <button type="submit">Guardar</button>
+        </form>
+    </div>
+    <script src="{% static 'js/formNuevaContrasenia.js' %}"></script>
+</body>
+</html>

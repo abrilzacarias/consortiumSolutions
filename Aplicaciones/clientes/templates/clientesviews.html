@@ -1,0 +1,309 @@
+{% extends 'layout.html' %} {% block content %}
+
+<head>
+   
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+    crossorigin="anonymous"
+  />
+  <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+  <title> Clientes </title>
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/clientes.css' %}" />
+  <script src="{% static 'js/clientes.js' %}"></script>
+
+</head>
+
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content bg-white"> 
+          <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="message-content">
+              <div id="messages-container">
+                  {% if messages %}
+                      {% for message in messages %}
+                          {% if message.error %}
+                              <div class="message text-danger">{{ message }}</div> 
+                          {% else %}
+                              <div class="message text-success">{{ message }}</div> 
+                          {% endif %}
+                      {% endfor %}
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="vertical-center">
+<div class="container">
+  <div class="group pb-3">
+    <h2 class="text-light m-0">Clientes</h2>
+    <div class="btn-group" role="group" aria-label="Tipo de Cliente">
+      <button type="button" class="btn btn-secondary btn-filtro" data-tipo-cliente="todos">Todos</button>
+      <button type="button" class="btn btn-secondary btn-filtro" data-tipo-cliente="1">Clientes</button>
+      <button type="button" class="btn btn-secondary btn-filtro" data-tipo-cliente="0">Prospectos</button>
+    </div>
+    <a type="button" class="btn btn-success btn-agregar text-light" href="{% url 'clientes:agregarCliente' %}">
+      Agregar Cliente
+    </a>
+  </div>
+
+
+<table class="table table-dark table-hover" id="tableClientes">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Apellido</th>
+      <th scope="col">CUIL/T</th>
+      <th scope="col">Dirección</th>
+      <th scope="col">Clave AFIP/AGIP</th>
+      <th scope="col">Tipo</th>
+      <th scope="col">Nro Matricula</th>
+      <th scope="col">Venc. Matricula</th>
+      <th scope="col">Contactos</th>
+      <th scope="col">Vendedor Asignado</th>
+      <th scope="col">Edificios</th>
+      <th scope="col">Observaciones</th>
+      <th scope="col">Acciones</th>
+    </tr>
+  </thead>
+  <tbody id="tabla-resultados">
+    
+    {% for cliente in resultados %}
+    <tr data-tipo-cliente="{{ cliente.tipo_cliente }}">
+        
+      <td>{{ cliente.nombre_cliente}} </td>
+      <td>{{ cliente.apellido_cliente }}</td>
+      <td>{{ cliente.cuit_cliente }}</td>
+      <td>{{ cliente.direccion_cliente }}</td>
+      <td>{{ cliente.clave_cliente }}</td>
+      <td> {% if cliente.tipo_cliente == 0 %} Prospecto {% elif cliente.tipo_cliente == 1 %} Cliente {% endif %}</td>
+      <td>{{ cliente.matricula_cliente}}</td>
+      <td>{{ cliente.fecha_vencimiento }}</td>
+      <td>{{ cliente.contacto_cliente|default:"-" }}</td>
+      <td>{{ cliente.vendedor_asignado|default:"-"}}</td>
+      <td>
+      <!-- Botón para abrir el modal del edificio -->
+        <a class="link-opacity-100" data-bs-toggle="modal" data-bs-target="#verEdificioModal{{ cliente.id_cliente }}">
+          Ver Edificios
+        </a>
+
+        <div class="modal fade" id="verEdificioModal{{ cliente.id_cliente }}" tabindex="-1" aria-labelledby="verEdificioModal{{ cliente.id_cliente }}" aria-hidden="true">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              
+              <div class="modal-header bg-dark text-light">
+                
+                  <h5 class="modal-title" id="exampleModalLabel">Edificios</h5>
+                  <button type="button" class="btn btn-success btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarEdificioModal{{ cliente.id_cliente }}">
+                    Agregar Edificio
+                  </button>
+                
+              </div>
+        
+              <div class="modal fade" id="agregarEdificioModal{{ cliente.id_cliente }}" tabindex="-1" aria-labelledby="agregarEdificioModal{{ cliente.id_cliente }}" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header bg-dark text-light">
+                      <h5 class="modal-title" id="exampleModalLabel">Agregar Edificio</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-dark text-light">
+                      <form action="{% url 'clientes:agregarEdificio' cliente.id_cliente %}" method="POST"> {% csrf_token %}
+                        <div class="form-group row mb-3">
+                          <label for="categoria" class="col-sm-3 col-form-label">Nombre:</label>
+                          <div class="col-sm-9 d-flex align-items-center"> 
+                            <input type="text" class="form-control" id="nombre_edificio" name="nombre_edificio" placeholder="Ingrese el nombre del edificio" minlength="4" required>
+                          </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                          <label for="categoria" class="col-sm-3 col-form-label">Direccion:</label>
+                          <div class="col-sm-9 d-flex align-items-center"> 
+                            <input type="text" class="form-control" id="direccion_edificio" name="direccion_edificio" placeholder="Ingrese la direccion del edificio" minlength="4" required>
+                          </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                          <label for="categoria" class="col-sm-3 col-form-label">CUIT:</label>
+                          <div class="col-sm-9 d-flex align-items-center"> 
+                            <input type="text" class="form-control" id="cuit_edificio" name="cuit_edificio" placeholder="Ingrese el CUIT del edificio" minlength="4">
+                          </div>
+                        </div>
+                        <div class="form-group">
+                          <label for="tipo_edificio">Tipo</label>
+                          <select class="form-control bg-dark text-light" id="tipo_edificio" name="tipo_edificio" required>
+                            <option value="1">Hotel</option>
+                            <option value="2">Hospital</option>
+                            <option value="3">Residencia</option>
+                            <option value="4">Escuela</option>
+                            <option value="5">Fabrica</option>
+                            <option value="6">Otro</option>
+                          </select>
+                        </div>
+                        <div class="modal-footer bg-dark text-light">
+                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                          <button type="submit" class="btn btn-success">Agregar</button>
+                        </div>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              </div>
+        
+              <div class="modal-body bg-dark text-light">
+                <table class="table table-dark" id="tableEdificios">
+                  <thead>
+                    <tr>
+                      <th scope="col">Nombre</th>
+                      <th scope="col">Direccion</th>
+                      <th scope="col">CUIT</th>
+                      <th scope="col">Tipo</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabla-resultados">
+                    {% for edificio in cliente.edificios %}
+                    <tr>
+                      <td> {{ edificio.nombre_edificio }} </td>
+                      <td> {{ edificio.direccion_edificio }} </td>
+                      <td> {{ edificio.cuit_edificio }} </td>
+                      <td> {{ edificio.tipo_edificio }} </td>
+                    </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+              
+              <div class="modal-footer bg-dark text-light">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+        
+      </td>
+      <td>
+        <a class="link-opacity-100" data-bs-toggle="modal" data-bs-target="#verObservacionesModal{{ cliente.id_cliente }}">
+            Ver Observaciones
+        </a>
+        
+        <div class="modal fade" id="verObservacionesModal{{ cliente.id_cliente }}" tabindex="-1" aria-labelledby="verObservacionesModal{{ cliente.id_cliente }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-light">
+                        <h5 class="modal-title" id="exampleModalLabel">Observaciones</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-dark text-light">
+                        <table class="table table-dark" id="tableObservacion">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Fecha / Hora</th>
+                                    <th scope="col">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-resultados">
+                                {% for observacion in cliente.observaciones %}
+                                    <tr>
+                                        <td>{{ observacion.fecha_hora_observacion }}</td>
+                                        <td>{{ observacion.descripcion_observacion }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="modal-footer bg-dark text-light">
+                        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#agregarObservacionModal{{ cliente.id_cliente }}">Agregar Observación</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+        <!-- Modal para agregar observación -->
+        <div class="modal fade" id="agregarObservacionModal{{ cliente.id_cliente }}" tabindex="-1" aria-labelledby="agregarObservacionModal{{ cliente.id_cliente }}" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header bg-dark text-light">
+                        <h5 class="modal-title" id="exampleModalLabel">Agregar Observación</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body bg-dark text-light">
+                        <form action="{% url 'clientes:agregarObservacionCliente' cliente.id_cliente %}" method="POST" method="POST">
+                            {% csrf_token %}
+                            <div class="form-group row mb-3">
+                                <label for="categoria" class="col-sm-3 col-form-label">Descripción:</label>
+                                <div class="col-sm-9 d-flex align-items-center">
+                                    <input type="text" class="form-control" id="descripcion_observacion" name="descripcion_observacion" placeholder="Ingrese" minlength="4" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer bg-dark text-light">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                <button type="submit" class="btn btn-success">Agregar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </td>
+    
+    
+      <td>
+        <div class="group btns">
+        <a
+          class="btn-modificar"
+          data-id="{{ cliente.id_cliente }}"
+          href="{% url 'clientes:editarCliente' cliente.id_cliente %}"
+        >
+          <img class="edit icon hovericon" alt="" src="{% static 'public/edit.svg' %}" />
+      </a>
+        <a
+          class="btn-eliminar"
+          data-id="{{ cliente.id_cliente }}"
+          href="{% url 'clientes:eliminarCliente' cliente.id_cliente %}"
+          onclick="return confirm('¿Está seguro de que desea eliminar este cliente?');"
+        >
+          <img class="delete hovericon" alt="" src="{% static 'public/delete.svg' %}" />
+        </a>
+      </div>
+
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+
+      function showMessage(message) {
+          var messageContent = document.getElementById('message-content');
+          messageContent.innerHTML = message;
+          messageModal.show();
+
+          setTimeout(function() {
+              messageModal.hide();
+          }, 5000); // Oculta el modal después de 5 segundos
+      }
+
+      // Verifica si hay mensajes para mostrar
+      var messages = document.querySelectorAll('.message');
+      if (messages.length > 0) {
+          // Recorre todos los mensajes y los muestra uno por uno
+          messages.forEach(function(message) {
+              showMessage(message.textContent);
+          });
+      }
+  });
+</script>
+{% endblock %}

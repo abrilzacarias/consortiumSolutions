@@ -1,0 +1,271 @@
+{% extends 'layout.html' %} {% block content %}
+
+<head>
+  <title>Vendedores</title>
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+    crossorigin="anonymous"
+  />
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+  
+  {% load static %}
+  <link rel="stylesheet" href="{% static 'css/clientes.css' %}" />
+  <script src="{% static 'js/scriptvendedores.js' %}"></script>
+  <script src="{% static 'js/validaciones_vendedor.js' %}"></script>
+  <style>
+    .form-group {
+        margin-bottom: 2rem; /* Ajustar el margen inferior para más espacio entre grupos */
+    }
+    .invalid-feedback {
+        display: none;
+        color: red;
+        margin-top: 0.5rem; /* Añadir margen superior para separarlo del input */
+    }
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    .d-flex.align-items-center {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    .d-flex.align-items-center > .form-control {
+        width: 100%;
+    }
+</style>
+
+</head>
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+      <div class="modal-content bg-success text-white"> <!-- Agregamos las clases bg-success para el fondo verde y text-white para el texto blanco -->
+          <div class="modal-header">
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="message-content">
+              <div id="messages-container">
+                  {% if messages %}
+                      {% for message in messages %}
+                          <div class="message text-success">{{ message }}</div> <!-- Agregamos la clase text-success para el color del texto verde -->
+                      {% endfor %}
+                  {% endif %}
+              </div>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="vertical-center">
+  <div class="container p-4">
+  <div class="group mb-3">
+      <h2 class="titulo text-light">Vendedores</h2>
+      <!-- Button trigger modal -->
+      <button type="button" class="btn btn-success btn-categoria btn-agregar text-light" data-bs-toggle="modal" data-bs-target="#addVendedorModal">
+          Agregar Vendedor
+      </button>
+  </div>
+
+<!-- Add Vendedor Modal -->
+<div class="modal fade" id="addVendedorModal" tabindex="-1" aria-labelledby="addVendedorModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content">
+          <div class="modal-header bg-dark text-light">
+              <h5 class="modal-title" id="addVendedorModalLabel">Agregar Vendedor</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body bg-dark text-light">
+              <form id="agregarVendedorForm" action="{% url 'vendedores:agregarVendedor' %}" method="POST">
+                  {% csrf_token %}
+                  <div class="mb-3">
+                      <label for="nombre_persona" class="form-label">Nombre: </label>
+                      <input type="text" class="form-control" id="nombre_persona" name="nombre_persona" placeholder="Ingrese el nombre del vendedor" required>
+                      <div class="invalid-feedback"></div>
+                  </div>
+                  <div class="mb-3">
+                      <label for="apellido_persona" class="form-label">Apellido: </label>
+                      <input type="text" class="form-control" id="apellido_persona" name="apellido_persona" placeholder="Ingrese el apellido del vendedor" required>
+                      <div class="invalid-feedback"></div>
+                  </div>
+                  <div class="mb-3">
+                      <label for="cuitl_persona" class="form-label">CUIT/CUIL: </label>
+                      <input type="text" class="form-control" id="cuitl_persona" name="cuitl_persona" placeholder="Ingrese el CUIT/CUIL del vendedor" required>
+                      <div class="invalid-feedback"></div>
+                  </div>
+                  <div class="mb-3">
+                      <label for="direccion_persona" class="form-label">Dirección: </label>
+                      <input type="text" class="form-control" id="direccion_persona" name="direccion_persona" placeholder="Ingrese la dirección del vendedor" required>
+                  </div>
+
+                  <!-- Contactos -->
+                  <div id="contactSection" class="form-group row mb-3">
+                    <label class="col-sm-3 col-form-label">Contactos: </label>
+                    <div class="col-sm-9" id="contactsContainerAdd">
+                      <div class="input-group mb-3">
+                        <select class="form-control bg-dark text-light" name="tipo_contacto[]">
+                          <option value="1">Correo Electrónico</option>
+                          <option value="2">Teléfono</option>
+                          <option value="3">Página Web</option>
+                        </select>
+                        <input type="text" class="form-control" name="contacto[]" placeholder="Ingrese el contacto" required>
+                        <button type="button" class="btn btn-danger remove-contact-btn-add">-</button>
+                      </div>
+                    </div>
+                    <div class="col-sm-9 offset-sm-3">
+                      <button type="button" class="btn btn-primary" id="addContactBtnAdd">Agregar Otro Contacto</button>
+                    </div>
+                  </div>
+                  <div class="text-end">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                    <button type="submit" class="btn btn-success">Agregar Vendedor</button>
+                    
+                  </div>
+                 
+              </form>
+          </div>
+      </div>
+  </div>
+</div>
+
+<div class="table-responsive">
+<table class="table table-dark" id="tableVendedores">
+  <thead>
+    <tr>
+      <th scope="col">Nombre</th>
+      <th scope="col">Apellido</th>
+      <th scope="col">CUIT/CUIL</th>
+      <th scope="col">Dirección</th>
+      <th scope="col">Contacto</th>
+      <th scope="col">Fecha de Alta</th>
+      <th scope="col">Acciones</th>
+    </tr>
+  </thead>
+  <tbody id="tabla-resultados">
+    {% for vendedor in vendedores %}
+    <tr>
+      <td>{{ vendedor.nombre_persona }}</td>
+      <td>{{ vendedor.apellido_persona }}</td>
+      <td>{{ vendedor.cuitl_persona|default:"-" }}</td>
+      <td>{{ vendedor.direccion_persona }}</td>
+      <td>{% for contacto in vendedor.contactos %}
+          <div>{{ contacto.descripcion_contacto }}</div>
+          {% endfor %}</td>
+      <td>{{ vendedor.fecha_alta_vendedor }}</td>
+      <td>
+        <button
+          type="button"
+          class="btn btn-modificar"
+          data-id="{{ vendedor.id_vendedor }}"
+          data-bs-toggle="modal"
+          data-bs-target="#editarVendedorModal{{ vendedor.id_vendedor }}"
+        >
+          <img class="edit icon" alt="" src="{% static 'public/edit.svg' %}" />
+        </button>
+        <a class="btn btn-eliminar"
+          href="eliminarVendedor/{{vendedor.id_vendedor}}"
+          onclick="return confirmarEliminacion();"
+        >
+          <img class="delete" alt="" src="{% static 'public/delete.svg' %}" />
+        </a>  
+
+<!-- Modal de edición -->
+<div class="modal fade editarVendedorModal" id="editarVendedorModal{{ vendedor.id_vendedor }}" tabindex="-1" aria-labelledby="editarVendedorModal{{ vendedor.id_vendedor }}" aria-hidden="true">
+  <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+          <div class="modal-header bg-dark text-light">
+              <h5 class="modal-title" id="exampleModalLabel">Editar Vendedor</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body bg-dark text-light">
+              <form id="editarVendedorForm{{ vendedor.id_vendedor }}" action="{% url 'vendedores:editarVendedor' vendedor.id_vendedor %}" method="POST">
+                  {% csrf_token %}
+                  <div class="form-group row mb-3">
+                      <label for="nombre_persona_editar_{{ vendedor.id_vendedor }}" class="col-sm-3 col-form-label">Nombre:</label>
+                      <div class="col-sm-9">
+                          <input value="{{ vendedor.nombre_persona }}" type="text" class="form-control" id="nombre_persona_editar_{{ vendedor.id_vendedor }}" name="nombre_persona_editar" placeholder="Ingrese el nombre" minlength="4" required>
+                          <div class="invalid-feedback"></div>
+                      </div>
+                  </div>
+                  <div class="form-group row mb-3">
+                      <label for="apellido_persona_editar_{{ vendedor.id_vendedor }}" class="col-sm-3 col-form-label">Apellido:</label>
+                      <div class="col-sm-9">
+                          <input value="{{ vendedor.apellido_persona }}" type="text" class="form-control" id="apellido_persona_editar_{{ vendedor.id_vendedor }}" name="apellido_persona_editar" placeholder="Ingrese el apellido" minlength="4" required>
+                          <div class="invalid-feedback"></div>
+                      </div>
+                  </div>
+                  <div class="form-group row mb-3">
+                      <label for="cuitl_persona_editar_{{ vendedor.id_vendedor }}" class="col-sm-3 col-form-label">CUIT/CUIL:</label>
+                      <div class="col-sm-9">
+                          <input value="{{ vendedor.cuitl_persona }}" type="text" class="form-control" id="cuitl_persona_editar_{{ vendedor.id_vendedor }}" name="cuitl_persona_editar" placeholder="Ingrese el CUIT/CUIL" minlength="4" required>
+                          <div class="invalid-feedback"></div>
+                      </div>
+                  </div>
+                  <div class="form-group row mb-3">
+                      <label for="direccion_persona_{{ vendedor.id_vendedor }}" class="col-sm-3 col-form-label">Dirección:</label>
+                      <div class="col-sm-9">
+                          <input value="{{ vendedor.direccion_persona }}" type="text" class="form-control" id="direccion_persona_{{ vendedor.id_vendedor }}" name="direccion_persona" placeholder="Ingrese la dirección" minlength="4" required>
+                      </div>
+                  </div>
+                  <!-- Dynamic Contact Section for Editing -->
+                  <div id="contactSection{{ vendedor.id_vendedor }}" class="form-group row mb-3">
+                      <label class="col-sm-3 col-form-label">Contactos:</label>
+                      <div class="col-sm-9 contactsContainerEdit" id="contactsContainerEdit{{ vendedor.id_vendedor }}">
+                          <button type="button" class="btn btn-primary mb-2 addContactBtnEdit" id="addContactBtnEdit{{ vendedor.id_vendedor }}">Agregar Otro Contacto</button>
+                          {% for contacto in vendedor.contactos %}
+                          <div class="input-group mb-3" id="contacto_{{ contacto.id_contacto }}">
+                              <select class="form-control bg-dark text-light" name="tipo_contacto_{{ contacto.id_contacto }}">
+                                  <option value="1" {% if contacto.tipo_contacto_id == 1 %}selected{% endif %}>Correo Electrónico</option>
+                                  <option value="2" {% if contacto.tipo_contacto_id == 2 %}selected{% endif %}>Teléfono</option>
+                                  <option value="3" {% if contacto.tipo_contacto_id == 3 %}selected{% endif %}>Página Web</option>
+                              </select>
+                              <input type="text" class="form-control" name="contacto_{{ contacto.id_contacto }}" value="{{ contacto.descripcion_contacto }}" required>
+                              <button type="button" class="btn btn-danger remove-contact-btn" data-contacto-id="{{ contacto.id_contacto }}" onclick="eliminarContactoDirecto(this); event.preventDefault();">-</button>
+                          </div>
+                          {% endfor %}
+                      </div>
+                  </div>
+          </div>
+          <div class="modal-footer bg-dark text-light">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+              <button type="submit" class="btn btn-success">Editar Vendedor</button>
+              
+          </div>
+          </form>
+      </div>
+  </div>
+</div>
+
+        
+        
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+</div>
+</div>
+</div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+      var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+
+      function showMessage(message) {
+          var messageContent = document.getElementById('message-content');
+          messageContent.innerHTML = message;
+          messageModal.show();
+
+          setTimeout(function() {
+              messageModal.hide();
+          }, 5000); // Oculta el modal después de 5 segundos
+      }
+
+      // Verifica si hay mensajes para mostrar
+      var messages = document.querySelectorAll('.message');
+      if (messages.length > 0) {
+          // Recorre todos los mensajes y los muestra uno por uno
+          messages.forEach(function(message) {
+              showMessage(message.textContent);
+          });
+      }
+  });
+</script>
+{% endblock %}

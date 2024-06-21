@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Restablecer Contraseña</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/formRestablecerContrasenia.css' %}">
+</head>
+<body>
+    <div class="reset-form">
+        <h2>Restablecer Contraseña</h2>
+        <form id="reset-form" method="post" action="{% url 'passwordReset' %}">
+            {% csrf_token %}
+            <label for="email" class="centered-label">Correo Electrónico:</label>
+            <input type="email" id="email" name="email" required placeholder="Ingrese su correo electrónico" value="{{ form.email.value|default_if_none:'' }}">
+            <p class="error-message" id="error-message" style="display: none;">{% if error_message %}{{ error_message }}{% endif %}</p>
+            <button type="submit">Enviar</button>
+        </form>
+    </div>
+    <script src="{% static 'js/formRestablecerContrasenia.js' %}"></script>
+</body>
+</html>
