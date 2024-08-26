@@ -22,7 +22,6 @@ def home(request):
     return render(request, 'vendedoresviews.html', {'vendedores': vendedores})
 
 
-
 def agregarVendedor(request):
     if request.method == 'POST':
         nombre_persona = request.POST.get('nombre_persona')
