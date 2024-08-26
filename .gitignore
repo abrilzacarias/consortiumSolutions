@@ -9,6 +9,7 @@ lib64/
 pip-selfcheck.json
 __pycache__
 __pycache__/
+**/__pycache__/
 
 # IDE files
 .vscode/
