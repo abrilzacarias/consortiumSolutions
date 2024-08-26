@@ -7,6 +7,7 @@ include/
 lib/
 lib64/
 pip-selfcheck.json
+__pycache__
 
 # IDE files
 .vscode/
@@ -16,9 +17,6 @@ pip-selfcheck.json
 
 # Environment variables
 .env
-
-# Database
-productscraper.db
 
 # Compiled Python files
 *.pyc
