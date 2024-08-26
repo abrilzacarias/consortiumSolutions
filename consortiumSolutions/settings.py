@@ -55,6 +55,9 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+
+
+
 ROOT_URLCONF = 'consortiumSolutions.urls'
 
 TEMPLATES = [
@@ -133,6 +136,10 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 STATIC_URL = '/static/'
+
+
+LOGIN_URL = '/signin'  # Debe coincidir con el nombre de la ruta de login
+
     
 if not DEBUG:
     STATIC_ROOT = ''

@@ -1,4 +1,4 @@
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
+from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin, Group, Permission
 from django.db import models
 
 class MyUserManager(BaseUserManager):
@@ -51,8 +51,32 @@ class MyUser(AbstractBaseUser, PermissionsMixin):
 
     objects = MyUserManager()
 
+    # Relaciones con modelos predefinidos
+    groups = models.ManyToManyField(
+        Group,
+        related_name='custom_users',  # Puedes cambiar el nombre de la relación si lo prefieres
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='custom_users',  # Puedes cambiar el nombre de la relación si lo prefieres
+        blank=True
+    )
+
+
     USERNAME_FIELD = 'correo_electronico'
     REQUIRED_FIELDS = ['nombre_usuario']
 
+    groups = models.ManyToManyField(
+        Group,
+        related_name='custom_users',
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        Permission,
+        related_name='custom_users',
+        blank=True
+    )
+    
     def __str__(self):
         return self.correo_electronico

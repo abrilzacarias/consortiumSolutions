@@ -4,15 +4,31 @@ from ..vendedores.models import Vendedor
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import timezone
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required, permission_required
+
 
 vendedor = Vendedor()
 clientes = Clientes()
 
+@login_required
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def listarClientes(request):
+    es_vendedor = request.user.groups.filter(name='vendedores').exists()  # Ajusta según tu lógica para identificar vendedores
+    #print(es_vendedor)
     resultados = clientes.listarClientes()
     vendedores = vendedor.mostrarVendedor()
     
     resultados_modificados = []
+
+    # Obtén el ID del vendedor si es vendedor
+    if es_vendedor:
+        try:
+            vendedorUsuario = Vendedor.objects.get(id_usuario=request.user.id_usuario)
+            id_vendedor_user = vendedorUsuario.id_vendedor
+            print("El vendedor existe.")
+        except Vendedor.DoesNotExist:
+            pass
+    # Filtra clientes si es un vendedor
     
     for cliente in resultados:
         if len(cliente) > 10:
@@ -85,6 +101,9 @@ def listarClientes(request):
         ]
 
         resultados_modificados.append(cliente_modificado)
+
+    if es_vendedor:
+        resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
         
     return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'vendedores': vendedores})
 

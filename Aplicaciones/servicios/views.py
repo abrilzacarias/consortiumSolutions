@@ -4,18 +4,19 @@ from django.urls import reverse
 from django.http import JsonResponse
 from django.contrib import messages
 from django.forms.models import model_to_dict
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def home(request):
     categorias = CategoriaServicio.objects.all()
 
     servicios = Servicio.objects.all()
 
-    print(servicios.count())
+    #print(servicios.count())
 
     for servicio in servicios:
         servicio_dict = model_to_dict(servicio)
-        for field, value in servicio_dict.items():
-            print(f"{field}: {value}")
+        
     return render(request, 'serviciosviews.html', {'categorias': categorias, 'servicios': servicios})
 
 def agregarCategoria(request):

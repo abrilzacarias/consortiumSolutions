@@ -1,8 +1,14 @@
 from django.shortcuts import render
 from .models import Actividades
 from django.http import HttpResponse, HttpResponseNotAllowed
+from django.contrib.auth.decorators import login_required
 
+
+@login_required
 def listarActividades(request):
+    if not request.user.is_authenticated:
+        return HttpResponse("No autenticado")
+    print('autenticado')
     actividades = Actividades()
     listaActividades = actividades.listarActividades()
     act_modificadas = []
@@ -15,7 +21,7 @@ def listarActividades(request):
         }
         act_modificadas.append(act_modificada)
 
-    print(act_modificadas)
+    #print(act_modificadas)
         
     return render(request, 'index.html', {'act_modificadas': act_modificadas})
     

@@ -8,31 +8,40 @@ from .forms import PasswordResetRequestForm
 from .models import MyUser
 from django.utils.http import urlsafe_base64_encode
 from django.utils.encoding import force_bytes
+from django.contrib.auth.forms import AuthenticationForm
 
-def loginView(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        print(f"Recibido - Usuario: {username}, Contraseña: {password}")
 
-        user = authenticate(request, correo_electronico=username, password=password)
-        print(f"Resultado de autenticación: {user}")
-
-        if user is not None:
-            login(request, user)
-            return HttpResponseRedirect(reverse('inicio:listarActividades'))
+def signin(request):
+    if request.method == 'GET':
+        return render(request, 'loginviews.html', {
+            'form': AuthenticationForm
+        })
+    else:
+        user = authenticate(request, username=request.POST['username'], password=request.POST['password'])
+        
+        if user is None:
+            print("Autenticación fallida.")
+            return render(request, 'loginviews.html', {
+            'form': AuthenticationForm,
+            'error': 'Username or password is incorrect'
+        })
         else:
-            error_message = "Correo electrónico o contraseña incorrectos."
-            return render(request, 'loginviews.html', {'error_message': error_message})
-    return render(request, 'loginviews.html')
-
+            print("Usuario autenticado correctamente.")
+            login(request, user)
+            print("Sesión iniciada para el usuario:", user.correo_electronico)
+            next_url = request.GET.get('next', reverse('inicio:listarActividades'))
+            print("Redirigiendo a:", next_url)
+            return redirect(next_url)
+        
+   
 def logoutView(request):
     logout(request)
-    return HttpResponseRedirect(reverse('login'))
+    return HttpResponseRedirect(reverse('signin'))
 
+#TODO ES NECESARIO?
 def indexView(request):
     if not request.user.is_authenticated:
-        return HttpResponseRedirect(reverse('login'))  
+        return HttpResponseRedirect(reverse('signin'))  
     return render(request, 'inicio/index.html')  
 
 def resetPasswordView(request):
@@ -70,3 +79,20 @@ def passwordResetRequestView(request):
         form = PasswordResetRequestForm()
     return render(request, 'formRestablecerContrasenia.html', {'form': form, 'error_message': error_message})
 
+"""
+   else:
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        print(f"Recibido - Usuario: {username}, Contraseña: {password}")
+
+        user = authenticate(request, correo_electronico=username, password=password)
+        print(f"Resultado de autenticación: {user}")
+
+        if user is not None:
+            login(request, user)
+            next_url = request.GET.get("next", "/inicio")
+            return redirect(next_url)
+        else:
+            error_message = "Correo electrónico o contraseña incorrectos."
+            return render(request, 'loginviews.html', {'error_message': error_message})
+ """

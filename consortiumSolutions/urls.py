@@ -20,9 +20,9 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', include('Aplicaciones.login.urls')),
     path('vendedores/', include('Aplicaciones.vendedores.urls', namespace='vendedores')), 
     path('inicio/', include('Aplicaciones.inicio.urls', namespace='inicio')),  # Esta será la ruta que redirige a login # Esta será la ruta que redirige a login
-    path('', include('Aplicaciones.login.urls')),
     path('servicios/', include('Aplicaciones.servicios.urls', namespace='servicios')),
     path('clientes/', include('Aplicaciones.clientes.urls', namespace='clientes')),
 ]

@@ -4,7 +4,8 @@ from .views import passwordResetRequestView
 from . import views
 
 urlpatterns = [
-    path('', views.loginView, name='login'),
+    path('', views.signin, name='signin'),  # La ruta raíz para login
+    path('signin/', views.signin, name='signin'),  # Ruta explícita para login
     path('logout/', views.logoutView, name='logout'),
     path('index/', views.indexView, name='index'),
     path('resetPassword/', views.resetPasswordView, name='resetPassword'),

@@ -3,33 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    {% load static %}
-    <link rel="stylesheet" href="{% static 'css/loginviews.css' %}">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600&display=swap">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@500&display=swap">
-</head>
+    </head>
 <body>
-    <div class="pantalla-de-inicio-de-sesion">
-        <form id="loginForm" class="sign-up-form" method="post" action="{% url 'login' %}">
-            {% csrf_token %}
-            <div class="mb-3">
-                <label for="username" class="form-label">Correo Electrónico: </label>
-                <input type="text" class="form-control" id="username" name="username" placeholder="Ingrese su correo electrónico">
-            </div>
-            <div class="mb-3">
-                <label for="password" class="form-label">Contraseña: </label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Ingrese su contraseña">
-            </div>
-            {% if error_message %}
-                <div class="alert alert-danger mt-3" role="alert">
-                    {{ error_message }}
-                </div>
-            {% endif %}
-            <button type="submit" class="btn btn-primary">Iniciar Sesión</button>
-            <small class="form-text text-muted"><a href="{% url 'passwordReset' %}">¿Olvidaste tu contraseña?</a></small>
-        </form>      
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFY05ZZWjCuHLFqvKfq0p/0lV2RIjvnRk5rEa5y3iC6wIlpqQ5C8eP6K0U" crossorigin="anonymous"></script>
+    <form action="/signin/" method="post">
+        {% csrf_token %}
+        {{form.as_p}}
+        <button>Iniciar sesion</button>
+    </form>
+    {{error }}
 </body>
 </html>

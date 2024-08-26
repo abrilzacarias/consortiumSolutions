@@ -59,4 +59,16 @@ class Migration(migrations.Migration):
                 'managed': False,
             },
         ),
+        migrations.CreateModel(
+            name='Vendedor',
+            fields=[
+                ('id_vendedor', models.AutoField(primary_key=True, serialize=False)),
+                ('fecha_alta_vendedor', models.DateField()),
+                ('fecha_baja_vendedor', models.DateField(blank=True, null=True)),
+            ],
+            options={
+                'db_table': 'vendedor',
+                'managed': False,
+            },
+        ),
     ]
