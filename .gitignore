@@ -17,10 +17,3 @@ __pycache__
 
 # Environment variables
 .env
-
-# Compiled Python files
-*.pyc
-
-# Dependency directories
-node_modules/
-/dist/
