@@ -23,7 +23,7 @@ def signin(request):
             print("Autenticación fallida.")
             return render(request, 'loginviews.html', {
             'form': AuthenticationForm,
-            'error': 'Username or password is incorrect'
+            'error': 'Correo electrónico o contraseña incorrectos.'
         })
         else:
             print("Usuario autenticado correctamente.")

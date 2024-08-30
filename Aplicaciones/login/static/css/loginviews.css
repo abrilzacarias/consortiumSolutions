@@ -10,6 +10,12 @@ body {
   margin: 0;
 }
 
+a{
+  color: #ffffff !important ;
+}
+a:hover {
+  color: #bebebe !important;
+}
 .pantalla-de-inicio-de-sesion {
   background-color: rgba(52, 58, 64, 0.8);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -20,6 +26,22 @@ body {
   border-radius: 8px;
 }
 
+#loginForm {
+  color: #ffffff; /* Color del texto del formulario */
+  
+}
+
+#loginForm p {
+  display: flex; /* Usa flexbox para alinear los elementos en línea */
+  align-items: center; /* Alinea los elementos verticalmente */
+  margin-bottom: 1rem; /* Espacio entre los grupos de campos */
+}
+
+#loginForm p label {
+  flex: 1; /* La etiqueta ocupa el espacio requerido */
+  margin-right: 1rem; /* Espacio entre la etiqueta y el campo de entrada */
+  color: #ffffff; /* Color del texto de la etiqueta */
+}
 .centered-label {
   font-weight: bold;
   text-align: center;
