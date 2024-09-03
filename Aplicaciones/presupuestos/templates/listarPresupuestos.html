@@ -1,10 +1,26 @@
 {% extends 'layout.html' %} {% block content %}
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lista de Presupuestos</title>
 </head>
 <body>
-    <p>vista de los presupuestos</p>
+    <h1>Lista de Presupuestos</h1>
+    <table>
+        <tr>
+            <th>ID Presupuesto</th>
+            <th>Fecha y Hora</th>
+            <th>Monto Total</th>
+            <th>ID Vendedor</th>
+            <th>ID Edificio</th>
+        </tr>
+        {% for presupuesto in presupuestos %}
+        <tr>
+            <td>{{ presupuesto.id_presupuesto }}</td>
+            <td>{{ presupuesto.fecha_hora_presupuesto }}</td>
+            <td>{{ presupuesto.monto_total_presupuesto }}</td>
+            <td>{{ presupuesto.id_vendedor }}</td>
+            <td>{{ presupuesto.id_edificio }}</td>
+        </tr>
+        {% endfor %}
+    </table>
 </body>
 {% endblock %}
