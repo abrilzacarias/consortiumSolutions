@@ -1,0 +1,83 @@
+body {
+  margin: 0;
+  line-height: normal;
+}
+
+#searchbar {
+  padding-top: 30px;
+  padding-bottom: 30px;
+}
+
+body {
+  background-color: #d9d9d9;
+}
+.navbar {
+  padding: 15px;
+  display:block;
+  border-radius: 16px;
+}
+
+.form-inline {
+  display: flex;
+  align-items: center;
+}
+
+.form-inline .form-control {
+  margin-right: 20px; 
+}
+
+.input-search, .input-search:focus, .input-search:active{
+  background-color: #394047;
+  color: #fff;
+  border: none;
+}
+
+
+.btn-outline-dark:hover {
+  background-color: #424242;
+}     
+
+.accordion {
+  background-color: #212529;
+  padding: 20px 20px 10px 20px;
+  border-top-left-radius: 10px; 
+  border-top-right-radius: 10px; 
+  width: 100%;
+}
+.accordion-item {
+  width: 100%;
+}
+
+.accordion-button {
+  width: calc(100% - 39px); 
+}
+
+.accordion-body {
+  width: 100%;
+  
+}
+
+.btn-agregar {
+  margin: 10px;
+  color: white !important;
+}
+
+
+.btn-eliminar:hover, .btn-modificar:hover {
+  background-color: #424242;
+  border: none;
+}
+
+.group {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.btn-categoria, .btn-aumentar {
+  margin-bottom: 30px;
+}
+
+.accordion-button:not(.collapsed), .collapsed {
+  background-color: #394047 !important;
+}

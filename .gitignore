@@ -1,0 +1,21 @@
+# Virtual environment
+venv/
+venv*/
+.Python
+bin/
+include/
+lib/
+lib64/
+pip-selfcheck.json
+__pycache__
+__pycache__/
+**/__pycache__/
+
+# IDE files
+.vscode/
+.idea/
+*.iml
+*.pyc
+
+# Environment variables
+.env

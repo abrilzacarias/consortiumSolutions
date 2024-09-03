@@ -1,0 +1,55 @@
+{% extends 'layout.html' %} {% block content %}
+<head>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+    <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+    <title> MT Soluciones </title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/inicioviews.css' %}" />
+    <script src="{% static 'js/index.js' %}"></script>
+</head>
+
+<div class="container">
+<div class="contenido">
+<div class="group">
+    <h2 class="titulo text-light">Últimas Actividades</h2>
+<div class="btn-group" role="group" aria-label="Tipo de Actividad">
+    <button type="button" class="btn btn-secondary btn-filtro text-light" >Todos</button>
+    <button type="button" class="btn btn-secondary btn-filtro text-light" >Alta Vendedor</button>
+    <button type="button" class="btn btn-secondary btn-filtro text-light" >Baja Vendedor</button>
+    <button type="button" class="btn btn-secondary btn-filtro text-light" >Baja Cliente</button>
+    <button type="button" class="btn btn-secondary btn-filtro text-light" >Observación</button>
+  </div>
+</div>
+
+  <div class="table-responsive">
+        <table class="table table-dark table-hover" id="tableActividades">
+            <thead>
+                <tr>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Tipo de Actividad</th>
+                    <th scope="col">Descripción</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-resultados">
+                {% for actividad in act_modificadas %}
+                <tr> <!-- Abre una nueva fila para cada actividad -->
+                    <td>{{ actividad.fecha_actividad }}</td> <!-- Fecha -->
+                    <td>{{ actividad.tipo_actividad }}</td> <!-- Tipo de Actividad -->
+                    <td>{{ actividad.descripcion_actividad }}</td> <!-- Descripción -->
+                </tr> <!-- Cierra la fila -->
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+
+<script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+{% endblock %}

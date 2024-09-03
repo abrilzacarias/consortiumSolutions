@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Contraseña Restablecida</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/contraseniaRestablecida.css' %}">
+</head>
+<body>
+    <div class="reset-form">
+        <h2>Contraseña Restablecida</h2>
+        <p>Su contraseña ha sido restablecida con éxito. Ahora puede <a href="{% url 'signin' %}">iniciar sesión</a> con su nueva contraseña.</p>
+    </div>
+</body>
+</html>

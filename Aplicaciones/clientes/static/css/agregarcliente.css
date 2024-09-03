@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  line-height: normal;
+  background-color: #d9d9d9;
+}
+
+.container {
+  background-color: #212529;
+  border-radius: 10px;
+  max-width: 50%; 
+
+}
+
+.vertical-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+}
+
+.btns {
+  padding-top: 15px;
+}
