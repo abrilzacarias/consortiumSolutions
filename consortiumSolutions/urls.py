@@ -25,6 +25,8 @@ urlpatterns = [
     path('inicio/', include('Aplicaciones.inicio.urls', namespace='inicio')),  # Esta será la ruta que redirige a login # Esta será la ruta que redirige a login
     path('servicios/', include('Aplicaciones.servicios.urls', namespace='servicios')),
     path('clientes/', include('Aplicaciones.clientes.urls', namespace='clientes')),
+    path('presupuestos/', include('Aplicaciones.presupuestos.urls', namespace='presupuestos')),
+    
 ]
 
 

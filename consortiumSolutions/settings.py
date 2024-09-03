@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'Aplicaciones.login',
     'Aplicaciones.vendedores',
     'Aplicaciones.clientes',
+    'Aplicaciones.presupuestos',
 ]
 
 MIDDLEWARE = [
@@ -63,7 +64,7 @@ ROOT_URLCONF = 'consortiumSolutions.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': ['components'],
+        'DIRS': [os.path.join(BASE_DIR, 'components')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
