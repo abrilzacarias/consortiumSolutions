@@ -1,45 +1,48 @@
-{% extends 'layout.html' %} {% block content %}
+{% extends 'layout.html' %}
+{% block content %}
 <head>
-
     <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
     <title> MT Soluciones </title>
     {% load static %}
     <script src="{% static 'js/index.js' %}"></script>
 </head>
 
-<div class="bg-gray-700 rounded-2xl text-white p-6 mt-12">
-<div class="group">
-    <h2 class="mb-4 text-xl font-bold md:text-5xl lg:text-2xl dark:text-white">Últimas Actividades</h2>
-<div class="btn-group" role="group" aria-label="Tipo de Actividad">
-    <button type="button" class="btn btn-secondary btn-filtro text-light" >Todos</button>
-    <button type="button" class="btn btn-secondary btn-filtro text-light" >Alta Vendedor</button>
-    <button type="button" class="btn btn-secondary btn-filtro text-light" >Baja Vendedor</button>
-    <button type="button" class="btn btn-secondary btn-filtro text-light" >Baja Cliente</button>
-    <button type="button" class="btn btn-secondary btn-filtro text-light" >Observación</button>
-  </div>
-</div>
+<!-- Contenedor de la página centrado -->
+<div class="flex items-center justify-center min-h-screen mt-12 sm:mt-6"> <!-- Añadido mt-20 para separación del navbar -->
+    <div class="container bg-gray-800 rounded-2xl text-white p-6 mx-4 max-w-4xl"> <!-- Cambiado max-w-screen-md a max-w-4xl -->
+        <h2 class="mb-4 text-xl font-bold md:text-2xl lg:text-3xl dark:text-white">Últimas Actividades</h2>
+        <div class="flex items-center justify-center mb-4">
+            <div class="btn-group flex flex-wrap justify-center md:justify-start">
+                <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Todos</button>
+                <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Alta Vendedor</button>
+                <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Baja Vendedor</button>
+                <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Baja Cliente</button>
+                <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Observación</button>
+            </div>
+        </div>
+        
 
-  <div class="table-responsive">
-        <table class="table table-dark table-hover" id="tableActividades">
-            <thead>
-                <tr>
-                    <th scope="col">Fecha</th>
-                    <th scope="col">Tipo de Actividad</th>
-                    <th scope="col">Descripción</th>
-                </tr>
-            </thead>
-            <tbody id="tabla-resultados">
-                {% for actividad in act_modificadas %}
-                <tr> <!-- Abre una nueva fila para cada actividad -->
-                    <td>{{ actividad.fecha_actividad }}</td> <!-- Fecha -->
-                    <td>{{ actividad.tipo_actividad }}</td> <!-- Tipo de Actividad -->
-                    <td>{{ actividad.descripcion_actividad }}</td> <!-- Descripción -->
-                </tr> <!-- Cierra la fila -->
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto text-white" id="tableActividades">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Fecha</th>
+                        <th class="py-2 px-4 border-b">Tipo de Actividad</th>
+                        <th class="py-2 px-4 border-b">Descripción</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-resultados">
+                    {% for actividad in act_modificadas %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="py-2 px-4 border-b">{{ actividad.fecha_actividad }}</td>
+                        <td class="py-2 px-4 border-b">{{ actividad.tipo_actividad }}</td>
+                        <td class="py-2 px-4 border-b">{{ actividad.descripcion_actividad }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
-
 </div>
 
 <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
