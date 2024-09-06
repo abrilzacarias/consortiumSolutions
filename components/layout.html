@@ -3,7 +3,6 @@
 <html lang="en">
   <head>
     <title>Django Tailwind</title>
-    <link rel="stylesheet" href="{% static 'css/layout.css' %}" />
     <link
       href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css"
       rel="stylesheet"
@@ -22,7 +21,6 @@
   </head>
   <body
     class="h-screen overflow-hidden flex items-center justify-center"
-    style="background: #edf2f7"
   >
     <style>
       ul.breadcrumb li + li::before {
@@ -54,16 +52,13 @@
     <!-- Navbar start -->
     <nav
       id="navbar"
-      class="fixed top-0 z-40 flex w-full flex-row justify-end bg-gray-700 px-4 sm:justify-between"
+      class="fixed top-0 z-40 flex w-full flex-row justify-end bg-gray-800 px-4 sm:justify-between"
     >
       <ul
         class="breadcrumb hidden flex-row items-center py-4 text-lg text-white sm:flex"
       >
         <li class="inline">
-          <a href="#">Main</a>
-        </li>
-        <li class="inline">
-          <span>Homepage</span>
+          <p>Bienvenido, {{ request.user }}</p>
         </li>
       </ul>
       <button
@@ -110,26 +105,26 @@
       <div class="navbar-menu relative z-40">
         <nav
           id="sidebar"
-          class="fixed left-0 bottom-0 flex w-3/4 -translate-x-full flex-col overflow-y-auto bg-gray-700 pt-6 pb-8 sm:max-w-xs lg:w-80"
+          class="fixed left-0 bottom-0 flex w-3/4 -translate-x-full flex-col overflow-y-auto bg-gray-800 pt-6 pb-8 sm:max-w-xs lg:w-80"
         >
           <!-- one category / navigation group -->
-          <div class="px-4 pb-6">
+          <div class="pb-24">
             <ul class="text-sm font-medium">
               <li>
                 <a
-                  class="active flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="{% url 'clientes:listarClientes' %}">
                   <img
                     class="clients-1-icon"
                     alt=""
                     src="{% static 'public/clients-1.svg' %}"
                   />
-                  <span>Clientes</span>
+                  <span class="ml-3">Clientes</span>
                 </a>
               </li>
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="#link1"
                 >
                   <img
@@ -137,12 +132,12 @@
                     alt=""
                     src="{% static 'public/ventas-1.svg' %}"
                   />
-                  <span>Ventas</span>
+                  <span class="ml-3">Ventas</span>
                 </a>
               </li>
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="{% url 'presupuestos:home' %}"
                 >
                   <img
@@ -150,12 +145,12 @@
                     alt=""
                     src="{% static 'public/preventas-1.svg' %}"
                   />
-                  <span>Presupuestos</span>
+                  <span class="ml-3">Presupuestos</span>
                 </a>
               </li>
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="{% url 'vendedores:home' %}"
                 >
                   <img
@@ -163,12 +158,12 @@
                     alt=""
                     src="{% static 'public/vendedores-1.svg' %}"
                   />
-                  <span>Vendedores</span>
+                  <span class="ml-3">Vendedores</span>
                 </a>
               </li>
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="{% url 'servicios:home' %}"
                 >
                   <img
@@ -176,31 +171,31 @@
                     alt=""
                     src="{% static 'public/servicios-1.svg' %}"
                   />
-                  <span>Servicios</span>
+                  <span class="ml-3">Servicios</span>
                 </a>
               </li>
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
                   href="{% url 'servicios:home' %}"
                 >
                   <img
-                    class="vuesaxlinearmenu-icon mr-3"
+                    class="vuesaxlinearmenu-icon"
                     alt=""
                     src="{% static 'public/facturacion.svg' %}"
                   />
-                  <span class="ml-2">Facturación</span>
+                  <span class="ml-3">Facturación</span>
                 </a>
               </li>
             </ul>
           </div>
           <!-- navigation group end-->
 
-          <div class="px-4 pb-6">
+          <div>
             <ul class="mb-8 text-sm font-medium">
               <li>
                 <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-600"
+                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-red-700"
                   href="{% url 'logout' %}"
                 >
                   <img
@@ -208,7 +203,7 @@
                     alt=""
                     src="{% static 'public/cerrarsesion-1.svg' %}"
                   />
-                  <span>Cerrar Sesión</span>
+                  <span class="ml-3">Cerrar Sesión</span>
                 </a>
               </li>
             </ul>
@@ -216,12 +211,14 @@
           <!-- example copies end -->
         </nav>
       </div>
-      <div class="mx-auto lg:ml-80"></div>
+      
     </div>
     <!-- Sidebar end -->
 
     <main>
-      <!-- your content goes here -->
+      {% block content %}
+      <!-- Contenido específico de la página -->
+      {% endblock %}
     </main>
 
     <script type="text/javascript">
