@@ -1,25 +1,49 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Establecer Nueva Contraseña</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/formNuevaContrasenia.css' %}">
+    {% tailwind_css %}
 </head>
-<body>
-    <div class="reset-form">
-        <h2>Establecer Nueva Contraseña</h2>
-        <form method="post" id="reset-form">
-            {% csrf_token %}
-            <label for="new_password1">Nueva contraseña:</label>
-            <input type="password" id="new_password1" name="new_password1" required placeholder="Ingrese su nueva contraseña">
-            <div id="error-new_password1" class="error-message"></div>
+<body class="bg-black text-white">
+    <div class="min-h-screen">
 
-            <label for="new_password2">Confirmar nueva contraseña:</label>
-            <input type="password" id="new_password2" name="new_password2" required placeholder="Repita su nueva contraseña">
-            <div id="error-new_password2" class="error-message"></div>
-
-            <button type="submit">Guardar</button>
-        </form>
+        <div class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+            <div class="bg-gray-700 rounded p-6 shadow-lg max-w-md w-full">
+                <form method="post" id="reset-form" class="space-y-4">
+                    {% csrf_token %}
+                    
+                    <div class="flex justify-between items-center">
+                        <h2 class="text-2xl font-bold">Establecer Nueva Contraseña</h2>
+                        <div class="flex-grow h-1 bg-gray-700 rounded ml-4"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="new_password1" class="block text-sm font-medium">Nueva contraseña:</label>
+                        <input type="password" id="new_password1" name="new_password1" required 
+                               placeholder="Ingrese su nueva contraseña"
+                               class="mt-2 block w-full px-3 bg-gray-800 border border-gray-700 rounded-md text-white">
+                        <div id="error-new_password1" class="text-red-500 text-sm mt-1"></div>
+                    </div>
+                    
+                    <div>
+                        <label for="new_password2" class="block text-sm font-medium">Confirmar nueva contraseña:</label>
+                        <input type="password" id="new_password2" name="new_password2" required 
+                               placeholder="Repita su nueva contraseña"
+                               class="mt-2 block w-full px-3 bg-gray-800 border border-gray-700 rounded-md text-white">
+                        <div id="error-new_password2" class="text-red-500 text-sm mt-1"></div>
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="block w-full px-4 py-2 bg-blue-900 hover:bg-blue-700 rounded text-center mx-auto">
+                            Guardar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
     <script src="{% static 'js/formNuevaContrasenia.js' %}"></script>
 </body>

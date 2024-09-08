@@ -1,14 +1,18 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contraseña Restablecida</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/contraseniaRestablecida.css' %}">
+    {% tailwind_css %}
 </head>
-<body>
-    <div class="reset-form">
-        <h2>Contraseña Restablecida</h2>
-        <p>Su contraseña ha sido restablecida con éxito. Ahora puede <a href="{% url 'signin' %}">iniciar sesión</a> con su nueva contraseña.</p>
+<body class="bg-gray-900 text-white flex items-center justify-center min-h-screen p-4">
+    <div class="bg-gray-800 rounded-lg p-6 shadow-lg max-w-md w-full text-center">
+        <h2 class="text-2xl font-semibold mb-4">Contraseña Restablecida</h2>
+        <p class="mb-4">Su contraseña ha sido restablecida con éxito. Ahora puede <a href="{% url 'signin' %}" class="text-blue-400 hover:underline">iniciar sesión</a> con su nueva contraseña.</p>
     </div>
 </body>
 </html>
+
+
