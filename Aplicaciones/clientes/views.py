@@ -1,13 +1,13 @@
 from django.shortcuts import render, redirect
 from .models import Clientes, Contacto
-from ..vendedores.models import Vendedor
+from ..vendedores.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 
 
-vendedor = Vendedor()
+vendedor = Empleado()
 clientes = Clientes()
 
 @login_required
@@ -23,10 +23,10 @@ def listarClientes(request):
     # Obtén el ID del vendedor si es vendedor
     if es_vendedor:
         try:
-            vendedorUsuario = Vendedor.objects.get(id_usuario=request.user.id_usuario)
+            vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
             id_vendedor_user = vendedorUsuario.id_vendedor
             print("El vendedor existe.")
-        except Vendedor.DoesNotExist:
+        except Empleado.DoesNotExist:
             pass
     # Filtra clientes si es un vendedor
     

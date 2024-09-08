@@ -1,12 +1,12 @@
 from django.shortcuts import render, redirect
-from .models import Vendedor, Contacto
+from .models import Empleado, Contacto
 import datetime
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect
 
 def home(request):
-    vendedores = Vendedor().mostrarVendedor()
+    vendedores = Empleado().mostrarVendedor()
 
     for vendedor in vendedores:
         contactos = Contacto.objects.filter(id_persona=vendedor['id_persona'])
@@ -45,7 +45,7 @@ def agregarVendedor(request):
         print("Fecha de baja vendedor:", fecha_baja_vendedor)
         print("Lista de contactos:", listaContactos)
 
-        vendedor = Vendedor()
+        vendedor = Empleado()
 
         if vendedor.vendedorExiste(cuitl_persona):
             messages.error(request, 'El vendedor ya existe.')
@@ -95,11 +95,11 @@ def editarVendedor(request, id_vendedor):
         
         print(contactos_data)
 
-        Vendedor().editarVendedor(id_vendedor,nombre_persona,apellido_persona,cuitl_persona,direccion_persona, contactos_data)
+        Empleado().editarVendedor(id_vendedor,nombre_persona,apellido_persona,cuitl_persona,direccion_persona, contactos_data)
     return redirect('vendedores:home')  # Redirige al usuario a la página principal de vendedores
 
 def eliminarVendedor(request, id_vendedor):
-    Vendedor().eliminarVendedor(id_vendedor)
+    Empleado().eliminarVendedor(id_vendedor)
     return redirect('vendedores:home')
 
 

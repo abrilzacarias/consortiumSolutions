@@ -50,29 +50,40 @@ class TipoContacto(models.Model):
         managed = False
         db_table = 'tipo_contacto'
 
-class Vendedor(models.Model):
-    id_vendedor = models.AutoField(primary_key=True)
-    fecha_alta_vendedor = models.DateField()
-    fecha_baja_vendedor = models.DateField(blank=True, null=True)
-    id_persona = models.ForeignKey(Persona, models.DO_NOTHING, db_column='id_persona')
-    id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario')
+class TipoEmpleado(models.Model):
+    id_tipo_empleado = models.AutoField(primary_key=True)
+    descripcion_tipo_empleado = models.CharField(max_length=60)
 
     class Meta:
         managed = False
-        db_table = 'vendedor'
+        db_table = 'tipo_empleado'
+
+class Empleado(models.Model):
+    id_empleado = models.AutoField(primary_key=True)
+    fecha_alta_empleado = models.DateField()
+    fecha_baja_empleado = models.DateField(blank=True, null=True)
+    id_persona = models.ForeignKey(Persona, models.DO_NOTHING, db_column='id_persona')
+    id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario')
+    id_tipo_empleado = models.ForeignKey(TipoEmpleado, models.DO_NOTHING, db_column='id_tipo_empleado')
+
+    class Meta:
+        managed = False
+        db_table = 'empleado'
         
     def vendedorExiste(self, cuitl_persona):
         with connection.cursor() as cursor:
             print("Verificando existencia de CUIT:", cuitl_persona)
             cursor.execute("""
-                SELECT v.id_vendedor FROM vendedor v 
+                SELECT e.id_empleado FROM empleado e 
                 JOIN persona p ON v.id_persona = p.id_persona 
-                WHERE p.cuitl_persona = %s
+                JOIN tipo_empleado te ON e.id_tipo_empleado = te.id_tipo_empleado
+                WHERE p.cuitl_persona = %s 
+                AND te.descripcion_tipo_empleado = 'Vendedor'
             """, [cuitl_persona])
             result = cursor.fetchone()
         return result is not None
 
-    def agregarVendedor(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_vendedor, fecha_baja_vendedor, listaContactos):
+    def agregarVendedor(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, listaContactos):
         nombre = nombre_persona.capitalize()
         apellido = apellido_persona.capitalize()
         try: 
@@ -88,10 +99,11 @@ class Vendedor(models.Model):
                     print("ID de nueva persona:", idPersona)
 
                     # Insertar nuevo Vendedor
+                    #EN USUARIO QE PONGO????? y despues en tipo de empleado supongo que le pongo nomas ahora el tema de vendedores
                     cursor.execute("""
-                        INSERT INTO vendedor (fecha_alta_vendedor, fecha_baja_vendedor, id_persona)
-                        VALUES (%s, %s, %s)
-                    """, [fecha_alta_vendedor, fecha_baja_vendedor, idPersona])
+                        INSERT INTO empleado (fecha_alta_empleado, fecha_baja_empleado, id_persona)
+                        VALUES (%s, %s, %s) 
+                    """, [fecha_alta_empleado, fecha_baja_empleado, idPersona])
                     print("Nuevo vendedor insertado.")
 
                     # Insertar contactos
@@ -115,51 +127,34 @@ class Vendedor(models.Model):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT
-                    v.id_vendedor,
-                    v.fecha_alta_vendedor,
-                    v.fecha_baja_vendedor,
+                    e.id_empleado,
+                    e.fecha_alta_empleado,
+                    e.fecha_baja_empleado,
                     p.id_persona,
                     p.cuitl_persona,
                     p.nombre_persona,
                     p.apellido_persona,
                     p.direccion_persona
                 FROM
-                    vendedor v
+                    empleado e
                 JOIN
                     persona p ON v.id_persona = p.id_persona
+                JOIN tipo_empleado te ON e.id_tipo_empleado = te.id_tipo_empleado
                 WHERE
-                    v.fecha_baja_vendedor IS NULL;
+                    v.fecha_baja_vendedor IS NULL 
+                AND te.descripcion_tipo_empleado = 'Vendedor';
             """)
             vendedores = dictfetchall(cursor)
             
             return vendedores
 
-        
-    def agregarVendedor(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_vendedor, fecha_baja_vendedor, listaContactos):
+
+    def editarVendedor(self, id_empleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, contactos_data):
         with connection.cursor() as cursor:
             # Insertar nueva Persona
             cursor.execute("""
-                INSERT INTO persona (nombre_persona, apellido_persona, cuitl_persona, direccion_persona)
-                VALUES (%s, %s, %s, %s) 
-            """, [nombre_persona, apellido_persona, cuitl_persona, direccion_persona])
-            idPersona = cursor.lastrowid
-
-            cursor.execute("""
-                INSERT INTO vendedor (fecha_alta_vendedor, fecha_baja_vendedor, id_persona)
-                VALUES (%s, %s, %s)
-            """, [fecha_alta_vendedor, fecha_baja_vendedor, idPersona])
-
-            for tipoContacto, contacto in listaContactos:
-                    sqlInsertarContacto = "INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) VALUES (%s, %s, %s);"
-                    cursor.execute(sqlInsertarContacto, [contacto, tipoContacto, idPersona])
-                    connection.commit()
-
-    def editarVendedor(self, idVendedor, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, contactos_data):
-        with connection.cursor() as cursor:
-            # Insertar nueva Persona
-            cursor.execute("""
-                SELECT id_persona FROM vendedor WHERE id_vendedor = %s;
-            """, [idVendedor])
+                SELECT id_persona FROM empleado WHERE id_empleado = %s;
+            """, [id_empleado])
             id_persona = cursor.fetchone()[0]
 
             # Actualizar la tabla persona
@@ -192,16 +187,16 @@ class Vendedor(models.Model):
                     """, [descripcion_contacto, tipo_contacto_id, id_persona])
 
 
-    def eliminarVendedor(self, idVendedor):
+    def eliminarVendedor(self, id_empleado):
         with connection.cursor() as cursor:
             cursor.execute("""
-                SELECT id_persona FROM vendedor WHERE id_vendedor = %s;
-            """, [idVendedor])
+                SELECT id_persona FROM empleado WHERE id_empleado = %s;
+            """, [id_empleado])
             id_persona = cursor.fetchone()[0]
 
             cursor.execute("""
-                UPDATE vendedor SET fecha_baja_vendedor = %s WHERE id_vendedor = %s;
-            """, [current_datetime, idVendedor])
+                UPDATE empleado SET fecha_baja_empleado = %s WHERE id_vendedor = %s;
+            """, [current_datetime, id_empleado])
 
             connection.commit()
 

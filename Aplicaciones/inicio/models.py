@@ -4,61 +4,77 @@ from ..login.models import MyUser
 class Actividades(): 
     def listarActividades(self):
         with connection.cursor() as cursor:
-            sqlListarActividades = """
-                    SELECT 
+            sql_listar_actividades = """
+                SELECT 
                     ROW_NUMBER() OVER (ORDER BY fecha_actividad DESC) AS actividad_id,
                     tipo_actividad,
                     descripcion,
                     fecha_actividad
                 FROM (
+                    -- Alta vendedor
                     SELECT 
                         'Alta vendedor' AS tipo_actividad,
                         CONCAT('Vendedor agregado: ', p.nombre_persona) AS descripcion,
-                        v.fecha_alta_vendedor AS fecha_actividad
+                        e.fecha_alta_empleado AS fecha_actividad
                     FROM 
-                        vendedor v JOIN persona p ON p.id_persona = v.id_persona
+                        empleado e 
+                    JOIN 
+                        persona p ON p.id_persona = e.id_persona
+                    JOIN 
+                        tipo_empleado te ON te.id_tipo_empleado = e.id_tipo_empleado
                     WHERE 
-                        v.fecha_alta_vendedor IS NOT NULL
+                        te.descripcion_tipo_empleado = 'Vendedor'
+                        AND e.fecha_alta_empleado IS NOT NULL
 
                     UNION ALL
 
+                    -- Baja vendedor
                     SELECT 
                         'Baja vendedor' AS tipo_actividad,
                         CONCAT('Vendedor dado de baja: ', p.nombre_persona) AS descripcion,
-                        v.fecha_baja_vendedor AS fecha_actividad
+                        e.fecha_baja_empleado AS fecha_actividad
                     FROM 
-                        vendedor v JOIN persona p ON p.id_persona = v.id_persona
+                        empleado e 
+                    JOIN 
+                        persona p ON p.id_persona = e.id_persona
+                    JOIN 
+                        tipo_empleado te ON te.id_tipo_empleado = e.id_tipo_empleado
                     WHERE 
-                        v.fecha_baja_vendedor IS NOT NULL
+                        te.descripcion_tipo_empleado = 'Vendedor'
+                        AND e.fecha_baja_empleado IS NOT NULL
 
                     UNION ALL
 
+                    -- Baja cliente
                     SELECT 
                         'Baja cliente' AS tipo_actividad,
                         CONCAT('Cliente dado de baja: ', p.nombre_persona) AS descripcion,
                         c.fecha_baja_cliente AS fecha_actividad
                     FROM 
-                        cliente c JOIN persona p ON p.id_persona = c.id_persona
+                        cliente c 
+                    JOIN 
+                        persona p ON p.id_persona = c.id_persona
                     WHERE 
                         c.fecha_baja_cliente IS NOT NULL
 
                     UNION ALL
 
+                    -- Observación
                     SELECT 
                         'Observacion' AS tipo_actividad,
                         descripcion_observacion AS descripcion,
-                        fecha_hora_observacion AS fecha_actividad
+                        fecha_observacion AS fecha_actividad
                     FROM 
                         observacion
                 ) AS actividades
                 ORDER BY 
                     fecha_actividad DESC;
-                    """
-            cursor.execute(sqlListarActividades)
-
+            """
+            cursor.execute(sql_listar_actividades)
             actividades = cursor.fetchall()
 
         return actividades
+
     
 
 class Administrador(models.Model):
