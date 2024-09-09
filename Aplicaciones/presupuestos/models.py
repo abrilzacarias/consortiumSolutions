@@ -15,9 +15,7 @@ class Presupuesto(models.Model):
     id_empleado = models.IntegerField() 
     id_edificio = models.IntegerField()
 
-    class Meta:
-        db_table = 'presupuesto'
-        managed = False  # Esto indica que Django no debería gestionar la creación de la tabla
+
 
     @classmethod
     def listarPresupuestos(cls):
@@ -41,6 +39,30 @@ class Presupuesto(models.Model):
             }
             presupuestos.append(presupuesto_modificado)
         return presupuestos
+    
+    
+    def insertarPresupuesto(self, fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles):
+        
+        try:
+           
+            with connection.cursor() as cursor:
+                sqlInsertarPresupuesto = "INSERT INTO presupuesto (fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado ) VALUES (%s, %s, %s, %s);"
+                cursor.execute(sqlInsertarPresupuesto, [fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado])
+                id_presupuesto = cursor.lastrowid  
+                connection.commit()
+
+
+                for cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_servicio in lista_detalles:
+                    sqlInsertarDetalle = "INSERT INTO detalle_presupuesto (cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio) VALUES (%s, %s, %s, %s, %s);"
+                    cursor.execute(sqlInsertarDetalle, [cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio])
+                    connection.commit()
+      
+
+                return id_presupuesto
+        except Exception as e:
+            print("Error al insertar:", str(e))
+            return None
+
 
 
 class DetallePresupuesto(models.Model):

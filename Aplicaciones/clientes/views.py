@@ -119,7 +119,6 @@ def agregarCliente(request):
         matricula_cliente = request.POST.get('matricula_cliente')  
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
         vendedor_asignado = request.POST.get('vendedor_asignado')
-        print(f'LLEGA VENDEDOR A VIEWSSSSSSSS {vendedor_asignado}')
         tipo_cliente = int(tipo_cliente)
 
         tipos_contacto = request.POST.getlist('tipo_contacto[]')
