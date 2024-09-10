@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Sep 08, 2024 at 05:25 AM
+-- Generation Time: Sep 10, 2024 at 02:11 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -617,7 +617,7 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('aqh7rpotuvwxbsauylv98hfdvelcpwrx', '.eJxVjEsOAiEQBe_C2hB-Irh07xlI03TLqIFkmFkZ766TzEK3r6reSyRYl5rWQXOaijgLJQ6_WwZ8UNtAuUO7dYm9LfOU5abInQ557YWel939O6gw6remUIIFnXXQxrEBhoDFuewjc3beK1RIZNl6E_3Rl0gYMJ40B45sicX7A_lgOLI:1sn3jL:JLYqjoHy82OcWd8vK1rprncYq23_Br3PKahJKjP3xFI', '2024-09-21 22:16:31.743569');
+('aqh7rpotuvwxbsauylv98hfdvelcpwrx', '.eJxVjEsOAiEQBe_C2hB-Irh07xlI03TLqIFkmFkZ766TzEK3r6reSyRYl5rWQXOaijgLJQ6_WwZ8UNtAuUO7dYm9LfOU5abInQ557YWel939O6gw6remUIIFnXXQxrEBhoDFuewjc3beK1RIZNl6E_3Rl0gYMJ40B45sicX7A_lgOLI:1snnsg:_0RtyCRv76l9vhgKJlDFTynI-ySIuZFR1W3V0b8jBD4', '2024-09-23 23:33:14.324434');
 
 -- --------------------------------------------------------
 
@@ -715,7 +715,7 @@ INSERT INTO `login_myuser` (`password`, `last_login`, `id_usuario`, `correo_elec
 ('pbkdf2_sha256$720000$IngWsmZrUahTcNNcGXV3jN$JQqZDcpU3VFnbaRSLh2PVrzNpn2RXDXFrO+E0vbh0yY=', '2024-08-22 00:18:11.012310', 1, 'abrilzacarias6@gmail.com', 'abril15', 1, 0, 0, '2024-08-21 16:29:41.819462'),
 ('pbkdf2_sha256$720000$esFNRTpiZOotC9HMloRgqt$qPrawkgxIGmtdTeexoEhIdiKre2cfiIVlg3iSIxLSP8=', '2024-08-22 00:25:10.340340', 2, 'abrilzacarias2004@gmail.com', 'abril2004', 1, 1, 1, '2024-08-21 17:52:47.188778'),
 ('pbkdf2_sha256$720000$lgHIar7Df2MQyQlcL30u63$ikJ/lVFdJSLMmMNkLOMsroNO+s6UQDozsv3O+zM1vQw=', '2024-08-22 00:18:51.925507', 3, 'marito@gmail.com', 'marito', 1, 0, 0, '2024-08-21 17:58:11.489204'),
-('pbkdf2_sha256$720000$X0BCAadhoqRstNhs7ITeBz$PeR2HES8CdcVL/GHqMdSGfuNzNhqUywolfy+5o01MmA=', '2024-09-07 22:16:31.736028', 0, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-07 21:18:01.487553');
+('pbkdf2_sha256$720000$X0BCAadhoqRstNhs7ITeBz$PeR2HES8CdcVL/GHqMdSGfuNzNhqUywolfy+5o01MmA=', '2024-09-09 23:33:14.316104', 0, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-07 21:18:01.487553');
 
 -- --------------------------------------------------------
 
