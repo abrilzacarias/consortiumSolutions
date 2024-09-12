@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Contacto, Empleado
+from .models import Contacto, Empleado, TipoEmpleado
 import datetime
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
@@ -7,7 +7,6 @@ from django.shortcuts import redirect
 
 def home(request):
     empleados = Empleado().mostrarEmpleados()
-
     for empleado in empleados:
         contactos = Contacto.objects.filter(id_persona=empleado['id_persona'])
         empleado['contactos'] = [
@@ -19,7 +18,9 @@ def home(request):
             }
             for contacto in contactos
         ]
-    return render(request, 'probandoplantilla.html', {'empleados': empleados})
+    tipoEmpleados = TipoEmpleado.objects.all()
+
+    return render(request, 'probandoplantilla.html', {'empleados': empleados, 'tipo_empleados': tipoEmpleados})
 
 def agregarEmpleado(request):
     if request.method == 'POST':
