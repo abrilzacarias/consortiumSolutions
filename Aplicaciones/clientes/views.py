@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 
 
-empleado = Empleado()
+vendedor = Vendedor()
 clientes = Clientes()
 
 @login_required
@@ -23,10 +23,10 @@ def listarClientes(request):
     # Obtén el ID del vendedor si es vendedor
     if es_vendedor:
         try:
-            vendedorUsuario = Vendedor.objects.get(id_usuario=request.user.id_usuario)
+            vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
             id_vendedor_user = vendedorUsuario.id_vendedor
             print("El vendedor existe.")
-        except Vendedor.DoesNotExist:
+        except Empleado.DoesNotExist:
             pass
     # Filtra clientes si es un vendedor
     
@@ -119,7 +119,6 @@ def agregarCliente(request):
         matricula_cliente = request.POST.get('matricula_cliente')  
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
         vendedor_asignado = request.POST.get('vendedor_asignado')
-        print(f'LLEGA VENDEDOR A VIEWSSSSSSSS {vendedor_asignado}')
         tipo_cliente = int(tipo_cliente)
 
         tipos_contacto = request.POST.getlist('tipo_contacto[]')

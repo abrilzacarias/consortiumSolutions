@@ -1,21 +1,49 @@
+{% load static tailwind_tags %}
 <!DOCTYPE html>
-<html>
+<html lang="es">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="{% static 'public/building.svg' %}" type="image/x-icon">
     <title>Restablecer Contraseña</title>
-    {% load static %}
-    <link rel="stylesheet" type="text/css" href="{% static 'css/formRestablecerContrasenia.css' %}">
+    {% tailwind_css %}
 </head>
-<body>
-    <div class="reset-form">
-        <h2>Restablecer Contraseña</h2>
-        <form id="reset-form" method="post" action="{% url 'passwordReset' %}">
-            {% csrf_token %}
-            <label for="email" class="centered-label">Correo Electrónico:</label>
-            <input type="email" id="email" name="email" required placeholder="Ingrese su correo electrónico" value="{{ form.email.value|default_if_none:'' }}">
-            <p class="error-message" id="error-message" style="display: none;">{% if error_message %}{{ error_message }}{% endif %}</p>
-            <button type="submit">Enviar</button>
-        </form>
+<body class="bg-black text-white">
+    <div class="flex min-h-screen">
+        <!-- Left side with logo -->
+        <div class="w-1/2 flex items-center justify-center bg-white">
+            <img src="{% static 'public/building.svg' %}" alt="logo" />
+          </div>
+        
+        <!-- Right side with password reset request form -->
+        <div class="w-1/2 bg-gray-900 flex items-center justify-center">
+            <div class="w-2/3">
+                <div class="flex justify-between items-center">
+                    <h2 class="text-2xl font-bold">Restablecer Contraseña</h2>
+                    <div class="flex-grow h-1 bg-gray-700 rounded ml-4"></div>
+                </div>
+                <form id="reset-form" method="post" action="{% url 'passwordReset' %}" class="space-y-6">
+                    {% csrf_token %}
+                    <div>
+                        <label for="email" id="email" class="block text-sm font-medium">Correo Electrónico:</label>
+                        <input type="email" id="email" name="email" required 
+                               placeholder="Ingrese su correo electrónico"
+                               value="{{ form.email.value|default_if_none:'' }}"
+                               class="mt-3 block w-full px-3 py-2 bg-gray-800 border border-gray-700 rounded-md text-white">
+                    </div>
+                    
+                    <div id="error-message" class="text-red-500 text-sm mt-1">
+                        {% if error_message %}{{ error_message }}{% endif %}
+                    </div>
+                    
+                    <div>
+                        <button type="submit" class="w-full px-4 py-2 bg-gray-800 hover:bg-gray-700">
+                            Enviar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-    <script src="{% static 'js/formRestablecerContrasenia.js' %}"></script>
-</body>
+    </body>
 </html>

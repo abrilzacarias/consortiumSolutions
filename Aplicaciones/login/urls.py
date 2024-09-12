@@ -7,8 +7,6 @@ urlpatterns = [
     path('', views.signin, name='signin'),  # La ruta raíz para login
     path('signin/', views.signin, name='signin'),  # Ruta explícita para login
     path('logout/', views.logoutView, name='logout'),
-    path('index/', views.indexView, name='index'),
-    path('resetPassword/', views.resetPasswordView, name='resetPassword'),
     path('passwordReset/', passwordResetRequestView, name='passwordReset'),
     path('passwordReset/done/', auth_views.PasswordResetDoneView.as_view(template_name='correoEnviado.html'), name='password_reset_done'),
     path('reset/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(template_name='formNuevaContrasenia.html'), name='password_reset_confirm'),

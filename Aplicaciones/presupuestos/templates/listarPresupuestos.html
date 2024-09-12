@@ -1,26 +1,58 @@
-{% extends 'layout.html' %} {% block content %}
+{% extends 'layout.html' %} 
+{% block content %}
 <head>
-    <title>Lista de Presupuestos</title>
+    <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+    <title> MT Soluciones </title>
+    {% load static %}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{% static 'presupuestos.js' %}"></script>
 </head>
-<body>
-    <h1>Lista de Presupuestos</h1>
-    <table>
-        <tr>
-            <th>ID Presupuesto</th>
-            <th>Fecha y Hora</th>
-            <th>Monto Total</th>
-            <th>ID Vendedor</th>
-            <th>ID Edificio</th>
-        </tr>
-        {% for presupuesto in presupuestos %}
-        <tr>
-            <td>{{ presupuesto.id_presupuesto }}</td>
-            <td>{{ presupuesto.fecha_hora_presupuesto }}</td>
-            <td>{{ presupuesto.monto_total_presupuesto }}</td>
-            <td>{{ presupuesto.id_vendedor }}</td>
-            <td>{{ presupuesto.id_edificio }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-</body>
+
+<div class="flex items-center justify-center min-h-screen mt-12 sm:mt-6">
+    <div class="container bg-gray-800 rounded-2xl text-white p-6 mx-4 max-w-4xl">
+        <div class="flex justify-between items-center mb-4">
+            <!-- Título -->
+            <h2 class="text-xl font-bold md:text-2xl lg:text-3xl dark:text-white">Lista de Presupuestos</h2>
+            
+            <!-- Botón para agregar presupuesto -->
+            <a  class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded" href="{% url 'presupuestos:agregarPresupuesto' %}">
+                Agregar Presupuesto
+            </a>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="min-w-full table-auto text-white" id="tableActividades">
+                <thead>
+                    <tr>
+                        <th class="py-2 px-4 border-b">Fecha y Hora</th>
+                        <th class="py-2 px-4 border-b">Edificio</th>
+                        <th class="py-2 px-4 border-b">Vendedor</th>
+                        <th class="py-2 px-4 border-b">Monto Total</th>
+                        <th class="py-2 px-4 border-b">Detalles</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-resultados">
+                    {% for presupuesto in presupuestos %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="py-2 px-4 border-b">{{ presupuesto.fecha_hora_presupuesto }}</td>
+                        <td class="py-2 px-4 border-b">{{ presupuesto.nombre_edificio }}</td>
+                        <td class="py-2 px-4 border-b">{{ presupuesto.nombre_persona }}</td>
+                        <td class="py-2 px-4 border-b">{{ presupuesto.monto_total_presupuesto }}</td>
+                        <td class="py-2 px-4 border-b">
+                            <a href="{% url 'presupuestos:detalle_presupuesto' presupuesto.id_presupuesto %}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                                Ver Detalles
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
 {% endblock %}
+
+
+
