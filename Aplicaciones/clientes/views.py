@@ -7,7 +7,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 
 
-vendedor = Vendedor()
+empleado = Empleado()
 clientes = Clientes()
 
 @login_required
@@ -16,7 +16,7 @@ def listarClientes(request):
     es_vendedor = request.user.groups.filter(name='empleados').exists()  # Ajusta según tu lógica para identificar vendedores
     #print(es_vendedor)
     resultados = clientes.listarClientes()
-    empleados = empleado.mostrarVendedor()
+    empleados = empleado.mostrarEmpleados()
     
     resultados_modificados = []
 

@@ -107,7 +107,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'consorciosmtp',
+        'NAME': 'consorciosmt',
                 'USER': 'root',
                 'PASSWORD': '',
                 'HOST': '127.0.0.1',
