@@ -2,14 +2,43 @@
 {% block content %}
 <head>
     <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
-    <title> MT Soluciones </title>
+    <title>MT Soluciones</title>
     {% load static %}
     <script src="{% static 'js/index.js' %}"></script>
+
+    <style>
+        /* Ajustar el espacio entre botones y tabla!!*/
+        .btn-group {
+            margin-bottom: 1rem; 
+        }
+
+        .overflow-x-auto {
+            margin-top: 1rem; 
+        }
+        
+        /* NO FUNCIONA. REVISAR!!*/
+        .dataTables_length label {
+            font-size: 1rem;
+        }
+
+        .dataTables_length select {
+            background-color: #4a5568;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+        }
+
+        .dataTables_length select option {
+            background-color: #4a5568;
+            color: white;
+        }
+    </style>
 </head>
 
 <!-- Contenedor de la página centrado -->
-<div class="flex items-center justify-center min-h-screen mt-12 sm:mt-6"> <!-- Añadido mt-20 para separación del navbar -->
-    <div class="container bg-gray-800 rounded-2xl text-white p-6 mx-4 max-w-4xl"> <!-- Cambiado max-w-screen-md a max-w-4xl -->
+<div class="flex items-center justify-center min-h-screen pt-5 sm:pt-8 mt-20">
+    <div class="container bg-gray-800 rounded-2xl text-white p-6 mx-4 max-w-4xl">
         <h2 class="mb-4 text-xl font-bold md:text-2xl lg:text-3xl dark:text-white">Últimas Actividades</h2>
         <div class="flex items-center justify-center mb-4">
             <div class="btn-group flex flex-wrap justify-center md:justify-start">
@@ -20,9 +49,8 @@
                 <button type="button" class="btn btn-filtro bg-gray-600 text-white py-2 px-4 hover:bg-gray-700 focus:outline-none">Observación</button>
             </div>
         </div>
-        
 
-        <div class="overflow-x-auto">
+        <div class="overflow-x-auto mt-4"> <!-- Reduce el margen superior aquí -->
             <table class="min-w-full table-auto text-white" id="tableActividades">
                 <thead>
                     <tr>
@@ -48,3 +76,4 @@
 <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
 
 {% endblock %}
+

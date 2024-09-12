@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     'Aplicaciones.servicios',
     'Aplicaciones.inicio',
     'Aplicaciones.login',
-    'Aplicaciones.vendedores',
+    'Aplicaciones.empleados',
     'Aplicaciones.clientes',
     'Aplicaciones.presupuestos',
     'tailwind',
@@ -107,7 +107,7 @@ AUTHENTICATION_BACKENDS = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'consorciosmt',
+        'NAME': 'consorciosmtp',
                 'USER': 'root',
                 'PASSWORD': '',
                 'HOST': '127.0.0.1',
@@ -160,7 +160,7 @@ if not DEBUG:
     
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static/'),
-    BASE_DIR / 'Aplicaciones/vendedores/static',
+    BASE_DIR / 'Aplicaciones/empleados/static',
     BASE_DIR / 'Aplicaciones/clientes/static',
     BASE_DIR / 'Aplicaciones/login/static',
 ]

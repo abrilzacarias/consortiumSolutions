@@ -1,0 +1,276 @@
+{% extends 'layout.html' %}
+{% block content %}
+
+<head>
+  <title>MT Soluciones Integrales</title>
+  {% load static %}
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/flowbite@1.5.1/dist/flowbite.js"></script>
+  <link href="../../../dist/output.css" rel="stylesheet">
+  <link href="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.css" rel="stylesheet">
+  <script src="{% static 'js/scriptvendedores.js' %}"></script>
+  <script src="{% static 'js/validaciones_vendedor.js' %}"></script>
+  <style>
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        max-width: 600px;
+        width: 100%;
+    }
+    .modal.show {
+        display: flex;
+    }
+    .form-group {
+        margin-bottom: 2rem; /* Ajustar el margen inferior para más espacio entre grupos */
+    }
+    .invalid-feedback {
+        display: none;
+        color: red;
+        margin-top: 0.5rem; /* Añadir margen superior para separarlo del input */
+    }
+    .is-invalid ~ .invalid-feedback {
+        display: block;
+    }
+    /* Estilo para el placeholder en los campos de entrada */
+    ::placeholder {
+      color: white;
+      opacity: 1; /* Asegura que el color se aplique con la opacidad correcta */
+    }
+
+</style>
+</head>
+
+<div class="flex items-center justify-center min-h-screen pt-5 sm:pt-8 mt-20">
+  <div class="container bg-gray-800 rounded-2xl text-white p-6 mx-4 max-w-4xl">
+    <h2 class="mb-4 text-xl font-bold md:text-2xl lg:text-3xl dark:text-white">Vendedores</h2>
+
+    <!-- Modal -->
+    <div id="messageModal" class="modal">
+      <div class="modal-content bg-green-600 text-white p-6 rounded-lg shadow-lg">
+        <div class="flex justify-end">
+          <button type="button" class="text-white" onclick="document.getElementById('messageModal').classList.remove('show')">&times;</button>
+        </div>
+        <div id="message-content">
+          <div id="messages-container">
+            {% if messages %}
+              {% for message in messages %}
+                <div class="text-green-400">{{ message }}</div>
+              {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex justify-end items-center mb-6">
+      <!-- Button trigger modal -->
+      <button id="defaultModalButton" data-modal-target="defaultModal" data-modal-toggle="defaultModal" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-md px-2 py-2 text-right dark:bg-red-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addVendedorModal').classList.add('show')" type="button">
+        Agregar Vendedor
+    </button>
+    </div>
+
+    <!-- Add Vendedor Modal -->
+    <div id="addVendedorModal" class="modal">
+      <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">  <!-- TERRIBLE!! PERO NO ENCONTRÉ OTRA FORMA -->
+        <div class="flex justify-between items-center mb-4">
+          <h5 class="text-lg">Agregar Vendedor</h5>
+          <button type="button" class="text-white" onclick="document.getElementById('addVendedorModal').classList.remove('show')">&times;</button>
+        </div>
+        <div>
+          <form id="agregarVendedorForm" action="{% url 'vendedores:agregarVendedor' %}" method="POST">
+            {% csrf_token %}
+            <div class="mb-4">
+              <label for="nombre_persona" class="block mb-1">Nombre:</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-800 rounded-md" id="nombre_persona" name="nombre_persona" placeholder="Ingrese el nombre del vendedor" required>
+              <div class="invalid-feedback text-red-500 mt-1"></div>
+            </div>
+            <div class="mb-4">
+              <label for="apellido_persona" class="block mb-1">Apellido:</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-500 rounded-md" id="apellido_persona" name="apellido_persona" placeholder="Ingrese el apellido del vendedor" required>
+              <div class="invalid-feedback text-red-500 mt-1"></div>
+            </div>
+            <div class="mb-4">
+              <label for="cuitl_persona" class="block mb-1">CUIT/CUIL:</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="cuitl_persona" name="cuitl_persona" placeholder="Ingrese el CUIT/CUIL del vendedor" required>
+              <div class="invalid-feedback text-red-500 mt-1"></div>
+            </div>
+            <div class="mb-4">
+              <label for="direccion_persona" class="block mb-1">Dirección:</label>
+              <input type="text" class="w-full px-3 py-2 border border-gray-300 rounded-md" id="direccion_persona" name="direccion_persona" placeholder="Ingrese la dirección del vendedor" required>
+            </div>
+
+            <!-- Contactos -->
+            <div id="contactSection" class="mb-4">
+              <label class="block mb-1">Contactos:</label>
+              <div id="contactsContainerAdd">
+                <div class="flex items-center mb-4">
+                  <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" name="tipo_contacto[]">
+                    <option value="1">Correo Electrónico</option>
+                    <option value="2">Teléfono</option>
+                    <option value="3">Página Web</option>
+                  </select>
+                  <input type="text" class="w-2/3 px-3 py-2 border border-gray-300 rounded-md" name="contacto[]" placeholder="Ingrese el contacto" required>
+                  <button type="button" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md">-</button>
+                </div>
+              </div>
+              <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md" id="addContactBtnAdd">Agregar Otro Contacto</button>
+            </div>
+            <div class="flex justify-end">
+              <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('addVendedorModal').classList.remove('show')">Cerrar</button>
+              <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Agregar Vendedor</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-gray-800 text-white" id="tableVendedores">
+        <thead>
+          <tr>
+            <th class="px-4 py-2">Nombre</th>
+            <th class="px-4 py-2">Apellido</th>
+            <th class="px-4 py-2">CUIT/CUIL</th>
+            <th class="px-4 py-2">Dirección</th>
+            <th class="px-4 py-2">Contacto</th>
+            <th class="px-4 py-2">Fecha de Alta</th>
+            <th class="px-4 py-2">Acciones</th>
+          </tr>
+        </thead>
+        <tbody id="tabla-resultados">
+          {% for vendedor in vendedores %}
+          <tr>
+            <td class="px-4 py-2">{{ vendedor.nombre_persona }}</td>
+            <td class="px-4 py-2">{{ vendedor.apellido_persona }}</td>
+            <td class="px-4 py-2">{{ vendedor.cuitl_persona|default:"-" }}</td>
+            <td class="px-4 py-2">{{ vendedor.direccion_persona }}</td>
+            <td class="px-4 py-2">
+              {% for contacto in vendedor.contactos %}
+                <div>{{ contacto.descripcion_contacto }}</div>
+              {% endfor %}
+            </td>
+            <td class="px-4 py-2">{{ vendedor.fecha_alta_vendedor }}</td>
+            <td class="px-4 py-2">
+              <div class="flex space-x-2">
+                <!-- Edit button -->
+                <button
+                  type="button"
+                  class="bg-blue-300 text-white px-3 py-2 rounded-md flex items-center justify-center"
+                  data-id="{{ vendedor.id_vendedor }}"
+                  onclick="document.getElementById('editarVendedorModal{{ vendedor.id_vendedor }}').classList.add('show')"
+                >
+                  <img class="w-5 h-5" alt="Edit" src="{% static 'public/edit.svg' %}" />
+                </button>
+                <!-- Delete button -->
+                <a
+                  class="bg-red-500 text-white px-3 py-2 rounded-md flex items-center justify-center"
+                  href="eliminarVendedor/{{ vendedor.id_vendedor }}"
+                  onclick="return confirm('¿Estás seguro de que quieres eliminar a este vendedor?')"
+                >
+                  <img class="w-5 h-5" alt="Delete" src="{% static 'public/delete.svg' %}" />
+                </a>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Editar Vendedor Modal -->
+          <div id="editarVendedorModal{{ vendedor.id_vendedor }}" class="modal">
+            <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+              <div class="flex justify-between items-center mb-4">
+                <h5 class="text-lg">Editar Vendedor</h5>
+                <button type="button" class="text-white" onclick="document.getElementById('editarVendedorModal{{ vendedor.id_vendedor }}').classList.remove('show')">&times;</button>
+              </div>
+              <div>
+                <form id="editarVendedorForm{{ vendedor.id_vendedor }}" action="{% url 'vendedores:editarVendedor' vendedor.id_vendedor %}" method="POST">
+                  {% csrf_token %}
+                  <div class="mb-4">
+                    <label for="nombre_persona" class="block mb-1">Nombre:</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="nombre_persona" name="nombre_persona" value="{{ vendedor.nombre_persona }}" required placeholder="Ingrese el nombre">
+                    <div class="invalid-feedback text-red-500 mt-1"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="apellido_persona" class="block mb-1">Apellido:</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="apellido_persona" name="apellido_persona" value="{{ vendedor.apellido_persona }}" required placeholder="Ingrese el apellido">
+                    <div class="invalid-feedback text-red-500 mt-1"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="cuitl_persona" class="block mb-1">CUIT/CUIL:</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="cuitl_persona" name="cuitl_persona" value="{{ vendedor.cuitl_persona }}" required placeholder="Ingrese el CUIT/CUIL">
+                    <div class="invalid-feedback text-red-500 mt-1"></div>
+                  </div>
+                  <div class="mb-4">
+                    <label for="direccion_persona" class="block mb-1">Dirección:</label>
+                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="direccion_persona" name="direccion_persona" value="{{ vendedor.direccion_persona }}" required placeholder="Ingrese la dirección">
+                  </div>
+
+                  <!-- Contactos -->
+                  <div id="contactSection" class="mb-4">
+                    <label class="block mb-1">Contactos:</label>
+                    <div id="contactsContainerEdit{{ vendedor.id_vendedor }}">
+                      <div class="flex items-center mb-4">
+                        <select class="w-1/3 px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md" name="tipo_contacto[]">
+                          <option value="1">Correo Electrónico</option>
+                          <option value="2">Teléfono</option>
+                          <option value="3">Página Web</option>
+                        </select>
+                        <input type="text" class="w-2/3 px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" name="contacto[]" placeholder="Ingrese el contacto" required>
+                        <button type="button" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md remove-contact-btn">-</button>
+                      </div>
+                    </div>
+                    <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md" id="addContactBtnEdit{{ vendedor.id_vendedor }}">Agregar Otro Contacto</button>
+                  </div>
+                  <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('editarVendedorModal{{ vendedor.id_vendedor }}').classList.remove('show')">Cerrar</button>
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+
+          {% empty %}
+          <tr>
+            <td colspan="7" class="px-4 py-2 text-center">No hay vendedores registrados.</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+<script>
+  // Función para agregar contactos en el modal de edición
+document.querySelectorAll('[id^="addContactBtnEdit"]').forEach(button => {
+    button.addEventListener('click', function() {
+        const id = this.id.match(/\d+/)[0];
+        const container = document.getElementById(`contactsContainerEdit${id}`);
+        const div = document.createElement('div');
+        div.className = 'flex items-center mb-4';
+        
+        // Aplicamos estilos en línea directamente al input para asegurarnos de que se vea
+        div.innerHTML = `
+          <select style="width: 30%; padding: 8px; border: 1px solid #ccc; background-color: #4a5568; color: white;" name="tipo_contacto[]">
+            <option value="1">Correo Electrónico</option>
+            <option value="2">Teléfono</option>
+            <option value="3">Página Web</option>
+          </select>
+          <input type="text" style="width: 60%; padding: 8px; border: 1px solid #ccc; background-color: white; color: black;" name="contacto[]" placeholder="Ingrese el contacto" required>
+          <button type="button" style="margin-left: 8px; background-color: red; color: white; padding: 8px; border-radius: 4px;" onclick="this.parentElement.remove()">-</button>
+        `;
+        container.appendChild(div);
+    });
+});
+
+</script>
+
+{% endblock %}

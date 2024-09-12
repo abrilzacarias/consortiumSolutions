@@ -1,22 +1,22 @@
 from django.shortcuts import render, redirect
 from .models import Clientes, Contacto
-from ..vendedores.models import Vendedor
+from ..empleados.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 
 
-vendedor = Vendedor()
+empleado = Empleado()
 clientes = Clientes()
 
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def listarClientes(request):
-    es_vendedor = request.user.groups.filter(name='vendedores').exists()  # Ajusta según tu lógica para identificar vendedores
+    es_vendedor = request.user.groups.filter(name='empleados').exists()  # Ajusta según tu lógica para identificar vendedores
     #print(es_vendedor)
     resultados = clientes.listarClientes()
-    vendedores = vendedor.mostrarVendedor()
+    empleados = empleado.mostrarVendedor()
     
     resultados_modificados = []
 
@@ -105,7 +105,7 @@ def listarClientes(request):
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
         
-    return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'vendedores': vendedores})
+    return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'empleados': empleados})
 
 
 def agregarCliente(request):
@@ -136,7 +136,7 @@ def agregarCliente(request):
             return redirect('/clientes/')
     else:
         vendedores = vendedor.mostrarVendedor()
-        return render(request, 'agregarcliente.html', {'vendedores': vendedores})
+        return render(request, 'agregarcliente.html', {'empleados': empleados})
 
 def editarCliente(request, id_cliente):
     if request.method == 'POST':
@@ -204,7 +204,7 @@ def editarCliente(request, id_cliente):
         print(cliente)
         
         vendedores = vendedor.mostrarVendedor()
-        return render(request, 'editarcliente.html', {'cliente': cliente, 'vendedores': vendedores})
+        return render(request, 'editarcliente.html', {'cliente': cliente, 'empleados': empleados})
 
 
 
