@@ -13,7 +13,7 @@ $(document).ready(function() {
 
     // Función para filtrar la tabla según el tipo de actividad
     $('.btn-filtro').on('click', function() {
-        var filtro = $(this).text();
+        var filtro = $(this).text().trim(); // Asegúrate de eliminar espacios adicionales
         if (filtro === 'Todos') {
             tabla.search('').columns().search('').draw();
         } else {
@@ -21,6 +21,3 @@ $(document).ready(function() {
         }
     });
 });
-
-
-
