@@ -40,6 +40,7 @@ class Servicio(models.Model):
     requiere_pago_servicio = models.IntegerField()
     precio_base_servicio = models.DecimalField(max_digits=10, decimal_places=0, blank=True, null=True)
     id_categoria_servicio = models.ForeignKey(CategoriaServicio, models.DO_NOTHING, db_column='id_categoria_servicio')
+    estado_servicio = models.IntegerField(default=1)
 
     class Meta:
         managed = False

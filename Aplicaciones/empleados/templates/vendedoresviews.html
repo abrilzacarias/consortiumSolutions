@@ -166,8 +166,7 @@
                 <button
                   type="button"
                   class="bg-blue-300 text-white px-3 py-2 rounded-md flex items-center justify-center"
-                  data-id="{{ vendedor.id_vendedor }}"
-                  onclick="document.getElementById('editarVendedorModal{{ vendedor.id_vendedor }}').classList.add('show')"
+                  data-id="{{ vendedor.id_vendedor }}"  onclick="document.getElementById('editarVendedorModal{{ vendedor.id_vendedor }}').classList.add('show')"
                 >
                   <img class="w-5 h-5" alt="Edit" src="{% static 'public/edit.svg' %}" />
                 </button>
