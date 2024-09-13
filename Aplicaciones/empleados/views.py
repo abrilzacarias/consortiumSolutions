@@ -77,6 +77,7 @@ def editarEmpleado(request, id_empleado):
         apellido_persona = request.POST.get('apellido_persona_editar')
         cuitl_persona = request.POST.get('cuitl_persona_editar')
         direccion_persona = request.POST.get('direccion_persona')
+        tipo_empleado = request.POST.get('tipo_empleado_editar')
 
         # Recopilación de los contactos existentes y nuevos
         contactos_data = []
