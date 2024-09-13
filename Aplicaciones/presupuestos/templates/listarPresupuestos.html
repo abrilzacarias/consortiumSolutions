@@ -5,14 +5,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Empleados</title>
+    <title>Presupuestos</title>
     {% load static %}
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
-    <!-- Incluir Select2 en tu HTML -->
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 <body>    <!-- Start block -->
     <body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
@@ -35,7 +35,7 @@
                             </form>
                         </div>
                         <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
-                            <button type="button" id="createProductModalButton" data-modal-target="createProductModal" data-modal-toggle="createProductModal" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none">
+                            <button type="button" id="agregarPresupuestoModalButton" data-modal-target="agregarPresupuestoModal" data-modal-toggle="agregarPresupuestoModal" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none">
                                 <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                                     <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
                                 </svg>
@@ -153,7 +153,7 @@
     </section>
 <!-- End block -->
 
-<!-- Agregar presupuesto modal -->
+<!-- Create modal -->
 <div id="agregarPresupuestoModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
@@ -161,7 +161,7 @@
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
                 <h3 class="text-lg font-semibold text-white">Agregar Presupuesto</h3>
-                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="createProductModal" data-modal-toggle="createProductModal">
+                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="agregarPresupuestoModal" data-modal-toggle="agregarPresupuestoModal">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
@@ -170,68 +170,45 @@
             </div>
             <!-- Modal body -->
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                    <div id="vendedorSection" class="mb-42 block">
-                        <label for="vendedor_asignado" class="block text-sm font-medium text-white">Vendedor Asignado:</label>
-                        <div class="mt-1 flex items-center">
-                            <div class="w-full">
-                                <select class="block w-full p-2 border border-gray-300 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500 text-white bg-gray-700" name="vendedor_asignado">
-                                    <option value="" {% if not cliente.id_vendedor_asignado %}selected{% endif %}>Seleccionar Vendedor</option>
-                                    {% for vendedor in vendedores %}
-                                        <option value="{{ vendedor.id_vendedor }}" {% if vendedor.id_vendedor == cliente.id_vendedor_asignado %}selected{% endif %}>{{ vendedor.nombre_persona }} {{ vendedor.apellido_persona }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                        </div>
-                    </div>                    
-                    <div>
-                        <label for="name" class="block mb-2 text-sm font-medium text-white">Apellido</label>
-                        <input type="text" name="apellido_persona" id="apellido_persona" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Apellido del empleado" required>
-                    </div>
-                    <div>
-                        <label for="tipo_empleado" class="block mb-2 text-sm font-medium text-white">Tipo de Empleado</label>
-                        <select id="tipo_empleado" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white">
-                            {% for tipo in tipo_empleados %}
-                            <option value="{{tipo.id_tipo_empleado}}">{{tipo.descripcion_tipo_empleado}}</option>
-                            {% endfor %}
-                    </select>
-                </div>
-                <div>
-                    <label for="cuitl_persona" class="block mb-2 text-sm font-medium text-white">CUIT/CUIL</label>
-                    <input type="text" name="cuitl_persona" id="cuitl_persona" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="CUIT/CUIL" required>
-                </div>
-                <div>
-                    <label for="direccion_persona" class="block mb-2 text-sm font-medium text-white">Dirección</label>
-                    <input type="text" name="direccion_persona" id="direccion_persona" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Dirección" required>
-                </div>
-                <div>
-                    <label for="direccion_persona" class="block mb-2 text-sm font-medium text-white">Fecha de Alta:</label>
-                    <input type="text" name="direccion_persona" id="direccion_persona" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Dirección" required>
-                </div>
-                <!-- Contactos -->
-                <div id="contactSection" class="mb-6 flex flex-col space-y-4">
-                    <label class="block text-sm font-medium text-gray-200">Contactos:</label>
-                    <div id="contactsContainerAdd" class="space-y-3">
-                      <div class="flex items-center space-x-2">
-                        <select class="w-1/4 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto[]">
-                          <option value="1">Correo Electrónico</option>
-                          <option value="2">Teléfono</option>
-                          <option value="3">Página Web</option>
+                    <div id="vendedorSection" class="mb-4">
+                        <label for="vendedor_asignado" class="block text-sm mb-2 font-medium text-white">Vendedor Asignado</label>
+                        <select id="vendedor_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="vendedor_asignado">
                         </select>
-                        <input type="text" class="flex-1 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="contacto[]" placeholder="Ingrese el contacto" required>
-                        <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-contact-btn-add">-</button>
-                      </div>
                     </div>
-                    <div class="flex">
-                      <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300" id="addContactBtnAdd">Agregar Otro Contacto</button>
+                    <div>
+                        
                     </div>
-                  </div>
+                    <div>
+                        <label for="cliente_asignado" class="block text-sm mb-2 font-medium text-white">Cliente</label>
+                        <select id="cliente_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="cliente_asignado">
+                        </select>
+                    </div>
+                    <div>
+                        <label for="edificio_asignado" class="block text-sm mb-2 font-medium text-white">Edificio</label>
+                        <select id="edificio_asignado" class="block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="edificio_asignado">
+                            <option value="">Seleccione un edificio</option>
+                        </select>
+                    </div>
                   
                 </div>
+
+                <!-- Servicios - Ahora fuera del grid y ocupando todo el ancho -->
+                <div id="serviciosSection" class="mb-6">
+                    <label class="block text-sm font-medium text-gray-200 mb-2">Servicios</label>
+                    <div id="serviciosContainer" class="space-y-3">
+                        <!-- Aquí se generarán dinámicamente los servicios -->
+                    </div>
+                    <div class="flex mt-3">
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300" id="addServiceBtn">Agregar Otro Servicio</button>
+                    </div>
+                    <p id="totalCost" class="text-white mt-4">Total: $0.00</p>
+                </div>
+            
                 <button type="submit" class="text-white bg-green-800 inline-flex items-center hover:bg-green-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
                     <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                     </svg>
-                    Agregar Empleado
+                    Agregar Presupuesto
                 </button>
         </div>
     </div>
