@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .models import Presupuesto, DetallePresupuesto
 from django.contrib import messages
@@ -54,3 +54,21 @@ def mostrar_servicios(request, method='GET'):
     for servicio in servicios:
         print(servicio)
     return JsonResponse(servicios, safe=False)
+
+def eliminarPresupuesto(request, id_presupuesto):
+    if request.method == 'POST':
+        presupuesto = get_object_or_404(Presupuesto, id_presupuesto=id_presupuesto)
+        
+        # Verifica si el presupuesto está referenciado en MensajePresupuesto
+        detalles = DetallePresupuesto.objects.filter(id_presupuesto=presupuesto.id_presupuesto)
+        print(detalles)
+        if detalles.exists():
+             messages.error(request, "No se puede eliminar el presupuesto porque está referenciado en uno o más servicios.")
+            
+        else:
+            presupuesto.delete()
+            messages.success(request, "Presupuesto eliminado con éxito.")
+        
+        return redirect('/presupuestos/')  # Ajusta esto según tu vista de lista
+
+    return redirect('/presupuestos/')  # Redirige en caso de solicitud no POST

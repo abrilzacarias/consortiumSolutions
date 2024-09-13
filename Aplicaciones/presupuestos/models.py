@@ -15,6 +15,10 @@ class Presupuesto(models.Model):
     id_empleado = models.IntegerField() 
     id_edificio = models.IntegerField()
 
+    class Meta:
+        db_table = 'presupuesto'  # Nombre de la tabla en la base de datos
+        managed = False
+        
     @classmethod
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
