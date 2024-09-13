@@ -22,6 +22,7 @@ def home(request):
 
     return render(request, 'probandoplantilla.html', {'empleados': empleados, 'tipo_empleados': tipoEmpleados})
 
+
 def agregarEmpleado(request):
     if request.method == 'POST':
         # Datos de persona
@@ -34,7 +35,7 @@ def agregarEmpleado(request):
         fechaYHoraActual = datetime.datetime.now()
         fecha_alta_empleado = fechaYHoraActual.strftime("%Y-%m-%d")
         fecha_baja_empleado = request.POST.get('fecha_baja_empleado', None)
-        tipo_empleado = request.POST.get('tipo_empleado')  # Recibe el tipo de empleado: "Facturador", "Asesor de Ventas", etc.
+        id_tipo_empleado = request.POST.get('tipo_empleado')  # Recibe el tipo de empleado: "Facturador", "Asesor de Ventas", etc.
         
         # Datos de contacto
         tiposContacto = request.POST.getlist('tipo_contacto[]')
@@ -46,7 +47,7 @@ def agregarEmpleado(request):
         print("Apellido:", apellido_persona)
         print("CUIT:", cuitl_persona)
         print("Dirección:", direccion_persona)
-        print("Tipo de empleado:", tipo_empleado)
+        print("Tipo de empleado:", id_tipo_empleado)
         print("Fecha de alta empleado:", fecha_alta_empleado)
         print("Fecha de baja empleado:", fecha_baja_empleado)
         print("Lista de contactos:", listaContactos)
@@ -60,7 +61,7 @@ def agregarEmpleado(request):
             id_empleado = empleado.agregarEmpleado(
                 nombre_persona, apellido_persona, cuitl_persona,
                 direccion_persona, fecha_alta_empleado, fecha_baja_empleado,
-                tipo_empleado, listaContactos
+                id_tipo_empleado, listaContactos
             )
             
             if id_empleado:
@@ -76,8 +77,16 @@ def editarEmpleado(request, id_empleado):
         nombre_persona = request.POST.get('nombre_persona_editar')
         apellido_persona = request.POST.get('apellido_persona_editar')
         cuitl_persona = request.POST.get('cuitl_persona_editar')
-        direccion_persona = request.POST.get('direccion_persona')
-        tipo_empleado = request.POST.get('tipo_empleado_editar')
+        direccion_persona = request.POST.get('direccion_persona_editar')
+        id_tipo_empleado = request.POST.get('tipo_empleado_editar')
+
+        # Agregar print para ver los datos principales
+        print("Datos de la persona:")
+        print("Nombre:", nombre_persona)
+        print("Apellido:", apellido_persona)
+        print("CUIT/CUIL:", cuitl_persona)
+        print("Dirección:", direccion_persona)
+        print("Tipo de Empleado:", id_tipo_empleado)
 
         # Recopilación de los contactos existentes y nuevos
         contactos_data = []
@@ -102,12 +111,14 @@ def editarEmpleado(request, id_empleado):
                     'descripcion_contacto': descripcion_contacto
                 })
 
+        # Agregar print para ver los contactos que están llegando
         print("Datos de contacto editados o nuevos:", contactos_data)
 
-        
-        Empleado().editarEmpleado(id_empleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, contactos_data)
+        # Llamada al método para actualizar el empleado
+        Empleado().editarEmpleado(id_empleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado, contactos_data)
 
-    return redirect('empleados:home')  
+    return redirect('empleados:home')
+
 
 
 def eliminarEmpleado(request, id_empleado):
