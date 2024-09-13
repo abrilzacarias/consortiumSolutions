@@ -53,7 +53,7 @@
 
 
 </head>
-
+<body>
 <!-- Small Modal -->
 <div id="small-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative w-full max-w-md max-h-full">
@@ -90,64 +90,9 @@
 </div>
 
 
-<div class="navbar navbar-expand-lg " id="searchbar">
-  <div class="navbar bg-dark">
-    <form class="form-inline" action="{% url 'servicios:buscar_servicio_categoria' %}" method="GET">
-      <input class="input-search form-control mr-sm-2" name="buscar" type="search" placeholder="Buscar categoría o servicio" aria-label="Search">
-      <button class="btn btn-outline-dark" type="submit">
-        <img
-          class="menu-svgrepo-com-1-1"
-          alt=""
-          src="{% static 'public/search.svg' %}"
-        />
-      </button>
-    </form>
-  </div>
-</div>
-<body > 
-{% if serviciosBusqueda or categoriasBusqueda %}
-    <h3>Resultados de la búsqueda:</h3>
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Tipo</th>
-                <th>Nombre</th>
-                <th>¿Requiere pago?</th>
-                <th>Precio Base</th>
-                <th>Categoria</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for servicio in serviciosBusqueda %}
-                <tr>  
-                    <td>Servicio</td>
-                    <td>{{ servicio.nombre_servicio }}</td>
-                    <td>{% if servicio.requiere_pago_servicio %}
-                      Sí
-                    {% else %}
-                      No
-                    {% endif %}</td>
-                    <td>{{ servicio.precio_base_servicio|default:"-"  }}</td>
-                    <td>{{ servicio.id_categoria_servicio.nombre_categoria_servicio }}</td>
-                </tr>
-            {% endfor %}
-            {% for categoria in categoriasBusqueda %}
-                <tr>
-                    <td>Categoría</td>
-                    <td>{{ categoria.nombre_categoria_servicio }}</td>
-                    <td>-</td>
-                    <td>-</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
-{% elif serviciosBusqueda or categoriasBusqueda is not None %}
-    <p>No se encontraron resultados.</p>
-{% endif %}
 
-{% if not serviciosBusqueda or categoriasBusqueda %}
 <div class="container mx-auto p-5">
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4 mt-8">
         <h2 class="text-2xl font-bold mb-4 text-white">Categoría de Servicios</h2>
         <div class="btn-group flex space-x-2" role="group" aria-label="Botones de acción">
             <button id="defaultModalButton" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addCategoriaModal').classList.toggle('show')" type="button">
@@ -384,10 +329,8 @@
 {% endfor %}
 </div>
 
-{% endif %}
-
-
 <div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" style="display: none;"></div>
+</body>
 <script>
     function showModal() {
         const modal = document.getElementById('small-modal');
@@ -425,8 +368,4 @@
     });
 </script>
 </body>
-
-
-
-
 {% endblock %}
