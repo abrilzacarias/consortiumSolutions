@@ -144,7 +144,7 @@ $(document).ready(function() {
 
     // Función para crear un nuevo dropdown de servicios
     function crearDropdownServicios(servicios) {
-        let selectHtml = '<select class="service-dropdown w-1/3 text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
+        let selectHtml = '<select name= class="servicios[]" service-dropdown w-1/3 text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
         selectHtml += '<option value="">Seleccione un servicio</option>';
 
         servicios.forEach(function(categoria) {
@@ -163,28 +163,51 @@ $(document).ready(function() {
     function agregarServicio(servicios) {
         const serviciosContainer = $('#serviciosContainer');
         const nuevoServicio = $(`
-            <div class="flex items-center space-x-2">
-                ${crearDropdownServicios(servicios)}
-                <input type="number" class="quantity-service w-1/6 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
-                <input type="number" class="extra-cost w-1/5 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
-                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+            <div class="flex items-center space-x-2 w-full">
+                <div class="w-1/3">
+                    ${crearDropdownServicios(servicios)}
+                </div>
+                <div class="w-1/6">
+                    <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
+                </div>
+                <div class="w-1/5">
+                    <input name="costos[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
+                </div>
+                <div class="w-1/5">
+                    <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
+                </div>
+                <div class="w-auto">
+                    <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+                </div>
             </div>
         `);
-
+    
         serviciosContainer.append(nuevoServicio);
         initSelect2(nuevoServicio.find('select'));
     }
+    
 
     // Función para calcular el total
     function calcularTotal() {
         let total = 0;
+
+        // Iterar sobre cada dropdown de servicios
         $('.service-dropdown').each(function() {
             const precioServicio = $(this).find(':selected').data('precio') || 0;
             const cantidadServicio = parseInt($(this).closest('.flex').find('.quantity-service').val()) || 1;
             const costoExtra = parseFloat($(this).closest('.flex').find('.extra-cost').val()) || 0;
-            console.log(cantidadServicio)
-            total += (precioServicio * cantidadServicio) + costoExtra;
+
+            // Calcular el subtotal para este servicio
+            const subtotal = (precioServicio * cantidadServicio) + costoExtra;
+
+            // Mostrar el subtotal en el span correspondiente
+            $(this).closest('.flex').find('.subtotal-service').text(`Subtotal: $${subtotal.toFixed(2)}`);
+
+            // Sumar el subtotal al total general
+            total += subtotal;
         });
+
+        // Mostrar el total general
         $('#totalCost').text('Total: $' + total.toFixed(2));
     }
 

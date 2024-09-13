@@ -189,65 +189,67 @@
     </div>
 </div>
 <!-- Agregar presupuesto modal -->
-<div id="agregarPresupuestoModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
-    <div class="relative p-4 w-full max-w-2xl max-h-full">
-        <!-- Modal content -->
-        <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
-            <!-- Modal header -->
-            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
-                <h3 class="text-lg font-semibold text-white">Agregar Presupuesto</h3>
-                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="agregarPresupuestoModal" data-modal-toggle="agregarPresupuestoModal">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="sr-only">Cerrar</span>
-                </button>
-            </div>
-            <!-- Modal body -->
-                <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                    <div id="vendedorSection" class="mb-4">
-                        <label for="vendedor_asignado" class="block text-sm mb-2 font-medium text-white">Vendedor Asignado</label>
-                        <select id="vendedor_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="vendedor_asignado">
-                        </select>
-                    </div>
-                    <div>
-                        
-                    </div>
-                    <div>
-                        <label for="cliente_asignado" class="block text-sm mb-2 font-medium text-white">Cliente</label>
-                        <select id="cliente_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="cliente_asignado">
-                        </select>
-                    </div>
-                    <div>
-                        <label for="edificio_asignado" class="block text-sm mb-2 font-medium text-white">Edificio</label>
-                        <select id="edificio_asignado" class="block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="edificio_asignado">
-                            <option value="">Seleccione un edificio</option>
-                        </select>
-                    </div>
-                  
+<form id="agregarPresupuestoForm" action="{% url 'presupuestos:agregarPresupuesto' %}" method="POST"> 
+    <div id="agregarPresupuestoModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+        <div class="relative p-4 w-full max-w-2xl max-h-full">
+            <!-- Modal content -->
+            <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
+                <!-- Modal header -->
+                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
+                    <h3 class="text-lg font-semibold text-white">Agregar Presupuesto</h3>
+                    <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="agregarPresupuestoModal" data-modal-toggle="agregarPresupuestoModal">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="sr-only">Cerrar</span>
+                    </button>
                 </div>
+                <!-- Modal body -->
+                    <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                        <div id="vendedorSection" class="mb-4">
+                            <label for="vendedor_asignado" class="block text-sm mb-2 font-medium text-white">Vendedor Asignado</label>
+                            <select id="vendedor_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="vendedor_asignado">
+                            </select>
+                        </div>
+                        <div>
+                            
+                        </div>
+                        <div>
+                            <label for="cliente_asignado" class="block text-sm mb-2 font-medium text-white">Cliente</label>
+                            <select id="cliente_asignado" class="select2 block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="cliente_asignado">
+                            </select>
+                        </div>
+                        <div>
+                            <label for="edificio_asignado" class="block text-sm mb-2 font-medium text-white">Edificio</label>
+                            <select id="edificio_asignado" class="block w-full p-2 border bg-gray-700 text-white py-2.5 rounded-md text-sm focus:ring-indigo-500 focus:border-indigo-500" name="edificio_asignado">
+                                <option value="">Seleccione un edificio</option>
+                            </select>
+                        </div>
+                    
+                    </div>
 
-                <!-- Servicios - Ahora fuera del grid y ocupando todo el ancho -->
-                <div id="serviciosSection" class="mb-6">
-                    <label class="block text-sm font-medium text-gray-200 mb-2">Servicios</label>
-                    <div id="serviciosContainer" class="space-y-3">
-                        <!-- Aquí se generarán dinámicamente los servicios -->
+                    <!-- Servicios - Ahora fuera del grid y ocupando todo el ancho -->
+                    <div id="serviciosSection" class="mb-6">
+                        <label class="block text-sm font-medium text-gray-200 mb-2">Servicios</label>
+                        <div id="serviciosContainer" class="space-y-3">
+                            <!-- Aquí se generarán dinámicamente los servicios -->
+                        </div>
+                        <div class="flex mt-3">
+                            <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300" id="addServiceBtn">Agregar Otro Servicio</button>
+                        </div>
+                        <p id="totalCost" class="text-white mt-4">Total: $0.00</p>
                     </div>
-                    <div class="flex mt-3">
-                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300" id="addServiceBtn">Agregar Otro Servicio</button>
-                    </div>
-                    <p id="totalCost" class="text-white mt-4">Total: $0.00</p>
-                </div>
-            
-                <button type="submit" class="text-white bg-green-800 inline-flex items-center hover:bg-green-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                    <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
-                    </svg>
-                    Agregar Presupuesto
-                </button>
+                
+                    <button type="submit" class="text-white bg-green-800 inline-flex items-center hover:bg-green-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Agregar Presupuesto
+                    </button>
+            </div>
         </div>
     </div>
-</div>
+</form> 
 
 <!-- Update modal -->
 <div id="{{empleado.id_empleado}}updateProductModal" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">

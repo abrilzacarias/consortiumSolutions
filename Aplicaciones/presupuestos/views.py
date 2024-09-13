@@ -20,25 +20,33 @@ def agregarPresupuesto(request):
     #fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles
     if request.method == 'POST':
         fecha_hora_presupuesto = request.POST.get('fecha_hora_presupuesto')
-        monto_total_presupuesto = request.POST.get('monto_total_presupuesto')
-        id_edificio = request.POST.get('id_edificio')
-        id_empleado = request.POST.get('id_empleado')
+        monto_total_presupuesto = request.POST.get('totalCost')
+        id_edificio = request.POST.get('edificio_asignado')
+        id_empleado = request.POST.get('vendedor_asignado')
 
+
+        print(f'MONTO TOTAL PRESUPUESTO {monto_total_presupuesto}')
+        print(f'Edificios {id_edificio}')
+        print(f'Edificios {id_empleado}')
         #cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, , id_servicio
-        lista_cantidad_detalle_presupuesto = request.POST.getlist('lista_cantidad_detalle_presupuesto[]')
-        lista_precio_unitario_detalle_presupuesto = request.POST.getlist('lista_precio_unitario_detalle_presupuesto[]')
+        lista_cantidad_detalle_presupuesto = request.POST.getlist('cantidades[]')
+        print(f'Edificios {lista_cantidad_detalle_presupuesto}')
+
+        #lista_precio_unitario_detalle_presupuesto = request.POST.getlist('lista_precio_unitario_detalle_presupuesto[]')
         lista_precio_total_detalle_presupuesto = request.POST.getlist('lista_precio_unitario_detalle_presupuesto[]')
-        lista_id_servicio = request.POST.getlist('lista_id_servicio[]')
+        print(f'Edificios {lista_precio_total_detalle_presupuesto}')
+        lista_id_servicio = request.POST.getlist('servicios[]')
+        print(f'Edificios {lista_id_servicio}')
         
         # Crear una lista de detalles
-        lista_detalles = list(zip(lista_cantidad_detalle_presupuesto, lista_precio_unitario_detalle_presupuesto, lista_precio_total_detalle_presupuesto, lista_id_servicio))
-        id_presupuesto = Presupuesto.insertarPresupuesto(fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
-        if id_presupuesto:
-            messages.success(request, 'El presupuesto se agregó correctamente.')
-            return redirect('/presupuestos/')
-        else:
-            messages.error(request, 'Hubo un error al agregar el presupuesto.')
-            return redirect('/presupuestos/')
+        #lista_detalles = list(zip(lista_cantidad_detalle_presupuesto, lista_precio_unitario_detalle_presupuesto, lista_precio_total_detalle_presupuesto, lista_id_servicio))
+        #id_presupuesto = Presupuesto.insertarPresupuesto(fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
+        #if id_presupuesto:
+           # messages.success(request, 'El presupuesto se agregó correctamente.')
+           # return redirect('/presupuestos/')
+        #else:
+           # messages.error(request, 'Hubo un error al agregar el presupuesto.')
+           # return redirect('/presupuestos/')
     else:
         presupuestos = Presupuesto.listarPresupuestos()
         return render(request, 'agregarPresupuesto.html', {'presupuestos': presupuestos})
