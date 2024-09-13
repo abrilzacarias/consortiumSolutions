@@ -20,7 +20,7 @@ def home(request):
         ]
     tipoEmpleados = TipoEmpleado.objects.all()
 
-    return render(request, 'probandoplantilla.html', {'empleados': empleados, 'tipo_empleados': tipoEmpleados})
+    return render(request, 'empleadoViews.html', {'empleados': empleados, 'tipo_empleados': tipoEmpleados})
 
 
 def agregarEmpleado(request):
