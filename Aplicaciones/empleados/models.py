@@ -63,8 +63,8 @@ class Empleado(models.Model):
     fecha_baja_empleado = models.DateField(blank=True, null=True)
     id_persona = models.ForeignKey(Persona, models.DO_NOTHING, db_column='id_persona')
     id_usuario = models.ForeignKey(Usuario, models.DO_NOTHING, db_column='id_usuario')
-    id_tipo_empleado = models.ForeignKey('TipoEmpleado', models.DO_NOTHING, db_column='id_tipo_empleado')
-
+    tipo_empleado = models.ForeignKey(TipoEmpleado, on_delete=models.SET_NULL, null=True, db_column='id_tipo_empleado')  # Aquí está la corrección
+    
     class Meta:
         managed = False
         db_table = 'empleado'
@@ -82,11 +82,18 @@ class Empleado(models.Model):
             result = cursor.fetchone()
         return result is not None
 
-    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, tipo_empleado, listaContactos):
+    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, id_tipo_empleado, listaContactos):
         nombre = nombre_persona.capitalize()
         apellido = apellido_persona.capitalize()
-
         try:
+            print("Valores recibidos:")
+            print(f"nombre_persona: {nombre_persona}")
+            print(f"apellido_persona: {apellido_persona}")
+            print(f"cuitl_persona: {cuitl_persona}")
+            print(f"direccion_persona: {direccion_persona}")
+            print(f"id_tipo_empleado: {id_tipo_empleado}")
+            print(f"contactos_data: {listaContactos}")
+            
             # Verificar si la persona ya existe como empleado
             if not self.empleadoExiste(cuitl_persona):
                 with connection.cursor() as cursor:
@@ -95,23 +102,19 @@ class Empleado(models.Model):
                         cursor.execute("""
                             INSERT INTO persona (nombre_persona, apellido_persona, cuitl_persona, direccion_persona)
                             VALUES (%s, %s, %s, %s)
-                            RETURNING id_persona
                         """, [nombre, apellido, cuitl_persona, direccion_persona])
+                        
+                        # Obtener el ID de la persona recién insertada
+                        cursor.execute("SELECT LAST_INSERT_ID()")
                         idPersona = cursor.fetchone()[0]
 
                         print("ID de nueva persona:", idPersona)
-
-                        # Obtener el ID del tipo de empleado
-                        cursor.execute("""
-                            SELECT id_tipo_empleado FROM tipo_empleado WHERE descripcion_tipo_empleado = %s
-                        """, [tipo_empleado])
-                        idTipoEmpleado = cursor.fetchone()[0]
 
                         # Insertar nuevo Empleado
                         cursor.execute("""
                             INSERT INTO empleado (fecha_alta_empleado, fecha_baja_empleado, id_persona, id_tipo_empleado)
                             VALUES (%s, %s, %s, %s)
-                        """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, idTipoEmpleado])
+                        """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, id_tipo_empleado])
                         print("Nuevo empleado insertado.")
 
                         # Insertar contactos
@@ -130,11 +133,9 @@ class Empleado(models.Model):
                         connection.rollback()
                         print("Error en la inserción de datos:", str(e))
                         return False
-
             else:
                 print("El empleado ya existe.")
                 return False
-
         except Exception as e:
             print("Error general:", str(e))
             return False
@@ -153,6 +154,7 @@ class Empleado(models.Model):
                         p.nombre_persona,
                         p.apellido_persona,
                         p.direccion_persona,
+                        e.id_tipo_empleado,  -- Incluye el id_tipo_empleado
                         te.descripcion_tipo_empleado
                     FROM
                         empleado e
@@ -176,14 +178,24 @@ class Empleado(models.Model):
             return []
 
 
-    def editarEmpleado(self, idEmpleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, tipo_empleado, contactos_data):
+    def editarEmpleado(self, idEmpleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado, contactos_data):
         try:
+            print("Valores recibidos:")
+            print(f"idEmpleado: {idEmpleado}")
+            print(f"nombre_persona: {nombre_persona}")
+            print(f"apellido_persona: {apellido_persona}")
+            print(f"cuitl_persona: {cuitl_persona}")
+            print(f"direccion_persona: {direccion_persona}")
+            print(f"id_tipo_empleado: {id_tipo_empleado}")
+            print(f"contactos_data: {contactos_data}")
+            
             with connection.cursor() as cursor:
                 # Obtener id_persona asociado al id_empleado
                 cursor.execute("""
                     SELECT id_persona FROM empleado WHERE id_empleado = %s;
                 """, [idEmpleado])
                 id_persona = cursor.fetchone()[0]
+                print(f"id_persona obtenido: {id_persona}")
 
                 # Actualizar la tabla persona
                 cursor.execute("""
@@ -194,12 +206,7 @@ class Empleado(models.Model):
                         direccion_persona = %s
                     WHERE id_persona = %s;
                 """, [nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_persona])
-
-                # Obtener id_tipo_empleado
-                cursor.execute("""
-                    SELECT id_tipo_empleado FROM tipo_empleado WHERE descripcion_tipo_empleado = %s;
-                """, [tipo_empleado])
-                id_tipo_empleado = cursor.fetchone()[0]
+                print("Tabla persona actualizada.")
 
                 # Actualizar la tabla empleado
                 cursor.execute("""
@@ -207,6 +214,7 @@ class Empleado(models.Model):
                         id_tipo_empleado = %s
                     WHERE id_empleado = %s;
                 """, [id_tipo_empleado, idEmpleado])
+                print(f"Empleado actualizado con id_tipo_empleado: {id_tipo_empleado}")
 
                 # Actualizar o crear contactos
                 for contacto_data in contactos_data:
@@ -214,18 +222,22 @@ class Empleado(models.Model):
                     tipo_contacto_id = contacto_data.get('tipo_contacto_id')
                     descripcion_contacto = contacto_data.get('descripcion_contacto')
 
-                    if contacto_id:  # Si el contacto ya existe, actualizarlo
+                    print(f"Procesando contacto: {contacto_data}")
+                    
+                    if contacto_id.isdigit():  # Verifica que el contacto_id sea un número válido
                         cursor.execute("""
                             UPDATE contacto SET 
                                 descripcion_contacto = %s,
                                 id_tipo_contacto = %s
                             WHERE id_contacto = %s;
                         """, [descripcion_contacto, tipo_contacto_id, contacto_id])
+                        print(f"Contacto actualizado con id: {contacto_id}")
                     else:  # Si el contacto es nuevo, crearlo
                         cursor.execute("""
                             INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) 
                             VALUES (%s, %s, %s);
                         """, [descripcion_contacto, tipo_contacto_id, id_persona])
+                        print("Nuevo contacto creado.")
 
                 connection.commit()
                 print("Empleado actualizado correctamente.")
@@ -235,6 +247,8 @@ class Empleado(models.Model):
             print("Error al actualizar el empleado:", str(e))
             connection.rollback()
             return False
+
+
 
 
     def eliminarEmpleado(self, idEmpleado):
