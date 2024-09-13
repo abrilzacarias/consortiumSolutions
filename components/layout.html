@@ -75,7 +75,7 @@
       </button>
       <ul class="breadcrumb flex justify-end items-center text-lg text-white sm:fixed w-full">
         <li class="inline">
-          <p>Bienvenido, {{ request.user }}</p>
+          <p class="text-right text-sm sm:text-lg">Bienvenido, {{ request.user }}</p>
         </li>
       </ul>
     </nav>
@@ -194,7 +194,7 @@
     </div>
     <!-- Sidebar end -->
 
-    <main class="flex-1 mt-3 px-4 bg-gray-900 ">
+    <main class="flex-1 mt-3 px-4 bg-gray-900">
       {% block content %}
       {% endblock %} 
     </main>

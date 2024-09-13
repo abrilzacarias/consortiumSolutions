@@ -1,21 +1,20 @@
 from django.shortcuts import render, redirect
+from django.http import JsonResponse
 from .models import Presupuesto, DetallePresupuesto
 from django.contrib import messages
-
+from ..clientes.models import Clientes
+from ..empleados.models import Empleado
+from ..servicios.models import Servicio
 # Create your views here.
 def home(request):
-    
     presupuestos = Presupuesto.listarPresupuestos()
-    detalle_presupuesto = DetallePresupuesto.listarDetallePresupuesto()
-    print(detalle_presupuesto)
+    #print(detalle_presupuesto)
     return render(request, 'listarPresupuestos.html', {'presupuestos': presupuestos})
 
-
-def detalle_presupuesto(request, id_presupuesto): 
-    
+def detalle_presupuesto(id_presupuesto): 
     detalle_presupuesto = [detalle for detalle in DetallePresupuesto.listarDetallePresupuesto() if detalle['id_presupuesto'] == id_presupuesto]
-    total_presupuesto = sum(detalle['cantidad_detalle_presupuesto'] * detalle['precio_unitario_detalle_presupuesto'] for detalle in detalle_presupuesto)
-    return render(request, 'detallePresupuesto.html', {'detalle_presupuesto': detalle_presupuesto, 'total_presupuesto': total_presupuesto})
+    print(detalle_presupuesto)
+    return JsonResponse(detalle_presupuesto, safe=False)
 
 def agregarPresupuesto(request):
     #fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles
@@ -43,3 +42,15 @@ def agregarPresupuesto(request):
     else:
         presupuestos = Presupuesto.listarPresupuestos()
         return render(request, 'agregarPresupuesto.html', {'presupuestos': presupuestos})
+    
+def mostrar_vendedores(request, method='GET'):
+    vendedores = list(Empleado.objects.values('id_empleado', 'nombre_persona', 'apellido_persona'))
+    for vendedor in vendedores:
+        print(vendedor)
+    return JsonResponse(vendedores, safe=False)
+
+def mostrar_servicios(request, method='GET'):
+    servicios = list(Servicio.objects.values('id_servicio', 'nombre_servicio'))
+    for servicio in servicios:
+        print(servicio)
+    return JsonResponse(servicios, safe=False)

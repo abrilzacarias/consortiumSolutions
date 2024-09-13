@@ -15,8 +15,6 @@ class Presupuesto(models.Model):
     id_empleado = models.IntegerField() 
     id_edificio = models.IntegerField()
 
-
-
     @classmethod
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
@@ -41,8 +39,7 @@ class Presupuesto(models.Model):
         return presupuestos
     
     
-    def insertarPresupuesto(self, fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles):
-        
+    def insertarPresupuesto(self, fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles):   
         try:
            
             with connection.cursor() as cursor:
@@ -62,8 +59,6 @@ class Presupuesto(models.Model):
         except Exception as e:
             print("Error al insertar:", str(e))
             return None
-
-
 
 class DetallePresupuesto(models.Model):
     id_detalle_presupuesto = models.AutoField(primary_key=True)
