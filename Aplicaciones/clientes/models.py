@@ -48,6 +48,27 @@ class TipoContacto(models.Model):
         managed = False
         db_table = 'tipo_contacto'
 
+class Cliente(models.Model):
+    id_cliente = models.AutoField(primary_key=True)
+    clave_afgip_cliente = models.CharField(max_length=11, blank=True, null=True)
+    conversion_cliente = models.IntegerField()
+    id_persona = models.ForeignKey('Persona', models.DO_NOTHING, db_column='id_persona')
+    id_matricula = models.ForeignKey('Matricula', models.DO_NOTHING, db_column='id_matricula', blank=True, null=True)
+
+    class Meta:
+        managed = False
+        db_table = 'cliente'
+
+
+class Matricula(models.Model):
+    id_matricula = models.AutoField(primary_key=True)
+    numero_matricula = models.CharField(max_length=70)
+    vencimiento_matricula = models.DateField()
+
+    class Meta:
+        managed = False
+        db_table = 'matricula'
+        
 class Clientes():
     def listarClientes(self):
         with connection.cursor() as cursor:
@@ -280,3 +301,23 @@ class Clientes():
                 cursor.execute("SELECT id_persona FROM persona WHERE cuitl_persona = %s", [cuit])
                 result = cursor.fetchone()
             return result is not None
+    
+class TipoEdificio(models.Model):
+    id_tipo_edificio = models.AutoField(primary_key=True)
+    nombre_tipo_edificio = models.CharField(max_length=60)
+
+    class Meta:
+        managed = False
+        db_table = 'tipo_edificio'
+
+class Edificio(models.Model):
+    id_edificio = models.AutoField(primary_key=True)
+    nombre_edificio = models.CharField(max_length=70)
+    direccion_edificio = models.CharField(max_length=70)
+    cuit_edificio = models.CharField(max_length=11)
+    id_tipo_edificio = models.ForeignKey('TipoEdificio', models.DO_NOTHING, db_column='id_tipo_edificio')
+    id_cliente = models.ForeignKey(Cliente, models.DO_NOTHING, db_column='id_cliente')
+
+    class Meta:
+        managed = False
+        db_table = 'edificio'

@@ -9,7 +9,7 @@ urlpatterns = [
     path('agregarServicio/', views.agregarServicio, name='agregarServicio'),
     path('eliminarCategoria/<id_categoria>', views.eliminarCategoria, name='eliminarCategoria'),
     path('eliminarServicio/<id_servicio>', views.eliminarServicio, name='eliminarServicio'),
-    path('editarServicio/<int:id_servicio>/', views.editarServicio, name='editar_servicio'),
+    path('editarServicio/<int:id_servicio>/', views.editarServicio, name='editarServicio'),
     path('buscarServicioOCategoria/', views.buscarServicioOCategoria, name='buscar_servicio_categoria'),
     path('aumentarPrecio/', views.aumentarPrecio, name='aumentarPrecio'),
 ]
