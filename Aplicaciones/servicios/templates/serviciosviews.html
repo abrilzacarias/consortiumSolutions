@@ -2,55 +2,93 @@
 
 <head>
   <title>Servicios</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  
   {% load static %}
-  <link rel="stylesheet" href="{% static 'css/serviciosviews.css' %}">
+  
+
+  <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <script src="https://kit.fontawesome.com/05c2be17c9.js" crossorigin="anonymous"></script>
-  <script src="{% static 'js/servicios.js' %}"></script>
-  <script src="{% static 'js/validaciones_servicios.js' %}"></script>
-
+ 
+  
   <style>
+    .modal {
+        display: none;
+        position: fixed;
+        inset: 0;
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        background: rgba(0, 0, 0, 0.5);
+    }
+    .modal-content {
+        background: white;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        max-width: 600px;
+        width: 100%;
+    }
+    .modal.show {
+        display: flex;
+    }
     .form-group {
-        margin-bottom: 2rem; 
+        margin-bottom: 2rem; /* Ajustar el margen inferior para más espacio entre grupos */
     }
     .invalid-feedback {
         display: none;
         color: red;
-        margin-top: 0.5rem; 
+        margin-top: 0.5rem; /* Añadir margen superior para separarlo del input */
     }
     .is-invalid ~ .invalid-feedback {
         display: block;
     }
-    .d-flex.align-items-center {
-        flex-direction: column;
-        align-items: flex-start;
+    /* Estilo para el placeholder en los campos de entrada */
+    ::placeholder {
+      color: #aaa;
+      opacity: 1; /* Asegura que el color se aplique con la opacidad correcta */
     }
-    .d-flex.align-items-center > .form-control {
-        width: 100%;
-    }
+    
+
 </style>
+
 
 </head>
 
-<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content bg-success text-white"> 
-          <div class="modal-header">
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body" id="message-content">
-              <div id="messages-container">
-                  {% if messages %}
-                      {% for message in messages %}
-                          <div class="message text-success">{{ message }}</div>
-                      {% endfor %}
-                  {% endif %}
-              </div>
-          </div>
-      </div>
-  </div>
+<!-- Small Modal -->
+<div id="small-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
+                <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+                    ANUNCIO
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="small-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
+                <button data-modal-hide="small-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Aceptar</button>
+            </div>
+        </div>
+    </div>
 </div>
+
 
 <div class="navbar navbar-expand-lg " id="searchbar">
   <div class="navbar bg-dark">
@@ -66,7 +104,7 @@
     </form>
   </div>
 </div>
-
+<body > 
 {% if serviciosBusqueda or categoriasBusqueda %}
     <h3>Resultados de la búsqueda:</h3>
     <table class="table">
@@ -108,273 +146,282 @@
 {% endif %}
 
 {% if not serviciosBusqueda or categoriasBusqueda %}
-<div class="accordion accordion-flush" id="accordionPanelsStayOpenExample">
-  <div class="group">
-    <h2 class="text-light">Categoría de Servicios</h2>
-    <div class="btn-group" role="group" aria-label="Botones de acción">
-      <button type="button" class="btn btn-success btn-categoria btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarCategoriaModal">
-        Agregar Categoría
-      </button>
-      <button type="button" class="btn btn-secondary btn-categoria btn-agregar" data-bs-toggle="modal" data-bs-target="#aumentarPrecioModal{{ categoria.id_categoria_servicio }}">
-        Aumentar Precio Base
-      </button>
+<div class="container mx-auto p-5">
+    <div class="flex items-center justify-between mb-4">
+        <h2 class="text-2xl font-bold mb-4 text-white">Categoría de Servicios</h2>
+        <div class="btn-group flex space-x-2" role="group" aria-label="Botones de acción">
+            <button id="defaultModalButton" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addCategoriaModal').classList.toggle('show')" type="button">
+              Agregar Categoría
+            </button>
+            <button id="defaultModalButton" class="block text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-blue-600 dark:hover:bg-blue-700 " onclick="document.getElementById('aumentarPrecioModal').classList.toggle('show')" type="button">
+              Aumentar Precio Base
+            </button>
+          </div>
     </div>
-  </div>
-</div>
-
-<div class="modal fade" id="agregarCategoriaModal" tabindex="-1" aria-labelledby="agregarCategoriaModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header bg-dark">
-        <h5 class="modal-title text-light" id="exampleModalLabel">Agregar Categoría de Servicio</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body bg-dark text-light">
-        <form id="agregarCategoriaForm" action="{% url 'servicios:agregarCategoria' %}" method="POST"> {% csrf_token %}
-          <div class="form-group row mb-3">
-            <label for="categoria" class="col-sm-3 col-form-label">Nombre de la categoría:</label>
-            <div class="col-sm-9 d-flex align-items-center"> 
-              <input type="text" class="form-control" id="categoria" name="categoria" placeholder="Ingrese la categoría" minlength="4" required>
-              <div class="invalid-feedback"></div>
+    
+    <!-- Add Categoria Modal -->
+    <div id="addCategoriaModal" class="modal ">
+        <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+            
+            <div class="flex justify-between items-center mb-4">
+                
+                <h5 class="text-lg">Agregar Categoria </h5>
+                <button type="button" class="text-white" onclick="document.getElementById('addCategoriaModal').classList.remove('show')">&times;</button>
             </div>
-          </div>
-          <div class="modal-footer bg-dark text-light">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-            <button type="submit" class="btn btn-success">Agregar categoría</button>
-          </div>
-        </form>
-      </div>
+            <div>
+                <form id="agregarCategoriaForm" action="{% url 'servicios:agregarCategoria' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="categoria" class="block mb-1">Categoria:</label>
+                        <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="categoria" name="categoria" placeholder="Ingrese el nombre de la categoria" required>
+                        <div class="invalid-feedback text-red-500 mt-1"></div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('addCategoriaModal').classList.remove('show')">Cerrar</button>
+                        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Agregar Categoria</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
-  </div>
+    
+<!-- Aumentar Precio Modal -->
+<div id="aumentarPrecioModal" class="modal ">
+    <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+        
+        <div class="flex justify-between items-center mb-4">
+            
+            <h5 class="text-lg">Aumentar Precio de {{categoria.nombre_categoria_servicio}} </h5>
+            <button type="button" class="text-white" onclick="document.getElementById('aumentarPrecioModal').classList.remove('show')">&times;</button>
+        </div>
+        <div>
+            <form id="aumentarPrecioForm" action="{% url 'servicios:aumentarPrecio' %}" method="POST">
+                {% csrf_token %}
+                <div class="mb-4">
+                    <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="categoria" name="categoria" required>
+                        {% for categoria in categorias %}
+                            <option value="{{ categoria.id_categoria_servicio }}">{{ categoria.nombre_categoria_servicio }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-4">
+                    <label for="porcentaje_aumento" class="block mb-1">Porcentaje:</label>
+                    <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="porcentaje_aumento" name="porcentaje_aumento" placeholder="Ingrese el % que desea aumentar" required>
+                    <div class="invalid-feedback text-red-500 mt-1"></div>
+                </div>
+                <div class="flex justify-end">
+                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('aumentarPrecioModal').classList.remove('show')">Cerrar</button>
+                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Aceptar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
 </div>
 
-<div class="modal fade" id="aumentarPrecioModal" tabindex="-1" aria-labelledby="aumentarPrecioModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-      <div class="modal-content">
-          <div class="modal-header bg-dark">
-              <h5 class="modal-title text-light" id="aumentarPrecioModalLabel">Aumentar Precio Base</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-          </div>
-          <div class="modal-body bg-dark text-light">
-            <form id="form-aumentar-precio" method="post" action="{% url 'servicios:aumentarPrecio' %}">
-              {% csrf_token %}
-                  <div class="form-group row mb-3">
-                      <label for="categoria" class="col-sm-3 col-form-label">Categoría:</label>
-                      <div class="col-sm-9">
-                          <select class="form-control" id="categoria" name="categoria" required>
-                              {% for categoria in categorias %}
-                                  <option value="{{ categoria.id_categoria_servicio }}">{{ categoria.nombre_categoria_servicio }}</option>
-                              {% endfor %}
-                          </select>
-                      </div>
+    {% for categoria in categorias %}
+    <div id="accordion-arrow-icon-{{ forloop.counter }}" data-accordion="collapse">
+        <h2 id="accordion-arrow-icon-heading-{{ forloop.counter }}">
+            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-gray-900 bg-gray-900 border border-b-0 border-gray-800 rounded-t-xl focus:ring-4 focus:ring-gray-800 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800" 
+                data-accordion-target="#accordion-arrow-icon-body-{{ forloop.counter }}" 
+                aria-expanded="true" 
+                aria-controls="accordion-arrow-icon-body-{{ forloop.counter }}">
+                <span>{{ categoria.nombre_categoria_servicio }} </span>
+                <svg data-accordion-icon class="w-3 h-3 rotate-180 shrink-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
+                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5 5 1 1 5"/>
+                </svg>
+            </button>
+        </h2>
+        
+        <div id="accordion-arrow-icon-body-{{ forloop.counter }}" class="hidden bg-gray-800"  aria-labelledby="accordion-arrow-icon-heading-{{ forloop.counter }}">
+            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+                <div class="flex justify-end items-center mb-6 space-x-2">
+                    <!-- Button trigger modal -->
+                    <a href="eliminarCategoria/{{categoria.id_categoria_servicio}}" 
+           onclick="return confirm('¿Está seguro de que desea eliminar esta categoría?');"
+           class="block text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+           Eliminar Categoría de {{categoria.nombre_categoria_servicio}}
+        </a>
+                    <button id="defaultModalButton-{{ forloop.counter }}" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.toggle('show')" type="button">
+                        Agregar Servicio a {{categoria.nombre_categoria_servicio}} {{ categoria.id_categoria_servicio }}
+                      </button>
                   </div>
-                    <div class="form-group row mb-3">
-                        <label for="porcentaje_aumento" class="col-sm-3 col-form-label">Porcentaje de Aumento:</label>
+        
+                  <!-- Add Servicio Modal -->
+                <div id="addServicioModal-{{ forloop.counter }}" class="modal hidden">
+        <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+            
+            <div class="flex justify-between items-center mb-4">
+                
+                <h5 class="text-lg">Agregar Servicio </h5>
+                <button type="button" class="text-white" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">&times;</button>
+            </div>
+            <div>
+                <form id="agregarServicioForm-{{ forloop.counter }}" action="{% url 'servicios:agregarServicio' %}" method="POST">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label for="nombre_servicio" class="block mb-1">Servicio:</label>
+                        <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="nombre_servicio" name="nombre_servicio" placeholder="Ingrese el nombre del servicio" required>
+                        <div class="invalid-feedback text-red-500 mt-1"></div>
+                    </div>
+                    <div class="mb-4">
+                        <label for="requiere_pago" class="block mb-1">¿Requiere pago?</label>
                         <div class="col-sm-9">
-                          <input type="number" class="form-control" id="porcentaje_aumento" name="porcentaje_aumento" placeholder="Ingrese el porcentaje de aumento" required min="1" value="1">
+                          <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
+                            <option value="1">Sí</option>
+                            <option value="0">No</option>
+                          </select>
                         </div>
                     </div>
-                  <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                      <button type="submit" class="btn btn-success">Guardar cambios</button>
-                  </div>
-              </form>
-          </div>
-      </div>
-  </div>
-</div>
-
-  </div>
-  {% for categoria in categorias %}
-  <div class="accordion-item ">
-    <h2 class="accordion-header" id="panelsStayOpen-heading{{ categoria.id_categoria_servicio }}">
-      <button id="bg-btn" class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" aria-expanded="true" aria-controls="panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" style="color: #ffffff !important;">
-        {{ categoria.nombre_categoria_servicio }}
-      </button>
-    </h2>
-    <div id="panelsStayOpen-collapse{{ categoria.id_categoria_servicio }}" class="accordion-collapse bg-dark collapse {% if forloop.first %}show{% endif %}" aria-labelledby="panelsStayOpen-heading{{ categoria.id_categoria_servicio }}">
-      <button type="button" class="btn btn-success btn-agregar" data-bs-toggle="modal" data-bs-target="#agregarServicioModal{{ categoria.id_categoria_servicio }}">
-        Agregar Servicio a {{ categoria.nombre_categoria_servicio}}
-      </button>
-
-      <div class="modal fade" id="agregarServicioModal{{ categoria.id_categoria_servicio }}" tabindex="-1" aria-labelledby="agregarServicioModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-          <div class="modal-content">
-            <div class="modal-header bg-dark text-light">
-              <h5 class="modal-title" id="agregarServicioModalLabel">Agregar Servicio a {{ categoria.nombre_categoria_servicio}}</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="mb-4"> 
+                        <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
+                        <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="precio_base_servicio" name="precio_base_servicio" placeholder="Ingrese el precio base del servicio" required>
+                        <div class="invalid-feedback text-red-500 mt-1"></div>
+                    </div>
+                    <div class="flex justify-end">
+                        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">Cerrar</button>
+                        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Agregar Servicio</button>
+                    </div>
+                    <input type="hidden" id="categoria_id" name="categoria_id" value="{{ categoria.id_categoria_servicio }}">
+                </form>
             </div>
-            <div class="modal-body bg-dark text-light">
-              <form id="agregarServicioForm" action="agregarServicio/" method="POST"> 
-                {% csrf_token %}
-                <div class="form-group row mb-3">
-                  <label for="nombre_servicio" class="col-sm-3 col-form-label">Nombre del Servicio:</label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" id="nombre_servicio" name="nombre_servicio" placeholder="Ingrese el nombre" minlength="4" required>
-                    <div class="invalid-feedback"></div>
-                  </div>
-                </div>
-                <div class="form-group row mb-3">
-                  <label for="requiere_pago_agregar" class="col-sm-3 col-form-label">¿Requiere pago?</label>
-                  <div class="col-sm-9">
-                    <select class="form-control bg-dark text-light" id="requiere_pago_agregar" name="requiere_pago" required>
-                      <option value="1">Sí</option>
-                      <option value="0">No</option>
-                    </select>
-                  </div>
-                </div>
-                <div class="form-group row mb-3">
-                  <label for="precio_base_agregar" class="col-sm-3 col-form-label">Precio Base:</label>
-                  <div class="col-sm-9">
-                    <input type="number" class="form-control" id="precio_base_agregar" name="precio_base" placeholder="Ingrese el precio base" required min="0">
-                  </div>
-                </div>
-                <div class="form-group row mb-3">
-                  <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
-                  <div class="col-sm-9">
-                    <input type="text" class="form-control" id="categoria_servicio" name="categoria_servicio" value="{{ categoria.nombre_categoria_servicio }}" readonly>
-                    <input type="hidden" name="categoria_id" value="{{ categoria.id_categoria_servicio }}">
-                  </div>
-                </div>
-                <div class="modal-footer bg-dark text-light">
-                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                  <button type="submit" class="btn btn-success">Agregar Servicio</button>
-                </div>
-              </form>
-            </div>
-          </div>
         </div>
-      </div>
-      
+        
+        </div>
+        
 
-      <a class="btn btn-danger btn-agregar" href="eliminarCategoria/{{categoria.id_categoria_servicio}}" onclick="return confirm('¿Está seguro de que desea eliminar esta categoría?');">Eliminar Categoría de {{categoria.nombre_categoria_servicio}}</a>
-      <div class="accordion-body">
-        <table class="table table-dark">
-          <thead>
-              <tr>
-                  <th scope="col">Nombre</th>
-                  <th scope="col">¿Requiere pago?</th>
-                  <th scope="col">Precio Base</th>
-                  <th scope="col">Acciones</th>
-              </tr>
-          </thead>
-          <tbody id="tabla-resultados">
-            {% for servicio in categoria.servicio_set.all %}
-              <tr>
-                  <td>{{ servicio.nombre_servicio }}</td>
-                  <td> {% if servicio.requiere_pago_servicio %}
-                    Sí
-                  {% else %}
-                    No
-                  {% endif %}</td>
-                  <td>{{ servicio.precio_base_servicio|default:"-"  }}</td>
-                  <td>
+
+                <table class="min-w-full bg-gray-800 text-white">
+                    <thead>
+                        <tr style="text-align: left;">
+                            <th>Servicio</th>
+                            <th>Requiere pago</th>
+                            <th>Precio Base</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for servicio in categoria.servicio_set.all  %}
+                        {%if servicio.estado_servicio == 1 %}
                     
-                  
-<button type="button" class="btn btn-modificar" data-id="{{ servicio.id_servicio }}" data-categoria="{{ servicio.categoria.id_categoria_servicio }}" data-bs-toggle="modal" data-bs-target="#modificarServicioModal{{ servicio.id_servicio }}">
-                      <img class="edit icon" alt="" src="{% static 'public/edit.svg' %}" />
-                  </button>
-                  
-<div class="modal fade" id="modificarServicioModal{{ servicio.id_servicio }}" tabindex="-1" aria-labelledby="modificarServicioModal{{ servicio.id_servicio }}" aria-hidden="true">
-                      <div class="modal-dialog">
-                          <div class="modal-content">
-                              <div class="modal-header bg-dark text-light">
-                                  <h5 class="modal-title" id="exampleModalLabel">Modificar Servicio de {{ servicio.nombre_servicio }}</h5>
-                                  <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                  
-                              </div>
-                              <div class="modal-body bg-dark text-light">
-                                  <form id="editarServicioForm"  action="{% url 'servicios:editar_servicio' servicio.id_servicio %}" method="POST">
-                                      {% csrf_token %}
-                                      <div class="form-group row mb-3">
-                                          <label for="nombre_servicio" class="col-sm-3 col-form-label">Nombre del Servicio:</label>
-                                          <div class="col-sm-9">
-                                              <input value="{{ servicio.nombre_servicio }}" type="text" class="form-control" id="nombre_servicio_editar" name="nombre_servicio" placeholder="Ingrese el nombre" minlength="4" required>
-                                          </div>
-                                      </div>
-                                      <div class="form-group row mb-3">
-                                          <label for="requiere_pago_editar" class="col-sm-3 col-form-label">¿Requiere pago?</label>
-                                          <div class="col-sm-9">
-                                              <select class="form-control" id="requiere_pago_editar" name="requiere_pago_editar" required>
-                                                  <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
-                                                  <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
-                                              </select>
-                                          </div>
-                                      </div>
-                                      <div class="form-group row mb-3">
-                                        <label for="precio_base_editar" class="col-sm-3 col-form-label">Precio Base:</label>
-                                        <div class="col-sm-9 d-flex align-items-center">
-                                            <input value="{{ servicio.precio_base_servicio }}" type="number" class="form-control" id="precio_base_editar" name="precio_base" placeholder="Ingrese el precio base" required min="0">
+                            <tr>
+                                <td>{{ servicio.nombre_servicio }}</td>
+                                <td>{{ servicio.requiere_pago_servicio|yesno:"Sí,No" }}</td>
+                                <td>{{ servicio.precio_base_servicio|default:"-" }}</td>
+                                <td>
+                                    <div class="flex items-center space-x-2">
+                                        <a class="btn btn-eliminar" data-id="{{ servicio.id_servicio }}" href="eliminarServicio/{{servicio.id_servicio}}" onclick="return confirm('¿Está seguro de que desea dar de baja este servicio?');">
+                                            <img class="delete" alt="" src="{% static 'public/delete.svg' %}"/>
+                                        </a>
+                                        <button id="defaultModalButton" class="block text-white focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-md px-2 py-2 text-right" onclick="document.getElementById('editServicioModal{{ servicio.id_servicio }}').classList.add('show')" type="button">
+                                            <img class="edit icon" alt="" src="{% static 'public/edit.svg' %}" />
+                                        </button>
+                                        </div>
+
+                                        <!-- Editar Servicio Modal -->
+                                    <div id="editServicioModal{{ servicio.id_servicio }}" class="modal">
+                                        <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+                                        <div class="flex justify-between items-center mb-4">
+                                            <h5 class="text-lg">Editar Servicio</h5>
+                                            <button type="button" class="text-white" onclick="document.getElementById('editServicioModal{{ servicio.id_servicio }}').classList.remove('show')">&times;</button>
+                                        </div>
+                                        <div>
+                                            <form id="editServicioModal{{ servicio.id_servicio }}" action="{% url 'servicios:editarServicio' servicio.id_servicio %}" method="POST">
+                                            {% csrf_token %}
+                                            <div class="mb-4">
+                                                <label for="nombre_servicio" class="block mb-1">Servicio:</label>
+                                                <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="nombre_servicio" name="nombre_servicio" value="{{ servicio.nombre_servicio }}" required placeholder="Ingrese el nombre del servicio">
+                                                <div class="invalid-feedback text-red-500 mt-1"></div>
+                                            </div>
+                                            <div class="mb-4">
+                                                <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
+                                                    <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
+                                                    <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
+                                                </select>
+                                            <div class="mb-4">
+                                                <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
+                                                <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="precio_base_servicio" name="precio_base_servicio" value="{{ servicio.precio_base_servicio }}" required placeholder="Ingrese el precio de base">
+                                                <div class="invalid-feedback text-red-500 mt-1"></div>
+                                            </div>
+                                            <div class="mb-4"></div>
+                                                <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
+                                                <div class="col-sm-9">
+                                                    <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="categoria_servicio" name="categoria_servicio" required>
+                                                        {% for categoria in categorias %}
+                                                        <option value="{{ categoria.id_categoria_servicio }}" 
+                                                        {% if categoria.id_categoria_servicio == servicio.id_categoria_servicio_id %} 
+                                                            selected 
+                                                        {% endif %}>
+                                                        {{ categoria.nombre_categoria_servicio }}
+                                                    </option>
+                                                        {% endfor %}
+                                                    </select>
+                                                    
+                                                </div>
+                                            <div class="flex justify-end">
+                                                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('editServicioModal{{ servicio.id_servicio }}').classList.remove('show')">Cerrar</button>
+                                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
+                                            </div>
+                                            
+                                            </form>
+                                        </div>
                                         </div>
                                     </div>
-                                      <div class="form-group row mb-3">
-                                          <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
-                                          <div class="col-sm-9">
-                                              <select class="form-control" id="categoria_servicio" name="categoria_servicio" required>
-                                                  {% for categoria in categorias %}
-                                                  <option value="{{ categoria.id_categoria_servicio }}" 
-                                                  {% if categoria.id_categoria_servicio == servicio.id_categoria_servicio_id %} 
-                                                      selected 
-                                                  {% endif %}>
-                                                  {{ categoria.nombre_categoria_servicio }}
-                                              </option>
-                                                  {% endfor %}
-                                              </select>
-                                              
-                                          </div>
-                                          
-                                      </div>
-                                      <div class="modal-footer bg-dark text-light">
-                                          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                          <button type="submit" class="btn btn-success">Editar Servicio</button>
-                                      </div>
-                                  </form>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-                      
-                      <a class="btn btn-eliminar" data-id="{{ servicio.id_servicio }}" href="eliminarServicio/{{servicio.id_servicio}}" onclick="return confirm('¿Está seguro de que desea eliminar este servicio?');">
-                        <img
-          class="delete"
-          alt=""
-          src="{% static 'public/delete.svg' %}"
-        />
-                      </a>
-                  </td>
-              </tr>
-              {% endfor %}
-          </tbody>
-      </table>
-      </div>
+
+                                    </div>
+                       
     </div>
-  </div>
-  {% endfor %}
-</div>  
+                                </td>
+                                {% endif %}
+                            </tr>
+                            
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endfor %}
+</div>
+
 {% endif %}
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-      var messageModal = new bootstrap.Modal(document.getElementById('messageModal'));
+    function showModal() {
+        const modal = document.getElementById('small-modal');
+        modal.classList.remove('hidden');
+    }
 
-      function showMessage(message) {
-          var messageContent = document.getElementById('message-content');
-          messageContent.innerHTML = message;
-          messageModal.show();
+    // Función para ocultar el modal
+    function hideModal() {
+        const modal = document.getElementById('small-modal');
+        modal.classList.add('hidden');
+    }
 
-          setTimeout(function() {
-              messageModal.hide();
-          }, 5000); // Oculta el modal después de 5 segundos
-      }
+    // Evento que se ejecuta cuando el DOM está completamente cargado
+    document.addEventListener('DOMContentLoaded', function () {
+        // Mostrar el modal si hay mensajes
+        const hasMessages = {{ messages|yesno:"true,false" }};
 
-      // Verifica si hay mensajes para mostrar
-      var messages = document.querySelectorAll('.message');
-      if (messages.length > 0) {
-          messages.forEach(function(message) {
-              showMessage(message.textContent);
-          });
-      }
-  });
-  
+        if (hasMessages) {
+            showModal();
+        }
+
+        // Agregar evento de clic al botón de cerrar
+        const closeButtons = document.querySelectorAll('[data-modal-hide="small-modal"]');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', hideModal);
+        });
+
+        // Cerrar el modal al hacer clic fuera de él
+        window.addEventListener('click', function(event) {
+            const modal = document.getElementById('small-modal');
+            if (event.target === modal) {
+                hideModal();
+            }
+        });
+    });
 </script>
+
 {% endblock %}
