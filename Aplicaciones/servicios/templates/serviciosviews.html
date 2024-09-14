@@ -233,9 +233,6 @@
         </div>
         
         </div>
-        
-
-
                 <table class="min-w-full bg-gray-800 text-white">
                     <thead>
                         <tr style="text-align: left;">
@@ -246,11 +243,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for servicio in categoria.servicio_set.all  %}
+                        
+                        {% for servicio in categoria.servicios.all  %}
+                        
                         {%if servicio.estado_servicio == 1 %}
                     
                             <tr>
-                                <td>{{ servicio.nombre_servicio }}</td>
+                                <td>{{ servicio.nombre_servicio }} </td>
                                 <td>{{ servicio.requiere_pago_servicio|yesno:"Sí,No" }}</td>
                                 <td>{{ servicio.precio_base_servicio|default:"-" }}</td>
                                 <td>
