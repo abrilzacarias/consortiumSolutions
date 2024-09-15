@@ -80,14 +80,6 @@ def editarEmpleado(request, id_empleado):
         direccion_persona = request.POST.get('direccion_persona_editar')
         id_tipo_empleado = request.POST.get('tipo_empleado_editar')
 
-        # Agregar print para ver los datos principales
-        print("Datos de la persona:")
-        print("Nombre:", nombre_persona)
-        print("Apellido:", apellido_persona)
-        print("CUIT/CUIL:", cuitl_persona)
-        print("Dirección:", direccion_persona)
-        print("Tipo de Empleado:", id_tipo_empleado)
-
         # Recopilación de los contactos existentes y nuevos
         contactos_data = []
         for key, value in request.POST.items():
@@ -95,29 +87,43 @@ def editarEmpleado(request, id_empleado):
                 contacto_id = key.split('_')[-1]
                 tipo_contacto_id = value
                 descripcion_contacto = request.POST.get(f'contacto_{contacto_id}')
-                contactos_data.append({
-                    'id_contacto': contacto_id,
-                    'tipo_contacto_id': tipo_contacto_id,
-                    'descripcion_contacto': descripcion_contacto
-                })
+                
+                # Solo agregamos si la descripción no está vacía
+                if descripcion_contacto:
+                    contactos_data.append({
+                        'id_contacto': contacto_id,  # Mantén el ID si es un contacto existente
+                        'tipo_contacto_id': tipo_contacto_id,
+                        'descripcion_contacto': descripcion_contacto
+                    })
 
-            elif key.startswith('nuevo_contacto_tipo_'):  
+            elif key.startswith('nuevo_contacto_tipo_'):
                 tipo_contacto_id = value.split('_')[-1]
-                unique_id = key.split('_')[-1]  
+                unique_id = key.split('_')[-1]
                 descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
-                contactos_data.append({
-                    'id_contacto': None,
-                    'tipo_contacto_id': tipo_contacto_id,
-                    'descripcion_contacto': descripcion_contacto
-                })
+                
+                if descripcion_contacto:
+                    contactos_data.append({
+                        'id_contacto': None,  # Nuevo contacto, sin ID
+                        'tipo_contacto_id': tipo_contacto_id,
+                        'descripcion_contacto': descripcion_contacto
+                    })
 
         # Agregar print para ver los contactos que están llegando
         print("Datos de contacto editados o nuevos:", contactos_data)
 
         # Llamada al método para actualizar el empleado
-        Empleado().editarEmpleado(id_empleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado, contactos_data)
+        Empleado().editarEmpleado(
+            id_empleado,
+            nombre_persona,
+            apellido_persona,
+            cuitl_persona,
+            direccion_persona,
+            id_tipo_empleado,
+            contactos_data  # Pasa todos los contactos para su procesamiento
+        )
 
     return redirect('empleados:home')
+
 
 
 

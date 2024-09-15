@@ -249,8 +249,6 @@ class Empleado(models.Model):
             return False
 
 
-
-
     def eliminarEmpleado(self, idEmpleado):
         try:
             with connection.cursor() as cursor:
