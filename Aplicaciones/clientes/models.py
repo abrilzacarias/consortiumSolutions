@@ -1,9 +1,7 @@
 from django.db import models
 from django.db import connection
 from django.utils import timezone
-
-
-from django.utils import timezone
+from datetime import datetime
 
 
 # Obtener la fecha y hora actual en la zona horaria local
@@ -54,7 +52,7 @@ class Cliente(models.Model):
     conversion_cliente = models.IntegerField()
     id_persona = models.ForeignKey('Persona', models.DO_NOTHING, db_column='id_persona')
     id_matricula = models.ForeignKey('Matricula', models.DO_NOTHING, db_column='id_matricula', blank=True, null=True)
-
+    id_empleado = models.ForeignKey('empleados.Empleado', models.DO_NOTHING, db_column='id_empleado', blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'cliente'
@@ -79,7 +77,7 @@ class Clientes():
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, vendedor_asignado=None):
+    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado):
         nombre = nombre_cliente.capitalize()
         apellido = apellido_cliente.capitalize()
         try:
@@ -98,8 +96,8 @@ class Clientes():
                 idMatricula = cursor.lastrowid  
                 connection.commit()
 
-                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
-                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
+                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula, id_empleado) VALUES (%s, %s, %s, %s, %s);"
+                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula, empleado_asignado])
                 idCliente = cursor.lastrowid  
                 connection.commit()
 
@@ -108,11 +106,11 @@ class Clientes():
                     cursor.execute(sqlInsertarContacto, [contacto, tipo_contacto, idPersona])
                     connection.commit()
                 # Verificar si el vendedor actual es nulo para permitir la edición del vendedor asignado
-                if vendedor_asignado == '':
-                    vendedor_asignado = None
+                if empleado_asignado == '':
+                    empleado_asignado = None
                     
-                if vendedor_asignado is not None:
-                    if self.agregarDesignacionVendedor(vendedor_asignado, idCliente):
+                if empleado_asignado is not None:
+                    if self.agregarDesignacionVendedor(empleado_asignado, idCliente):
                         print("Designación de vendedor agregada exitosamente.")
                     else:
                         print("Hubo un error al agregar la designación de vendedor.")
@@ -123,7 +121,7 @@ class Clientes():
             return None
 
         
-    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
+    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data, id_empleado):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT id_persona, id_matricula FROM cliente WHERE id_cliente = %s;
@@ -152,9 +150,10 @@ class Clientes():
             cursor.execute("""
                 UPDATE cliente SET
                     clave_afgip_cliente = %s,
-                    conversion_cliente = %s
+                    conversion_cliente = %s, 
+                    id_empleado = %s
                 WHERE id_cliente = %s;
-            """, [clave_afgip_cliente, tipo_cliente, id_cliente])
+            """, [clave_afgip_cliente, tipo_cliente, id_empleado, id_cliente])
 
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
@@ -180,16 +179,14 @@ class Clientes():
         
     def eliminarCliente(self, id_cliente):
         with connection.cursor() as cursor:
+            # Actualiza la fecha de baja del cliente en lugar de eliminar
             cursor.execute("""
-                SELECT id_persona FROM cliente WHERE id_cliente = %s;
-            """, [id_cliente])
-            id_persona = cursor.fetchone()[0]
-
-            cursor.execute("DELETE FROM edificio WHERE id_cliente = %s;", [id_cliente])
-            cursor.execute("DELETE FROM cliente WHERE id_cliente = %s;", [id_cliente])
-            cursor.execute("DELETE FROM contacto WHERE id_persona = %s;", [id_persona])
-            cursor.execute("DELETE FROM persona WHERE id_persona = %s;", [id_persona])
-    
+                UPDATE cliente
+                SET fecha_baja_cliente = %s
+                WHERE id_cliente = %s;
+            
+        """, [current_datetime, id_cliente])
+            
     def agregarEdificio(self, nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio, id_cliente):
         try:
             with connection.cursor() as cursor:
@@ -214,21 +211,22 @@ class Clientes():
                 raise ValueError("No se encontró un cliente con el id_cliente proporcionado.")
             return idpersona
         
-    def agregarDesignacionVendedor(self, id_vendedor, id_cliente):
+    def agregarDesignacionVendedor(self, empleado_asignado, id_cliente):
         try:
             with connection.cursor() as cursor:
-                # Define la consulta SQL para insertar una nueva designación de vendedor
+                current_datetime = datetime.now()  # Asegúrate de que esta variable esté definida y tenga el formato correcto
                 sql_insert = """
-                    INSERT INTO designacion (id_vendedor, id_cliente, fecha_alta_designacion)
-                    VALUES (%s, %s, %s)
+                    INSERT INTO designacion (id_empleado, id_cliente, fecha_alta_designacion, id_administrador)
+                    VALUES (%s, %s, %s, %s)
                 """
-                # Ejecuta la consulta SQL con los parámetros proporcionados
-                cursor.execute(sql_insert, [id_vendedor, id_cliente, current_datetime])
+                id_administrador = 1
+                cursor.execute(sql_insert, [empleado_asignado, id_cliente, current_datetime, id_administrador])
                 connection.commit()
                 return True
         except Exception as e:
             print("Error al insertar designación de vendedor:", str(e))
             return False
+
         
     def eliminarDesignacionVendedor(self, id_cliente, id_vendedor):
         try:
@@ -237,7 +235,7 @@ class Clientes():
                 cursor.execute("""
                     UPDATE designacion 
                     SET fecha_baja_designacion = %s 
-                    WHERE id_cliente = %s AND id_vendedor = %s AND fecha_baja_designacion IS NULL;
+                    WHERE id_cliente = %s AND id_empleado = %s AND fecha_baja_designacion IS NULL;
                 """, [current_datetime, id_cliente, id_vendedor])
 
                 # Guardar los cambios en la base de datos

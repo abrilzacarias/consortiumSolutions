@@ -1,38 +1,35 @@
+document.addEventListener('DOMContentLoaded', function() {
+  const addContactBtn = document.getElementById('addContactBtnAdd');
+  const contactsContainer = document.getElementById('contactsContainerAdd');
 
-$(document).ready(function() {
-  $('.js-example-basic-single').select2({
-    width: '100%', // need to override the changed default
-    height: '100%'
+  function createContactInputGroup() {
+      const newContactGroup = document.createElement('div');
+      newContactGroup.className = 'flex items-center space-x-2';
+      newContactGroup.innerHTML = `
+          <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto[]">
+              <option value="1">Correo Electrónico</option>
+              <option value="2">Teléfono</option>
+              <option value="3">Página Web</option>
+          </select>
+          <input type="text" class="flex-1 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="contacto[]" placeholder="Ingrese el contacto" required>
+          <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-contact-btn">-</button>
+      `;
+      return newContactGroup;
+  }
+
+  function addContact() {
+      const newContactGroup = createContactInputGroup();
+      contactsContainer.appendChild(newContactGroup);
+  }
+
+  if (addContactBtn) {
+      addContactBtn.addEventListener('click', addContact);
+  }
+
+  // Event delegation for removing contact groups
+  contactsContainer.addEventListener('click', function(e) {
+      if (e.target && e.target.classList.contains('remove-contact-btn')) {
+          e.target.closest('.flex.items-center.space-x-2').remove();
+      }
   });
 });
-
-document.addEventListener("DOMContentLoaded", () => {
-  const createContactInputGroupAdd = () => {
-    const newContactAdd = document.createElement('div');
-    newContactAdd.className = 'input-group mb-3';
-
-
-    newContactAdd.innerHTML = `
-      <select class="form-control bg-dark text-light" name="tipo_contacto[]">
-        <option value="1">Correo Electrónico</option>
-        <option value="2">Teléfono</option>
-        <option value="3">URL</option>
-      </select>
-      <input type="text" class="form-control" name="contacto[]" placeholder="Ingrese el contacto" required>
-      <button type="button" class="btn btn-danger remove-contact-btn">-</button>
-    `;
-
-    newContactAdd.querySelector('.remove-contact-btn').addEventListener('click', () => {
-      newContactAdd.parentElement.removeChild(newContactAdd);
-    });
-
-    return newContactAdd;
-  };
-
-  const addContactBtnAdd = document.getElementById('addContactBtnAdd');
-  const contactsContainerAdd = document.getElementById('contactsContainerAdd');
-  addContactBtnAdd.addEventListener('click', () => {
-    const newContact = createContactInputGroupAdd();
-    contactsContainerAdd.appendChild(newContact);
-  });
-})
