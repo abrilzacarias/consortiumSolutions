@@ -105,8 +105,9 @@ def eliminarPresupuesto(request, id_presupuesto):
         detalles = DetallePresupuesto.objects.filter(id_presupuesto=presupuesto.id_presupuesto)
         print(detalles)
         if detalles.exists():
-             messages.error(request, "No se puede eliminar el presupuesto porque está referenciado en uno o más servicios.")
-            
+             detalles.delete()
+             presupuesto.delete()
+             messages.success(request, "Presupuesto y detalles eliminados con éxito.")
         else:
             presupuesto.delete()
             messages.success(request, "Presupuesto eliminado con éxito.")

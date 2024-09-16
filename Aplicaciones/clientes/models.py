@@ -52,7 +52,7 @@ class Cliente(models.Model):
     conversion_cliente = models.IntegerField()
     id_persona = models.ForeignKey('Persona', models.DO_NOTHING, db_column='id_persona')
     id_matricula = models.ForeignKey('Matricula', models.DO_NOTHING, db_column='id_matricula', blank=True, null=True)
-
+    id_empleado = models.ForeignKey('empleados.Empleado', models.DO_NOTHING, db_column='id_empleado', blank=True, null=True)
     class Meta:
         managed = False
         db_table = 'cliente'
@@ -77,7 +77,7 @@ class Clientes():
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado=None):
+    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado):
         nombre = nombre_cliente.capitalize()
         apellido = apellido_cliente.capitalize()
         try:
@@ -96,8 +96,8 @@ class Clientes():
                 idMatricula = cursor.lastrowid  
                 connection.commit()
 
-                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
-                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
+                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula, id_empleado) VALUES (%s, %s, %s, %s, %s);"
+                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula, empleado_asignado])
                 idCliente = cursor.lastrowid  
                 connection.commit()
 
@@ -121,7 +121,7 @@ class Clientes():
             return None
 
         
-    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
+    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data, id_empleado):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT id_persona, id_matricula FROM cliente WHERE id_cliente = %s;
@@ -150,9 +150,10 @@ class Clientes():
             cursor.execute("""
                 UPDATE cliente SET
                     clave_afgip_cliente = %s,
-                    conversion_cliente = %s
+                    conversion_cliente = %s, 
+                    id_empleado = %s
                 WHERE id_cliente = %s;
-            """, [clave_afgip_cliente, tipo_cliente, id_cliente])
+            """, [clave_afgip_cliente, tipo_cliente, id_empleado, id_cliente])
 
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
