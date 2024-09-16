@@ -81,8 +81,8 @@ def listarClientes(request):
             'contacto_cliente': cliente[10] if len(cliente) > 11 else '',
             'tipo_contacto': cliente[11] if len(cliente) > 12 else '',
             'edificios': edificios,  
-            'vendedor_asignado': cliente[16] if len(cliente) > 16 else '',  
-            'id_vendedor_asignado': id_vendedor_asignado,  
+            'vendedor_asignado': id_vendedor_asignado,  
+            'id_vendedor_asignado': cliente[16] if len(cliente) > 16 else '',
             'observaciones': observaciones, 
             'id_persona': idpersona
         }
@@ -106,38 +106,49 @@ def listarClientes(request):
         
     return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'empleados': empleados})
 
-
 def agregarCliente(request):
-
     if request.method == 'POST':
         nombre_cliente = request.POST.get('nombre_cliente')
         apellido_cliente = request.POST.get('apellido_cliente')
         cuitl_cliente = request.POST.get('cuitl_cliente')
         direccion_cliente = request.POST.get('direccion_cliente')
         clave_afgip_cliente = request.POST.get('clave_afgip_cliente')
-        tipo_cliente = request.POST.get('tipo_cliente')  # Convertir el valor del dropdown a un booleano
-        matricula_cliente = request.POST.get('matricula_cliente')  
+        tipo_cliente = int(request.POST.get('tipo_cliente'))  # Convertir el valor del dropdown a entero
+        matricula_cliente = request.POST.get('matricula_cliente')
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
         vendedor_asignado = request.POST.get('vendedor_asignado')
-        tipo_cliente = int(tipo_cliente)
 
         tipos_contacto = request.POST.getlist('tipo_contacto[]')
         contactos = request.POST.getlist('contacto[]')
-        print(f'hola{clave_afgip_cliente}')
         
+        print(f"VENDEDOR: {vendedor_asignado}")
+
         # Crear una lista de contactos como tuplas (tipo_contacto, contacto)
         lista_contactos = list(zip(tipos_contacto, contactos))
-        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos, vendedor_asignado)
+        
+        # Agregar el cliente y obtener el id_cliente
+        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos)
+        print(f"CLIENTE: {id_cliente}")
+        
         if id_cliente:
-            messages.success(request, 'El cliente se agregó correctamente.')
+            
+            # Ahora que tienes el id_cliente, agrega la designación del vendedor si hay uno asignado
+            if vendedor_asignado:
+                if clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
+                    messages.success(request, 'El cliente y la designación se agregaron correctamente.')
+                else:
+                    messages.error(request, 'El cliente se agregó, pero hubo un error al agregar la designación del vendedor.')
+            else:
+                messages.success(request, 'El cliente se agregó correctamente, sin designación de vendedor.')
+                
             return redirect('/clientes/')
         else:
             messages.error(request, 'Hubo un error al agregar el cliente.')
             return redirect('/clientes/')
     else:
         empleados = empleado.mostrarEmpleados()
-        print(empleados)
         return render(request, 'clientesviews.html', {'empleados': empleados})
+
 
 def editarCliente(request, id_cliente):
     if request.method == 'POST':
@@ -196,16 +207,14 @@ def editarCliente(request, id_cliente):
                 return HttpResponse("Hubo un error al agregar la nueva designación de vendedor.")
 
         # Llamar a la función editarCliente del modelo
-        if not clientes.editarCliente(id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
+        if not clientes.editarCliente(id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data, vendedor_asignado):
             return HttpResponse("Hubo un error al editar el cliente.")
 
         return redirect('/clientes/')
     else:
         cliente = clientes.obtenerClientePorId(id_cliente)
-        print(cliente)
-        
-        vendedores = vendedor.mostrarVendedor()
-        return render(request, 'editarcliente.html', {'cliente': cliente, 'empleados': empleados})
+        empleados = empleado.mostrarEmpleados()
+        return render(request, 'clientesviews.html', {'cliente': cliente, 'empleados': empleados})
 
 
 
