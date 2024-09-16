@@ -214,12 +214,11 @@ class Clientes():
     def agregarDesignacionVendedor(self, empleado_asignado, id_cliente):
         try:
             with connection.cursor() as cursor:
-                # Define la consulta SQL para insertar una nueva designación de vendedor
+                current_datetime = datetime.now()  # Asegúrate de que esta variable esté definida y tenga el formato correcto
                 sql_insert = """
                     INSERT INTO designacion (id_empleado, id_cliente, fecha_alta_designacion, id_administrador)
                     VALUES (%s, %s, %s, %s)
                 """
-                # Ejecuta la consulta SQL con los parámetros proporcionados
                 id_administrador = 1
                 cursor.execute(sql_insert, [empleado_asignado, id_cliente, current_datetime, id_administrador])
                 connection.commit()
@@ -227,6 +226,7 @@ class Clientes():
         except Exception as e:
             print("Error al insertar designación de vendedor:", str(e))
             return False
+
         
     def eliminarDesignacionVendedor(self, id_cliente, id_vendedor):
         try:
@@ -235,7 +235,7 @@ class Clientes():
                 cursor.execute("""
                     UPDATE designacion 
                     SET fecha_baja_designacion = %s 
-                    WHERE id_cliente = %s AND id_vendedor = %s AND fecha_baja_designacion IS NULL;
+                    WHERE id_cliente = %s AND id_empleado = %s AND fecha_baja_designacion IS NULL;
                 """, [current_datetime, id_cliente, id_vendedor])
 
                 # Guardar los cambios en la base de datos
