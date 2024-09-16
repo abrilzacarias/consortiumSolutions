@@ -40,14 +40,10 @@ function detallesPresupuesto(buttonElement) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    initializeSelect2Components();
-    setupClienteChangeListener();
-});
-
 function initializeSelect2Components() {
     initializeSelect2('#vendedor_asignado', '/presupuestos/vendedores/', vendedorFormatter);
     initializeSelect2('#cliente_asignado', '/presupuestos/clientes/', clienteFormatter);
+    initializeSelect2('#edificio_asignado', '/presupuestos/edificios/', edificioFormatter); // Inicializa select2 para edificios
 }
 
 function initializeSelect2(selector, url, formatter) {
@@ -59,21 +55,18 @@ function initializeSelect2(selector, url, formatter) {
             data: function(params) {
                 return {
                     q: params.term,
-                    page: params.page
+                    page: params.page || 1
                 };
             },
             processResults: function(data, params) {
                 params.page = params.page || 1;
                 return {
                     results: data.map(formatter),
-                    pagination: {
-                        more: (params.page * 30) < data.total_count
-                    }
                 };
             },
             cache: true
         },
-        placeholder: `Seleccionar`,
+        placeholder: 'Seleccionar',
         minimumInputLength: 0,
         width: '100%'
     });
@@ -93,63 +86,97 @@ function clienteFormatter(cliente) {
     };
 }
 
+function edificioFormatter(edificio) {
+    return {
+        id: edificio.id_edificio,
+        text: edificio.nombre_edificio
+    };
+}
+
 function setupClienteChangeListener() {
+    var edificioSelect = $('#edificio_asignado');
+    edificioSelect.prop('disabled', true); // Deshabilita el select durante la carga
+
     $('#cliente_asignado').on('change', function() {
         var clienteId = $(this).val();
-        var edificioSelect = document.getElementById('edificio_asignado');
         
+
         if (clienteId) {
-            edificioSelect.disabled = true;
             fetch(`/presupuestos/edificios/${clienteId}/`)
                 .then(response => response.json())
                 .then(data => {
-                    edificioSelect.innerHTML = '<option value="">Seleccione un edificio</option>';
-                    data.forEach(edificio => {
-                        var option = document.createElement('option');
-                        option.value = edificio.id_edificio;
-                        option.textContent = edificio.nombre_edificio;
-                        edificioSelect.appendChild(option);
+                    var options = data.map(edificio => ({
+                        id: edificio.id_edificio,
+                        text: edificio.nombre_edificio
+                    }));
+                    
+                    edificioSelect.select2({
+                        data: options,
+                        placeholder: 'Seleccione un edificio',
+                        minimumInputLength: 0,
+                        width: '100%'
                     });
-                    edificioSelect.disabled = false;
+
+                    edificioSelect.prop('disabled', false); // Habilita el select después de la carga
                 })
                 .catch(error => {
                     console.error('Error fetching edificios:', error);
-                    edificioSelect.innerHTML = '<option value="">Error al cargar edificios</option>';
-                    edificioSelect.disabled = false;
+                    edificioSelect.select2({
+                        data: [{ id: '', text: 'Error al cargar edificios' }],
+                        placeholder: 'Seleccione un edificio',
+                        minimumInputLength: 0,
+                        width: '100%'
+                    });
+
+                    edificioSelect.prop('disabled', false); // Habilita el select aunque haya error
                 });
         } else {
-            edificioSelect.innerHTML = '<option value="">Seleccione un cliente primero</option>';
-            edificioSelect.disabled = true;
+            edificioSelect.select2({
+                data: [{ id: '', text: 'Seleccione un cliente primero' }],
+                placeholder: 'Seleccione un edificio',
+                minimumInputLength: 0,
+                width: '100%'
+            });
+            edificioSelect.prop('disabled', true); // Deshabilita el select
         }
     });
 }
+
+// Inicializa Select2 y setup listener
 $(document).ready(function() {
-    // Inicializar select2
+    initializeSelect2Components();
+    setupClienteChangeListener();
+});
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Función para inicializar Select2
     function initSelect2(selector) {
         $(selector).select2({
             placeholder: "Seleccione un servicio",
             allowClear: true,
-            width: '100%',
         });
     }
 
     // Función para obtener las categorías y servicios
     function obtenerServicios() {
-        return $.ajax({
-            url: '/presupuestos/servicios',  // Ajusta la ruta aquí
-            method: 'GET',
-            dataType: 'json',
-        });
+        return fetch('/presupuestos/servicios')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            });
     }
 
     // Función para crear un nuevo dropdown de servicios
     function crearDropdownServicios(servicios) {
-        let selectHtml = '<select name= class="servicios[]" service-dropdown w-1/3 text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
+        let selectHtml = '<select name="servicios[]" class="select2 service-dropdown w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
         selectHtml += '<option value="">Seleccione un servicio</option>';
 
-        servicios.forEach(function(categoria) {
+        servicios.forEach(categoria => {
             selectHtml += `<optgroup label="${categoria.categoria}">`;
-            categoria.servicios.forEach(function(servicio) {
+            categoria.servicios.forEach(servicio => {
                 selectHtml += `<option value="${servicio.id}" data-precio="${servicio.precio}">${servicio.nombre} - $${servicio.precio}</option>`;
             });
             selectHtml += '</optgroup>';
@@ -161,77 +188,92 @@ $(document).ready(function() {
 
     // Función para agregar un nuevo servicio
     function agregarServicio(servicios) {
-        const serviciosContainer = $('#serviciosContainer');
-        const nuevoServicio = $(`
-            <div class="flex items-center space-x-2 w-full">
-                <div class="w-1/3">
-                    ${crearDropdownServicios(servicios)}
-                </div>
-                <div class="w-1/6">
-                    <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
-                </div>
-                <div class="w-1/5">
-                    <input name="costos[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
-                </div>
-                <div class="w-1/5">
-                    <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
-                </div>
-                <div class="w-auto">
-                    <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
-                </div>
+        const serviciosContainer = document.getElementById('serviciosContainer');
+        const nuevoServicio = document.createElement('div');
+        nuevoServicio.className = 'flex items-center space-x-2 w-full';
+        nuevoServicio.innerHTML = `
+            <div class="w-1/3">
+                ${crearDropdownServicios(servicios)}
             </div>
-        `);
-    
-        serviciosContainer.append(nuevoServicio);
-        initSelect2(nuevoServicio.find('select'));
-    }
-    
+            <div class="w-1/6">
+                <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
+            </div>
+            <div class="w-1/5">
+                <input name="costos_extra[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
+            </div>
+            <div class="w-1/5">
+                <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
+                <input type="hidden" name="precios_unitarios[]" class="precios-unitarios" value="0.00">
+                <input name="subtotales[]" type="hidden" class="subtotal-service-value" value="0.00">
+            </div>
+            <div class="w-auto">
+                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+            </div>
+        `;
 
-    // Función para calcular el total
-    function calcularTotal() {
-        let total = 0;
-
-        // Iterar sobre cada dropdown de servicios
-        $('.service-dropdown').each(function() {
-            const precioServicio = $(this).find(':selected').data('precio') || 0;
-            const cantidadServicio = parseInt($(this).closest('.flex').find('.quantity-service').val()) || 1;
-            const costoExtra = parseFloat($(this).closest('.flex').find('.extra-cost').val()) || 0;
-
-            // Calcular el subtotal para este servicio
-            const subtotal = (precioServicio * cantidadServicio) + costoExtra;
-
-            // Mostrar el subtotal en el span correspondiente
-            $(this).closest('.flex').find('.subtotal-service').text(`Subtotal: $${subtotal.toFixed(2)}`);
-
-            // Sumar el subtotal al total general
-            total += subtotal;
-        });
-
-        // Mostrar el total general
-        $('#totalCost').text('Total: $' + total.toFixed(2));
+        serviciosContainer.appendChild(nuevoServicio);
+        initSelect2(nuevoServicio.querySelector('select'));
     }
 
     // Obtener los servicios al cargar la página
-    obtenerServicios().done(function(servicios) {
-        // Inicializar el primer dropdown de servicios
-        agregarServicio(servicios);
-
-        // Al hacer clic en "Agregar Otro Servicio"
-        $('#addServiceBtn').click(function() {
+    obtenerServicios()
+        .then(servicios => {
             agregarServicio(servicios);
-        });
 
-        // Al eliminar un servicio
-        $('#serviciosContainer').on('click', '.remove-service-btn', function() {
-            $(this).closest('.flex').remove();
-            calcularTotal();  // Recalcular total
-        });
+            // Al hacer clic en "Agregar Otro Servicio"
+            const addServiceBtn = document.getElementById('addServiceBtn');
+            if (addServiceBtn) {
+                addServiceBtn.addEventListener('click', function() {
+                    agregarServicio(servicios);
+                });
+            }
 
-        // Calcular el total cada vez que se cambia un dropdown, cantidad o se ingresa un costo extra
-        $('#serviciosContainer').on('change', '.service-dropdown, .quantity-service, .extra-cost', function() {
+            // Al eliminar un servicio
+            const serviciosContainer = document.getElementById('serviciosContainer');
+            if (serviciosContainer) {
+                serviciosContainer.addEventListener('click', function(event) {
+                    if (event.target.classList.contains('remove-service-btn')) {
+                        event.target.closest('.flex').remove();
+                        calcularTotal();  // Recalcular total
+                    }
+                });
+            }
+
+            // Calcular el total cada vez que se cambia un dropdown, cantidad o se ingresa un costo extra
+            $('#serviciosContainer').on('change', '.service-dropdown, .quantity-service, .extra-cost', function() {
             calcularTotal();
         });
-    }).fail(function() {
-        console.error('Error al cargar los servicios.');
-    });
+        })
+        .catch(() => {
+            console.error('Error al cargar los servicios.');
+        });
+
 });
+
+
+function calcularTotal() {
+    let total = 0;
+    const serviceDropdowns = document.querySelectorAll('.service-dropdown');
+
+    serviceDropdowns.forEach(dropdown => {
+        // Obtener el valor seleccionado con Select2
+        const selectedValue = $(dropdown).val(); // Valor seleccionado en el dropdown
+        const selectedOption = Array.from(dropdown.options).find(option => option.value == selectedValue);
+
+        // Obtener el precio del servicio
+        const precioServicio = selectedOption ? selectedOption.dataset.precio : 0;
+        const cantidadServicio = parseInt(dropdown.closest('.flex').querySelector('.quantity-service').value) || 1;
+        const costoExtra = parseFloat(dropdown.closest('.flex').querySelector('.extra-cost').value) || 0;
+        const subtotal = (precioServicio * cantidadServicio) + costoExtra;
+
+        dropdown.closest('.flex').querySelector('.subtotal-service').textContent = `Subtotal: $${subtotal.toFixed(2)}`;
+        dropdown.closest('.flex').querySelector('.subtotal-service-value').value = subtotal.toFixed(2);
+        dropdown.closest('.flex').querySelector('.precios-unitarios').value = precioServicio;
+
+        total += subtotal;
+    });
+
+    document.getElementById('totalCost').value = total.toFixed(2); // Actualiza el valor del campo oculto
+    document.getElementById('totalCostDisplay').textContent = 'Total: $' + total.toFixed(2); // Actualiza la visualización opcional
+}
+

@@ -1,10 +1,6 @@
 from django.db import models
 from django.db import connection
-from django.utils import timezone
-from ..inicio.models import Edificio
-
-
-current_datetime = timezone.localtime(timezone.now())
+from django.utils.timezone import now
 
 from django.db import models
 
@@ -42,27 +38,76 @@ class Presupuesto(models.Model):
             presupuestos.append(presupuesto_modificado)
         return presupuestos
     
-    
-    def insertarPresupuesto(self, fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles):   
+    @classmethod
+    def insertarPresupuesto(cls, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles):   
+        current_datetime = now()  # Obtener la fecha y hora actual
         try:
-           
             with connection.cursor() as cursor:
                 sqlInsertarPresupuesto = "INSERT INTO presupuesto (fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado ) VALUES (%s, %s, %s, %s);"
-                cursor.execute(sqlInsertarPresupuesto, [fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado])
+                cursor.execute(sqlInsertarPresupuesto, [current_datetime, monto_total_presupuesto, id_edificio, id_empleado])
                 id_presupuesto = cursor.lastrowid  
                 connection.commit()
 
 
-                for cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_servicio in lista_detalles:
+                for detalle in lista_detalles:
                     sqlInsertarDetalle = "INSERT INTO detalle_presupuesto (cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio) VALUES (%s, %s, %s, %s, %s);"
-                    cursor.execute(sqlInsertarDetalle, [cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio])
+                    cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
                     connection.commit()
-      
-
+                
+                print(id_presupuesto)
                 return id_presupuesto
         except Exception as e:
             print("Error al insertar:", str(e))
             return None
+
+    @classmethod
+    def actualizarPresupuesto(cls, id_presupuesto, nuevo_monto_total, nuevo_id_edificio, nuevo_id_empleado, lista_detalles):
+        try:
+            current_datetime = now()
+
+            with connection.cursor() as cursor:
+                # Actualizar el presupuesto principal
+                sqlActualizarPresupuesto = """
+                    UPDATE presupuesto
+                    SET fecha_hora_presupuesto = %s,
+                        monto_total_presupuesto = %s,
+                        id_edificio = %s,
+                        id_empleado = %s
+                    WHERE id_presupuesto = %s;
+                """
+                cursor.execute(sqlActualizarPresupuesto, [current_datetime, nuevo_monto_total, nuevo_id_edificio, nuevo_id_empleado, id_presupuesto])
+
+                # Procesar los detalles
+                for detalle in lista_detalles:
+                    if detalle['id_detalle_presupuesto'] == 'null':
+                        detalle['id_detalle_presupuesto'] = None
+                        
+                    if detalle['id_detalle_presupuesto']:
+                        # Actualizar el detalle si ya existe
+                        sqlActualizarDetalle = """
+                            UPDATE detalle_presupuesto
+                            SET cantidad_detalle_presupuesto = %s,
+                                precio_unitario_detalle_presupuesto = %s,
+                                precio_total_detalle_presupuesto = %s
+                            WHERE id_presupuesto = %s AND id_servicio = %s;
+                        """
+                        cursor.execute(sqlActualizarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                    else:
+                        # Insertar nuevo detalle si no existe
+                        sqlInsertarDetalle = """
+                            INSERT INTO detalle_presupuesto
+                            (cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio)
+                            VALUES (%s, %s, %s, %s, %s);
+                        """
+                        cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                
+                connection.commit()
+                print("Actualización y commit completados con éxito")
+            return True
+        except Exception as e:
+            print("Error al actualizar presupuesto:", str(e))
+            return False
+
 
 class DetallePresupuesto(models.Model):
     id_detalle_presupuesto = models.AutoField(primary_key=True)
