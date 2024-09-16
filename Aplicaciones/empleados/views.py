@@ -97,8 +97,8 @@ def editarEmpleado(request, id_empleado):
                     })
 
             elif key.startswith('nuevo_contacto_tipo_'):
-                tipo_contacto_id = value.split('_')[-1]
                 unique_id = key.split('_')[-1]
+                tipo_contacto_id = value
                 descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
                 
                 if descripcion_contacto:
@@ -123,8 +123,6 @@ def editarEmpleado(request, id_empleado):
         )
 
     return redirect('empleados:home')
-
-
 
 
 def eliminarEmpleado(request, id_empleado):
