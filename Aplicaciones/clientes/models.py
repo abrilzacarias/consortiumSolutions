@@ -1,9 +1,7 @@
 from django.db import models
 from django.db import connection
 from django.utils import timezone
-
-
-from django.utils import timezone
+from datetime import datetime
 
 
 # Obtener la fecha y hora actual en la zona horaria local
@@ -79,7 +77,7 @@ class Clientes():
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, vendedor_asignado=None):
+    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado=None):
         nombre = nombre_cliente.capitalize()
         apellido = apellido_cliente.capitalize()
         try:
@@ -108,11 +106,11 @@ class Clientes():
                     cursor.execute(sqlInsertarContacto, [contacto, tipo_contacto, idPersona])
                     connection.commit()
                 # Verificar si el vendedor actual es nulo para permitir la edición del vendedor asignado
-                if vendedor_asignado == '':
-                    vendedor_asignado = None
+                if empleado_asignado == '':
+                    empleado_asignado = None
                     
-                if vendedor_asignado is not None:
-                    if self.agregarDesignacionVendedor(vendedor_asignado, idCliente):
+                if empleado_asignado is not None:
+                    if self.agregarDesignacionVendedor(empleado_asignado, idCliente):
                         print("Designación de vendedor agregada exitosamente.")
                     else:
                         print("Hubo un error al agregar la designación de vendedor.")
@@ -180,16 +178,14 @@ class Clientes():
         
     def eliminarCliente(self, id_cliente):
         with connection.cursor() as cursor:
+            # Actualiza la fecha de baja del cliente en lugar de eliminar
             cursor.execute("""
-                SELECT id_persona FROM cliente WHERE id_cliente = %s;
-            """, [id_cliente])
-            id_persona = cursor.fetchone()[0]
-
-            cursor.execute("DELETE FROM edificio WHERE id_cliente = %s;", [id_cliente])
-            cursor.execute("DELETE FROM cliente WHERE id_cliente = %s;", [id_cliente])
-            cursor.execute("DELETE FROM contacto WHERE id_persona = %s;", [id_persona])
-            cursor.execute("DELETE FROM persona WHERE id_persona = %s;", [id_persona])
-    
+                UPDATE cliente
+                SET fecha_baja_cliente = %s
+                WHERE id_cliente = %s;
+            
+        """, [current_datetime, id_cliente])
+            
     def agregarEdificio(self, nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio, id_cliente):
         try:
             with connection.cursor() as cursor:
@@ -214,16 +210,17 @@ class Clientes():
                 raise ValueError("No se encontró un cliente con el id_cliente proporcionado.")
             return idpersona
         
-    def agregarDesignacionVendedor(self, id_vendedor, id_cliente):
+    def agregarDesignacionVendedor(self, empleado_asignado, id_cliente):
         try:
             with connection.cursor() as cursor:
                 # Define la consulta SQL para insertar una nueva designación de vendedor
                 sql_insert = """
-                    INSERT INTO designacion (id_vendedor, id_cliente, fecha_alta_designacion)
-                    VALUES (%s, %s, %s)
+                    INSERT INTO designacion (id_empleado, id_cliente, fecha_alta_designacion, id_administrador)
+                    VALUES (%s, %s, %s, %s)
                 """
                 # Ejecuta la consulta SQL con los parámetros proporcionados
-                cursor.execute(sql_insert, [id_vendedor, id_cliente, current_datetime])
+                id_administrador = 1
+                cursor.execute(sql_insert, [empleado_asignado, id_cliente, current_datetime, id_administrador])
                 connection.commit()
                 return True
         except Exception as e:
