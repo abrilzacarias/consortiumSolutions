@@ -216,8 +216,9 @@
                   <div id="contactSection" class="mb-4">
                     <label class="block mb-1">Contactos:</label>
                     <div id="contactsContainerEdit{{ vendedor.id_vendedor }}">
+                      {% for contacto in empleado.contactos %}
                       <div class="flex items-center mb-4">
-                        <select class="w-1/3 px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md" name="tipo_contacto[]">
+                        <select class="w-1/3 px-3 py-2 border border-gray-600 bg-gray-700 text-white rounded-md" name="tipo_contacto_{{ empleado.id_empleado }}[]">
                           <option value="1">Correo Electrónico</option>
                           <option value="2">Teléfono</option>
                           <option value="3">Página Web</option>
@@ -225,6 +226,7 @@
                         <input type="text" class="w-2/3 px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" name="contacto[]" placeholder="Ingrese el contacto" required>
                         <button type="button" class="ml-2 bg-red-500 text-white px-2 py-1 rounded-md remove-contact-btn">-</button>
                       </div>
+                      {% endfor %}
                     </div>
                     <button type="button" class="bg-blue-500 text-white px-4 py-2 rounded-md" id="addContactBtnEdit{{ vendedor.id_vendedor }}">Agregar Otro Contacto</button>
                   </div>
