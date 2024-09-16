@@ -210,40 +210,48 @@ class Clientes():
                 raise ValueError("No se encontró un cliente con el id_cliente proporcionado.")
             return idpersona
         
-    def agregarDesignacionVendedor(self, empleado_asignado, id_cliente):
+        
+    def agregarDesignacionVendedor(self, id_empleado, id_cliente):
+        cursor = connection.cursor()
         try:
-            with connection.cursor() as cursor:
-                current_datetime = datetime.now()  # Asegúrate de que esta variable esté definida y tenga el formato correcto
-                sql_insert = """
+            # Verificar si ya existe una designación activa para este cliente
+            cursor.execute("""
+                SELECT id_designacion, id_empleado FROM designacion 
+                WHERE id_cliente = %s AND fecha_baja_designacion IS NULL
+            """, [id_cliente])
+            designacion_existente = cursor.fetchone()
+
+            if designacion_existente:
+                id_designacion, id_empleado_actual = designacion_existente
+                if id_empleado_actual != id_empleado:
+                    # Si existe una designación activa pero con un empleado diferente,
+                    # actualizamos el empleado y la fecha de alta
+                    cursor.execute("""
+                        UPDATE designacion 
+                        SET id_empleado = %s, fecha_alta_designacion = %s
+                        WHERE id_designacion = %s
+                    """, [id_empleado, timezone.now().date(), id_designacion])
+                else:
+                    # Si el empleado es el mismo, no hacemos nada
+                    return True
+            else:
+                # Si no existe una designación activa, creamos una nueva
+                id_administrador = 1  # Este valor debe ser adecuado según tu contexto
+                fecha_alta_designacion = timezone.now().date()
+
+                cursor.execute("""
                     INSERT INTO designacion (id_empleado, id_cliente, fecha_alta_designacion, id_administrador)
                     VALUES (%s, %s, %s, %s)
-                """
-                id_administrador = 1
-                cursor.execute(sql_insert, [empleado_asignado, id_cliente, current_datetime, id_administrador])
-                connection.commit()
-                return True
+                """, [id_empleado, id_cliente, fecha_alta_designacion, id_administrador])
+            
+            connection.commit()
+            return True
         except Exception as e:
-            print("Error al insertar designación de vendedor:", str(e))
+            print(f"Error al manejar designación de vendedor: {e}")
+            connection.rollback()
             return False
 
         
-    def eliminarDesignacionVendedor(self, id_cliente, id_vendedor):
-        try:
-            with connection.cursor() as cursor:
-                # Actualizar la tabla designacion para establecer la fecha de baja
-                cursor.execute("""
-                    UPDATE designacion 
-                    SET fecha_baja_designacion = %s 
-                    WHERE id_cliente = %s AND id_empleado = %s AND fecha_baja_designacion IS NULL;
-                """, [current_datetime, id_cliente, id_vendedor])
-
-                # Guardar los cambios en la base de datos
-                connection.commit()
-                return True
-        except Exception as e:
-            print("Error al eliminar designación de vendedor:", str(e))
-            return False
-
     def agregarObservacion(self, id_cliente, descripcion_observacion):
         try:
             with connection.cursor() as cursor:

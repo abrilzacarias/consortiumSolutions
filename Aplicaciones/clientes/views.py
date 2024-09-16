@@ -151,7 +151,10 @@ def agregarCliente(request):
 
 
 def editarCliente(request, id_cliente):
+    clientes = Clientes()
+    
     if request.method == 'POST':
+        # Obtener los datos del formulario
         nombre_persona = request.POST.get('nombre_persona')
         apellido_persona = request.POST.get('apellido_persona')
         cuitl_persona = request.POST.get('cuitl_persona')
@@ -161,59 +164,69 @@ def editarCliente(request, id_cliente):
         matricula_cliente = request.POST.get('matricula_cliente')
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
         vendedor_asignado = request.POST.get('vendedor_asignado')  
-        print(f'vendedor ASIGNADO {vendedor_asignado}')
 
-        tipo_cliente = int(tipo_cliente)
-
-        # Procesar los datos de los contactos
-        contactos_data = []
-        for key, value in request.POST.items():
-            if key.startswith('tipo_contacto_'):
-                contacto_id = key.split('_')[-1]
-                tipo_contacto_id = value
-                descripcion_contacto = request.POST.get(f'contacto_{contacto_id}')
-                contactos_data.append({
-                    'id_contacto': contacto_id,
-                    'tipo_contacto_id': tipo_contacto_id,
-                    'descripcion_contacto': descripcion_contacto
-                })
-                
-            elif key.startswith('nuevo_contacto_tipo_'):  
-                tipo_contacto_id = value.split('_')[-1]
-                unique_id = key.split('_')[-1] 
-                descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
-                contactos_data.append({
-                'id_contacto': None,
-                'tipo_contacto_id': tipo_contacto_id,
-                'descripcion_contacto': descripcion_contacto
-                })
-
-        cliente_actual = clientes.obtenerClientePorId(id_cliente)
-        vendedor_actual = cliente_actual.get('id_vendedor_asignado') if cliente_actual else None
+        print(f"ID Cliente recibido: {id_cliente}")  # Verifica el ID del cliente
         
-        if vendedor_asignado == '':
-            if vendedor_actual:
-                if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                    return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
-            else:
-                print("No hay vendedor asignado y no se asignó uno nuevo.")
-        elif vendedor_actual != vendedor_asignado:
-            if vendedor_actual:
-                print(f'vendedor actual {vendedor_actual}')
-                # Cambiar el vendedor asignado
-                if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                    return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
-            if not clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
-                return HttpResponse("Hubo un error al agregar la nueva designación de vendedor.")
+        print(f"Vendedor asignado recibido: {vendedor_asignado}")
+        
+        
+        # Procesar contactos desde el formulario
+        contactos_data = []
+        for i in range(len(request.POST.getlist('contacto[]'))):
+            contacto_data = {
+                'id_contacto': request.POST.getlist('id_contacto[]')[i],  # Asume que tienes un campo hidden para id_contacto[] en el formulario
+                'tipo_contacto_id': request.POST.getlist('tipo_contacto[]')[i],
+                'descripcion_contacto': request.POST.getlist('contacto[]')[i]
+            }
+            contactos_data.append(contacto_data)
 
-        # Llamar a la función editarCliente del modelo
-        if not clientes.editarCliente(id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data, vendedor_asignado):
+        # Verificar que el cliente existe
+        cliente_actual = clientes.obtenerClientePorId(id_cliente)
+        if not cliente_actual:
+            return HttpResponse("El cliente no existe")
+
+        vendedor_actual = cliente_actual.get('id_vendedor_asignado')
+
+        # Manejar la designación de vendedores
+        if vendedor_asignado:
+            # Verifica si el vendedor asignado es diferente al actual
+            if vendedor_actual != vendedor_asignado:
+                if vendedor_actual:
+                    # Eliminar la designación del vendedor actual
+                    if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
+                        return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
+                # Asignar el nuevo vendedor
+                if not clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
+                    return HttpResponse("Hubo un error al asignar el nuevo vendedor.")
+        else:
+            # Si no se ha asignado un vendedor, elimina la designación actual
+            if vendedor_actual:
+                if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
+                    return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
+
+        # Llamar a la función editarCliente para realizar la actualización
+        actualizado = clientes.editarCliente(
+            id_cliente, 
+            nombre_persona, 
+            apellido_persona, 
+            cuitl_persona, 
+            direccion_persona, 
+            clave_afgip_cliente, 
+            tipo_cliente, 
+            matricula_cliente, 
+            vencimiento_matricula, 
+            contactos_data
+        )
+
+        if not actualizado:
             return HttpResponse("Hubo un error al editar el cliente.")
-
+        
         return redirect('/clientes/')
+    
     else:
+        # Obtener los datos del cliente y los empleados para mostrar en el formulario
         cliente = clientes.obtenerClientePorId(id_cliente)
-        empleados = empleado.mostrarEmpleados()
+        empleados = Empleado().mostrarEmpleados()
         return render(request, 'clientesviews.html', {'cliente': cliente, 'empleados': empleados})
 
 
@@ -238,12 +251,12 @@ def agregarEdificio(request, id_cliente):
 
 def agregarDesignacionVendedor(request, id_cliente):
     if request.method == 'POST':
-        id_vendedor = request.POST.get('vendedor')
+        vendedor_asignado = request.POST.get('vendedor_asignado')  
         
         clientes = Clientes()
         
         # Llama al método agregarDesignacionVendedor con los IDs del vendedor y el cliente
-        if clientes.agregarDesignacionVendedor(id_vendedor, id_cliente):
+        if clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
             # Si la inserción fue exitosa, redirige a una página de éxito
             return redirect('/clientes/')
         else:
