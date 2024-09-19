@@ -80,6 +80,9 @@ class Clientes():
     def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado=None):
         nombre = nombre_cliente.capitalize()
         apellido = apellido_cliente.capitalize()
+        if empleado_asignado == '':
+            empleado_asignado = None
+
         try:
             # Verificar si el cliente ya existe
             if self.clienteExiste(cuitl_cliente):
@@ -121,7 +124,7 @@ class Clientes():
             return None
 
         
-    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data, id_empleado):
+    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT id_persona, id_matricula FROM cliente WHERE id_cliente = %s;
@@ -150,10 +153,9 @@ class Clientes():
             cursor.execute("""
                 UPDATE cliente SET
                     clave_afgip_cliente = %s,
-                    conversion_cliente = %s, 
-                    id_empleado = %s
+                    conversion_cliente = %s 
                 WHERE id_cliente = %s;
-            """, [clave_afgip_cliente, tipo_cliente, id_empleado, id_cliente])
+            """, [clave_afgip_cliente, tipo_cliente, id_cliente])
 
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
