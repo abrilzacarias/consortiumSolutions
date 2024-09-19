@@ -100,7 +100,7 @@ def listarClientes(request):
         ]
 
         resultados_modificados.append(cliente_modificado)
-        print(resultados_modificados)
+
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
         
@@ -121,13 +121,12 @@ def agregarCliente(request):
         tipos_contacto = request.POST.getlist('tipo_contacto[]')
         contactos = request.POST.getlist('contacto[]')
         
-        print(f"VENDEDOR: {vendedor_asignado}")
 
         # Crear una lista de contactos como tuplas (tipo_contacto, contacto)
         lista_contactos = list(zip(tipos_contacto, contactos))
         
         # Agregar el cliente y obtener el id_cliente
-        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos)
+        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos, vendedor_asignado)
         print(f"CLIENTE: {id_cliente}")
         
         if id_cliente:

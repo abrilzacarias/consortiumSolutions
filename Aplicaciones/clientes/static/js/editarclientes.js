@@ -1,88 +1,114 @@
+// Función para crear un nuevo grupo de contacto
+function createContactGroup(clienteId, contactoId = null, tipoContacto = '', descripcionContacto = '') {
+  const div = document.createElement('div');
+  div.className = 'flex items-center space-x-2 contact-group';
+  if (contactoId) {
+      div.setAttribute('data-contacto-id', contactoId);
+  }
 
-$(document).ready(function() {
-  $('.js-example-basic-single').select2({
-    width: '100%', 
-    height: '100%'
+  div.innerHTML = `
+      <select class="w-1/4 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto_${contactoId || 'nuevo'}">
+          <option value="1" ${tipoContacto === '1' ? 'selected' : ''}>Correo Electrónico</option>
+          <option value="2" ${tipoContacto === '2' ? 'selected' : ''}>Teléfono</option>
+          <option value="3" ${tipoContacto === '3' ? 'selected' : ''}>Página Web</option>
+      </select>
+      <input type="text" class="flex-1 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="contacto_${contactoId || 'nuevo'}" value="${descripcionContacto}" required>
+      <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-contact-btn">-</button>
+  `;
+
+  div.querySelector('.remove-contact-btn').addEventListener('click', function() {
+      if (contactoId) {
+          eliminarContacto(clienteId, contactoId, div);
+      } else {
+          div.remove();
+      }
+  });
+
+  return div;
+}
+
+// Función para agregar un nuevo contacto
+function addNewContact(clienteId) {
+  const contactsContainer = document.querySelector(`#contactsContainerAdd${clienteId}`);
+  const newContactGroup = createContactGroup(clienteId);
+  contactsContainer.innerHTML = '';
+  contactsContainer.appendChild(newContactGroup);
+}
+
+// Función para eliminar un contacto
+function eliminarContacto(clienteId, contactoId, contactElement) {
+  if (confirm("¿Está seguro de que desea eliminar este contacto?")) {
+      fetch(`/clientes/eliminarContacto/${contactoId}/`, {
+          method: 'DELETE',
+          headers: {
+              'X-CSRFToken': getCookie('csrftoken')
+          }
+      })
+      .then(response => {
+          if (response.ok) {
+              contactElement.remove();
+              mostrarMensaje(clienteId, 'Contacto eliminado exitosamente.', 'success');
+          } else {
+              mostrarMensaje(clienteId, 'Error al eliminar el contacto.', 'error');
+          }
+      })
+      .catch(error => {
+          console.error('Error al eliminar el contacto:', error);
+          mostrarMensaje(clienteId, 'Error al eliminar el contacto.', 'error');
+      });
+  }
+}
+
+// Función para mostrar mensajes
+function mostrarMensaje(clienteId, mensaje, tipo) {
+  const modalBody = document.querySelector(`#editarClienteModal_${clienteId}`);
+  const messageDiv = document.createElement('div');
+  messageDiv.textContent = mensaje;
+  messageDiv.className = `text-sm ${tipo === 'success' ? 'text-green-500' : 'text-red-500'} mt-2`;
+  modalBody.appendChild(messageDiv);
+  setTimeout(() => messageDiv.remove(), 3000);
+}
+
+// Inicializar los eventos para cada modal de cliente
+document.addEventListener('DOMContentLoaded', function() {
+  const clienteModals = document.querySelectorAll('[id^="editarClienteModal_"]');
+  
+  clienteModals.forEach(modal => {
+      const clienteId = modal.id.split('_')[1];
+      
+      // Agregar evento al botón de agregar contacto
+      const addContactBtn = modal.querySelector(`#addContactBtnAdd${clienteId}`);
+      if (addContactBtn) {
+          addContactBtn.addEventListener('click', () => addNewContact(clienteId));
+      }
+
+      // Inicializar eventos para los botones de eliminar contacto existentes
+      const removeContactBtns = modal.querySelectorAll('.remove-contact-btn');
+      removeContactBtns.forEach(btn => {
+          const contactoId = btn.closest('.contact-group').getAttribute('data-contacto-id');
+          btn.addEventListener('click', function() {
+              eliminarContacto(clienteId, contactoId, this.closest('.contact-group'));
+          });
+      });
   });
 });
 
- const createContactInputGroupEdit = () => {
-    const newContactEdit = document.createElement('div');
-    newContactEdit.className = 'input-group mb-3';
-    const uniqueId = Math.random().toString(36).substring(2, 15); // Generate a unique ID
-
-    newContactEdit.innerHTML = `
-      <select class="form-control bg-dark text-light" name="nuevo_contacto_tipo_${uniqueId}">
-        <option value="1">Correo Electrónico</option>
-        <option value="2">Teléfono</option>
-        <option value="3">URL</option>
-      </select>
-      <input type="text" class="form-control" name="nuevo_contacto_descripcion_${uniqueId}" placeholder="Ingrese el contacto" required>
-      <button type="button" class="btn btn-danger remove-contact-btn">-</button>
-    `;
-
-    newContactEdit.querySelector('.remove-contact-btn').addEventListener('click', () => {
-      newContactEdit.parentElement.removeChild(newContactEdit);
-    });
-
-    return newContactEdit;
-  };
-
-  document.addEventListener('click', (event) => {
-    if (event.target && event.target.classList.contains('addContactBtnEdit')) {
-      const contactsContainerEdit = document.querySelector('.contactsContainerEdit');
-      const newContact = createContactInputGroupEdit();
-      contactsContainerEdit.appendChild(newContact);
-    }
-  });
-
-
-// Function to get CSRF token
+// Función auxiliar para obtener el token CSRF
 function getCookie(name) {
-  var cookieValue = null;
+  let cookieValue = null;
   if (document.cookie && document.cookie !== '') {
-    var cookies = document.cookie.split(';');
-    for (var i = 0; i < cookies.length; i++) {
-      var cookie = cookies[i].trim();
-      if (cookie.substring(0, name.length + 1) === (name + '=')) {
-        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-        break;
+      const cookies = document.cookie.split(';');
+      for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+              cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+              break;
+          }
       }
-    }
   }
   return cookieValue;
 }
 
-function eliminarContactoDirecto(buttonElement) {
-  const contactoId = buttonElement.getAttribute('data-contacto-id');
-  var csrftoken = getCookie('csrftoken');
-
-  if (confirm("¿Está seguro de que desea eliminar este contacto?")) {
-    fetch(`/vendedores/eliminarContacto/${contactoId}`, {
-      method: 'DELETE',
-      headers: {
-        'X-CSRFToken': csrftoken
-      }
-    })
-    .then(response => {
-      if (response.ok) {
-        const contactElement = document.getElementById(`contacto_${contactoId}`);
-        contactElement.parentElement.removeChild(contactElement);
-        const modalBody = document.querySelector('.modal-body');
-        const successMessage = document.createElement('p');
-        successMessage.classList.add('alert', 'alert-success');
-        successMessage.textContent = 'Contacto eliminado exitosamente.';
-        modalBody.appendChild(successMessage);
-        setTimeout(() => successMessage.remove(), 2000); 
-      } else {
-
-      }
-    })
-    .catch(error => {
-      console.error('Error al eliminar el contacto:', error);
-    });
-  }
-}
 
 
 
