@@ -77,7 +77,7 @@ class Clientes():
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado):
+    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado=None):
         nombre = nombre_cliente.capitalize()
         apellido = apellido_cliente.capitalize()
         if empleado_asignado == '':
