@@ -31,7 +31,6 @@ function createContactGroup(clienteId, contactoId = null, tipoContacto = '', des
 function addNewContact(clienteId) {
   const contactsContainer = document.querySelector(`#contactsContainerAdd${clienteId}`);
   const newContactGroup = createContactGroup(clienteId);
-  contactsContainer.innerHTML = '';
   contactsContainer.appendChild(newContactGroup);
 }
 
