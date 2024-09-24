@@ -29,11 +29,13 @@ def listarClientes(request):
     # Filtra clientes si es un vendedor
     for cliente in resultados:
         if len(cliente) > 10:
-            nombre_edificios = cliente[12].split(', ') if cliente[12] else []
-            direccion_edificios = cliente[13].split(', ') if cliente[13] else []
-            cuit_edificios = cliente[14].split(', ') if cliente[14] else []
-            tipo_edificios = cliente[15].split(', ') if cliente[15] else []
+            id_edificios = cliente[12].split(', ') if cliente[12] else []
+            nombre_edificios = cliente[13].split(', ') if cliente[13] else []
+            direccion_edificios = cliente[14].split(', ') if cliente[14] else []
+            cuit_edificios = cliente[15].split(', ') if cliente[15] else []
+            tipo_edificios = cliente[16].split(', ') if cliente[16] else []
         else:
+            id_edificios = []
             nombre_edificios = []
             direccion_edificios = []
             cuit_edificios = []
@@ -42,6 +44,7 @@ def listarClientes(request):
         edificios = []
         for i in range(len(nombre_edificios)):
             edificio = {
+                'id_edificio': nombre_edificios[i] if i < len(id_edificios) else '',
                 'nombre_edificio': nombre_edificios[i] if i < len(nombre_edificios) else '',
                 'direccion_edificio': direccion_edificios[i] if i < len(direccion_edificios) else '',
                 'cuit_edificio': cuit_edificios[i] if i < len(cuit_edificios) else '',
@@ -64,7 +67,7 @@ def listarClientes(request):
                 'fecha_observacion': fechas_observaciones[i] if i < len(fechas_observaciones) else '',
                 'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else ''
             }
-            observaciones.append(observacion)
+
         
         idpersona = clientes.obtenerIdPersona(cliente[0])
         cliente_modificado = {
