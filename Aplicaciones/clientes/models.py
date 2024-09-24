@@ -157,23 +157,28 @@ class Clientes():
                 WHERE id_cliente = %s;
             """, [clave_afgip_cliente, tipo_cliente, id_cliente])
 
+            # Actualizar o crear contactos
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
                 tipo_contacto_id = contacto_data.get('tipo_contacto_id')
                 descripcion_contacto = contacto_data.get('descripcion_contacto')
 
-                if contacto_id:  # Si el contacto ya existe, actualizarlo
+                print(f"Procesando contacto: {contacto_data}")
+                
+                if contacto_id.isdigit():  # Verifica que el contacto_id sea un número válido
                     cursor.execute("""
                         UPDATE contacto SET 
                             descripcion_contacto = %s,
                             id_tipo_contacto = %s
                         WHERE id_contacto = %s;
                     """, [descripcion_contacto, tipo_contacto_id, contacto_id])
+                    print(f"Contacto actualizado con id: {contacto_id}")
                 else:  # Si el contacto es nuevo, crearlo
                     cursor.execute("""
                         INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) 
                         VALUES (%s, %s, %s);
                     """, [descripcion_contacto, tipo_contacto_id, id_persona])
+                    print("Nuevo contacto creado.")
 
             connection.commit()
 
