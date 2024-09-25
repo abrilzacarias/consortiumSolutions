@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Clientes, Contacto
+from .models import Clientes, Contacto, Edificio
 from ..empleados.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.utils import timezone
@@ -44,7 +44,7 @@ def listarClientes(request):
         edificios = []
         for i in range(len(nombre_edificios)):
             edificio = {
-                'id_edificio': nombre_edificios[i] if i < len(id_edificios) else '',
+                'id_edificio': id_edificios[i] if i < len(id_edificios) else '',
                 'nombre_edificio': nombre_edificios[i] if i < len(nombre_edificios) else '',
                 'direccion_edificio': direccion_edificios[i] if i < len(direccion_edificios) else '',
                 'cuit_edificio': cuit_edificios[i] if i < len(cuit_edificios) else '',
@@ -278,6 +278,19 @@ def eliminarContactoCliente(request, id_contacto):
         try:
             contacto = Contacto.objects.get(pk=id_contacto)
             contacto.delete()
+            return JsonResponse({'message': 'Contacto eliminado con éxito.'})
+        except Contacto.DoesNotExist:
+            return JsonResponse({'error': 'El contacto con ID especificado no existe.'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': f'Error al eliminar el contacto: {str(e)}'}, status=500)
+    else:
+        return HttpResponse(status=405)
+    
+def eliminarEdificio(request, id_edificio):
+    if request.method == 'DELETE':
+        try:
+            edificio = Edificio.objects.get(pk=id_edificio)
+            edificio.delete()
             return JsonResponse({'message': 'Contacto eliminado con éxito.'})
         except Contacto.DoesNotExist:
             return JsonResponse({'error': 'El contacto con ID especificado no existe.'}, status=404)
