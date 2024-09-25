@@ -106,6 +106,7 @@ def listarClientes(request):
 
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
+    print(resultados_modificados)
         
     return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'empleados': empleados})
 
@@ -308,17 +309,9 @@ def eliminarContactoCliente(request, id_contacto):
         return HttpResponse(status=405)
     
 def eliminarEdificio(request, id_edificio):
-    if request.method == 'DELETE':
-        try:
-            edificio = Edificio.objects.get(pk=id_edificio)
-            edificio.delete()
-            return JsonResponse({'message': 'Contacto eliminado con éxito.'})
-        except Contacto.DoesNotExist:
-            return JsonResponse({'error': 'El contacto con ID especificado no existe.'}, status=404)
-        except Exception as e:
-            return JsonResponse({'error': f'Error al eliminar el contacto: {str(e)}'}, status=500)
-    else:
-        return HttpResponse(status=405)
+
+    Clientes().eliminarEdificio(id_edificio)
+    return redirect('/clientes/') 
 
 
 

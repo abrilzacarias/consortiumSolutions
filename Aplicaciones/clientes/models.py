@@ -68,6 +68,7 @@ class Matricula(models.Model):
         db_table = 'matricula'
         
 class Clientes():
+    
     def listarClientes(self):
         with connection.cursor() as cursor:
             sqlListarClientes = """
@@ -99,8 +100,8 @@ class Clientes():
                 idMatricula = cursor.lastrowid  
                 connection.commit()
 
-                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula, id_empleado) VALUES (%s, %s, %s, %s, %s);"
-                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula, empleado_asignado])
+                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
+                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
                 idCliente = cursor.lastrowid  
                 connection.commit()
 
@@ -314,6 +315,21 @@ class Clientes():
                 cursor.execute("SELECT id_persona FROM persona WHERE cuitl_persona = %s", [cuit])
                 result = cursor.fetchone()
             return result is not None
+    
+   
+    def eliminarEdificio(cls, id_edificio):
+         print('HOLAAAAAAAA')
+         print(f'edificio model {id_edificio}')
+         with connection.cursor() as cursor:
+            # Actualiza la fecha de baja del edificio en lugar de eliminar
+            cursor.execute("""
+                UPDATE edificio
+                SET fecha_baja_edificio = %s
+                WHERE id_edificio = %s;
+            
+        """, [current_datetime, id_edificio])
+            connection.commit()
+
     
 class TipoEdificio(models.Model):
     id_tipo_edificio = models.AutoField(primary_key=True)
