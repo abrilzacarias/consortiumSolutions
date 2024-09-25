@@ -172,16 +172,37 @@ def editarCliente(request, id_cliente):
         print(f"Vendedor asignado recibido: {vendedor_asignado}")
         
         
-        # Procesar contactos desde el formulario
+        # Recopilación de los contactos existentes y nuevos
         contactos_data = []
-        for i in range(len(request.POST.getlist('contacto[]'))):
-            contacto_data = {
-                'id_contacto': request.POST.getlist('id_contacto[]')[i],  # Asume que tienes un campo hidden para id_contacto[] en el formulario
-                'tipo_contacto_id': request.POST.getlist('tipo_contacto[]')[i],
-                'descripcion_contacto': request.POST.getlist('contacto[]')[i]
-            }
-            contactos_data.append(contacto_data)
+        for key, value in request.POST.items():
+            if key.startswith('tipo_contacto_'):
+                contacto_id = key.split('_')[-1]
+                tipo_contacto_id = value
+                descripcion_contacto = request.POST.get(f'contacto_{contacto_id}')
+                
+                # Solo agregamos si la descripción no está vacía
+                if descripcion_contacto:
+                    contactos_data.append({
+                        'id_contacto': contacto_id,  # Mantén el ID si es un contacto existente
+                        'tipo_contacto_id': tipo_contacto_id,
+                        'descripcion_contacto': descripcion_contacto
+                    })
 
+            elif key.startswith('nuevo_contacto_tipo_'):
+                unique_id = key.split('_')[-1]
+                tipo_contacto_id = value
+                descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
+                
+                if descripcion_contacto:
+                    contactos_data.append({
+                        'id_contacto': None,  # Nuevo contacto, sin ID
+                        'tipo_contacto_id': tipo_contacto_id,
+                        'descripcion_contacto': descripcion_contacto
+                    })
+
+        # Agregar print para ver los contactos que están llegando
+        print("Datos de contacto editados o nuevos:", contactos_data)
+        
         # Verificar que el cliente existe
         cliente_actual = clientes.obtenerClientePorId(id_cliente)
         if not cliente_actual:
