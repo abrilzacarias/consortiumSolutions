@@ -12,7 +12,7 @@
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
+stylesheet
 </head>
 
 <body>    <!-- Start block -->
@@ -260,17 +260,25 @@
         <!-- Modal content -->
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
             <!-- Modal header -->
-            <div class="flex justify-between mb-4 rounded-t sm:mb-5">
-                <h3 class="font-semibold text-lg md:text-xl text-white">Detalles de Presupuesto</h3>
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 border-gray-600">
+                <h3 class="text-lg font-semibold text-white">Detalles de Presupuesto</h3>
+                <button type="button" class="text-gray-400 bg-transparent rounded-lg text-sm p-1.5 ml-auto inline-flex items-center hover:bg-gray-600 hover:text-white" data-modal-toggle="readProductModal">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="sr-only">Cerrar</span>
+                </button>
             </div>
             
             <div class="justify-center">
-                <table class="w-full text-sm text-left text-gray-400">
+                <div class="block overflow-x-auto">
+                <table class="min-w-full text-sm text-left text-gray-400">
                     <thead class="text-xs text-white-700 uppercase bg-gray-700">
                         <tr>
                             <th scope="col" class="px-4 py-4">Servicio</th>
+                            <th scope="col" class="px-4 py-4">Precio Base de Servicio</th>
                             <th scope="col" class="px-4 py-3">Cantidad</th>
-                            <th scope="col" class="px-4 py-3">Precio Unitario</th>
+                            <th scope="col" class="px-4 py-3">Costo Extra</th>
                             <th scope="col" class="px-4 py-3">Monto Total</th>
                         </tr>
                     </thead>
@@ -279,17 +287,8 @@
                     </tbody>
                 </table>
             </div>
+        </div>
 
-            <div class="flex justify-between items-center mt-4">
-                <!-- Botones del modal -->
-                <button type="button" class="text-white inline-flex items-center hover:bg-primary-800 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-primary-600 hover:bg-primary-700 focus:ring-primary-800">
-                    Edit
-                </button>
-                <button type="button" class="py-2.5 px-5 text-sm font-medium focus:outline-none rounded-lg border hover:text-primary-700 focus:z-10 focus:ring-4  focus:ring-gray-700 bg-gray-800 text-gray-400 border-gray-600 hover:text-white hover:bg-gray-700">Preview</button>
-                <button type="button" class="inline-flex items-center text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-red-500 hover:bg-red-600 focus:ring-red-900">
-                    Delete
-                </button>
-            </div>
         </div>
     </div>
 </div>

@@ -17,8 +17,9 @@ function detallesPresupuesto(buttonElement) {
                 // Agregar las celdas a la fila
                 row.innerHTML = `
                     <td class="px-4 py-3">${detalle.nombre_servicio || 'No disponible'}</td>
+                    <td class="px-4 py-3">${detalle.precio_servicio || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.cantidad_detalle_presupuesto || 'No disponible'}</td>
-                    <td class="px-4 py-3">${detalle.precio_unitario_detalle_presupuesto || 'No disponible'}</td>
+                    <td class="px-4 py-3">${detalle.costo_extra_presupuesto || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.precio_total_detalle_presupuesto || 'No disponible'}</td>
                 `;
 
@@ -68,7 +69,7 @@ function initializeSelect2(selector, url, formatter) {
         },
         placeholder: 'Seleccionar',
         minimumInputLength: 0,
-        width: '100%'
+        width: '100%',
     });
 }
 
@@ -190,30 +191,37 @@ document.addEventListener('DOMContentLoaded', function() {
     function agregarServicio(servicios) {
         const serviciosContainer = document.getElementById('serviciosContainer');
         const nuevoServicio = document.createElement('div');
-        nuevoServicio.className = 'flex items-center space-x-2 w-full';
+        
+        // Añadir diseño en columna para dispositivos móviles
+        nuevoServicio.className = 'flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 w-full';
+    
         nuevoServicio.innerHTML = `
-            <div class="w-1/3">
+            <div class="w-full">
                 ${crearDropdownServicios(servicios)}
             </div>
-            <div class="w-1/6">
+    
+            <div class="w-full md:w-1/6">
                 <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
             </div>
-            <div class="w-1/5">
+            <div class="w-full md:w-1/5">
                 <input name="costos_extra[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
             </div>
-            <div class="w-1/5">
+            <div class="w-full md:w-1/5">
                 <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
                 <input type="hidden" name="precios_unitarios[]" class="precios-unitarios" value="0.00">
                 <input name="subtotales[]" type="hidden" class="subtotal-service-value" value="0.00">
             </div>
-            <div class="w-auto">
-                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+            <div class="w-full md:w-auto flex-shrink-0">
+                <button type="button" class="px-3 py-2 w-full md:w-auto text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
             </div>
         `;
-
+    
         serviciosContainer.appendChild(nuevoServicio);
+    
+        // Inicializar Select2 en el nuevo dropdown.
         initSelect2(nuevoServicio.querySelector('select'));
     }
+    
 
     // Obtener los servicios al cargar la página
     obtenerServicios()
@@ -260,17 +268,22 @@ function calcularTotal() {
         const selectedValue = $(dropdown).val(); // Valor seleccionado en el dropdown
         const selectedOption = Array.from(dropdown.options).find(option => option.value == selectedValue);
 
-        // Obtener el precio del servicio
-        const precioServicio = selectedOption ? selectedOption.dataset.precio : 0;
+        // Asegurar que selectedOption y precioServicio siempre tengan un valor válido
+        const precioServicio = selectedOption ? parseFloat(selectedOption.dataset.precio) || 0 : 0;
         const cantidadServicio = parseInt(dropdown.closest('.flex').querySelector('.quantity-service').value) || 1;
         const costoExtra = parseFloat(dropdown.closest('.flex').querySelector('.extra-cost').value) || 0;
         const subtotal = (precioServicio * cantidadServicio) + costoExtra;
 
-        dropdown.closest('.flex').querySelector('.subtotal-service').textContent = `Subtotal: $${subtotal.toFixed(2)}`;
-        dropdown.closest('.flex').querySelector('.subtotal-service-value').value = subtotal.toFixed(2);
-        dropdown.closest('.flex').querySelector('.precios-unitarios').value = precioServicio;
+        // Asegurarse de que subtotal siempre sea un número válido
+        if (!isNaN(subtotal)) {
+            dropdown.closest('.flex').querySelector('.subtotal-service').textContent = `Subtotal: $${subtotal.toFixed(2)}`;
+            dropdown.closest('.flex').querySelector('.subtotal-service-value').value = subtotal.toFixed(2);
+            dropdown.closest('.flex').querySelector('.precios-unitarios').value = precioServicio;
 
-        total += subtotal;
+            total += subtotal;
+        } else {
+            dropdown.closest('.flex').querySelector('.subtotal-service').textContent = `Subtotal: $0.00`;
+        }
     });
 
     document.getElementById('totalCost').value = total.toFixed(2); // Actualiza el valor del campo oculto
