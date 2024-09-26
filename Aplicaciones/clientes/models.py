@@ -318,8 +318,6 @@ class Clientes():
     
    
     def eliminarEdificio(cls, id_edificio):
-         print('HOLAAAAAAAA')
-         print(f'edificio model {id_edificio}')
          with connection.cursor() as cursor:
             # Actualiza la fecha de baja del edificio en lugar de eliminar
             cursor.execute("""
@@ -329,6 +327,22 @@ class Clientes():
             
         """, [current_datetime, id_edificio])
             connection.commit()
+
+    def editarEdificio(self, id_edificio, nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio):
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                UPDATE edificio SET 
+                    nombre_edificio = %s,
+                    direccion_edificio = %s,
+                    cuit_edificio = %s,
+                    id_tipo_edificio = %s
+                WHERE id_edificio = %s;
+            """, [nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio, id_edificio])
+
+
+            connection.commit()
+
+            return True
 
     
 class TipoEdificio(models.Model):

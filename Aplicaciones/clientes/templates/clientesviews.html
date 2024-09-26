@@ -49,8 +49,8 @@
                                 <thead class="text-xs text-white-700 uppercase bg-gray-700">
                                     <!-- Cabecera de la tabla -->
                                     <tr>
-                                        <th scope="col" class="px-4 py-4">Nombre</th>
-                                        <th scope="col" class="px-4 py-3">Apellido</th>
+                                        <th scope="col" class="px-4 py-4">Nombre y Apellido</th>
+                                        
                                         <th scope="col" class="px-4 py-3">CUIT/CUIL</th>
                                         <th scope="col" class="px-4 py-3">Dirección</th>
                                         <th scope="col" class="px-4 py-3">Clave AFIP/AGIP</th>
@@ -68,8 +68,8 @@
                                     {% for cliente in resultados %}
                                     
                                     <tr class="border-b">
-                                        <td class="px-4 py-3">{{cliente.nombre_cliente}}</td>
-                                        <td class="px-4 py-3">{{cliente.apellido_cliente}}</td>
+                                        <td class="px-4 py-3">{{cliente.nombre_cliente}} {{cliente.apellido_cliente}}</td>
+                                        
                                         <td class="px-4 py-3">{{cliente.cuit_cliente}}</td>
                                         <td class="px-4 py-3 max-w-[12rem] truncate">{{cliente.direccion_cliente}}</td>
                                         <td class="px-4 py-3">{{cliente.clave_cliente}}</td>
@@ -436,6 +436,7 @@
 
 <!-- Edificios modal -->
 {% for cliente in resultados %}
+
 <div id="edificiosClienteModal_{{ cliente.id_cliente }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
@@ -473,6 +474,7 @@
                     </thead>
                     <tbody>
                         {% for edificio in cliente.edificios %}
+                        {% if not edificio.fecha_baja_edificio %}
                         <tr class="border-b">
                             <td class="px-4 py-3"> {{edificio.nombre_edificio}}</td>
                             <td class="px-4 py-3"> {{edificio.direccion_edificio}}</td>
@@ -507,6 +509,7 @@
                                 </div>
                             </td>
                         </tr>
+                        {% endif %}
                         {%endfor%}
                     </tbody>
                     
@@ -526,7 +529,7 @@
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                <h3 class="text-lg font-semibold text-white">Agregar Edificio</h3>
+                <h3 class="text-lg font-semibold text-white">Agregar Edificio a {{cliente.nombre_cliente}}</h3>
                 <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-target="agregarEdificioModal_{{ cliente.id_cliente }}" data-modal-toggle="agregarEdificioModal_{{ cliente.id_cliente }}">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -578,6 +581,72 @@
     </div>
 </div>
 {% endfor %}
+
+
+
+<!-- Update modal -->
+{% for cliente in resultados %}
+{% for edificio in cliente.edificios %}
+
+<div id="editarEdificioModal_{{ edificio.id_edificio }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 flex items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-white">Actualizar Edificio</h3>
+                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="editarEdificioModal_{{ edificio.id_edificio }}">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="sr-only">Cerrar</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form id="editarEdificioModal_{{ edificio.id_edificio }}" action="{% url 'clientes:editarEdificio' edificio.id_edificio %}" method="POST">
+                <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                    {% csrf_token %}
+                    <div class="mb-0">
+                        <label for="nombre_edificio" class="block mb-2 text-sm font-medium text-white">Edificio</label>
+                        <input type="text" name="nombre_edificio" id="nombre_edificio_{{ edificio.id_edificio }}" value="{{ edificio.nombre_edificio }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Nombre del edificio" required>
+                        <div id="errorNombre_{{ edificio.id_edificio }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                    </div>
+                    <div class="mb-0">
+                        <label for="direccion_edificio" class="block mb-2 text-sm font-medium text-white">Dirección</label>
+                        <input type="text" name="direccion_edificio" id="direccion_edificio_{{ edificio.id_edificio }}" value="{{ edificio.direccion_edificio }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Dirección del edificio" required>
+                        <div id="errorDirecion_{{ edificio.id_edificio }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                    </div>
+                    <div class="mb-0">
+                        <label for="cuit_edificio" class="block mb-2 text-sm font-medium text-white">CUIT del Edificio</label>
+                        <input type="text" name="cuit_edificio" id="cuit_edificio_{{ edificio.id_edificio}}" value="{{ edificio.cuit_edificio }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="CUIT/CUIL" required>
+                        <div id="errorCuit_{{ edificio.id_edificio }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                    </div>
+                    <div class="mb-0">
+                        <label for="tipo_edificio" class="block mb-2 text-sm font-medium text-white">Tipo</label>
+                        <select name="tipo_edificio" id="tipo_edificio_{{ edificio.id_edificio }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white">
+                            <option value="1" {% if edificio.tipo_edificio == 1 %}selected{% endif %}>Hotel</option>
+                            <option value="2" {% if edificio.tipo_edificio == 0 %}selected{% endif %}>Hospital</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="flex justify-end mb-4">
+                    <button type="submit" class="text-white bg-purple-800 inline-flex items-center hover:bg-purple-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Actualizar Edificio
+                    </button>
+                </div>  
+            </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endfor %}
+{% endfor %}
+
+
+
 
 {% for cliente in resultados %}
 <!-- Delete Edificio modal -->

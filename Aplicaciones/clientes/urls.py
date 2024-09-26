@@ -12,4 +12,5 @@ urlpatterns = [
     path('agregarObservacionCliente/<int:id_cliente>/', views.agregarObservacionCliente, name='agregarObservacionCliente'),
     path('eliminarContactoCliente/<int:id_contacto>/', views.eliminarContactoCliente, name='eliminarContactoCliente'),
     path('eliminarEdificio/<int:id_edificio>/', views.eliminarEdificio, name='eliminarEdificio'),
+    path('editarEdificio/<int:id_edificio>/', views.editarEdificio, name='editarEdificio'),
 ]

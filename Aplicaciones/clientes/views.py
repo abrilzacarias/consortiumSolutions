@@ -34,12 +34,14 @@ def listarClientes(request):
             direccion_edificios = cliente[14].split(', ') if cliente[14] else []
             cuit_edificios = cliente[15].split(', ') if cliente[15] else []
             tipo_edificios = cliente[16].split(', ') if cliente[16] else []
+            fecha_baja_edificios = cliente[25].split(', ') if cliente[25] else []
         else:
             id_edificios = []
             nombre_edificios = []
             direccion_edificios = []
             cuit_edificios = []
             tipo_edificios = []
+            fecha_baja_edificios = []
 
         edificios = []
         for i in range(len(nombre_edificios)):
@@ -48,11 +50,12 @@ def listarClientes(request):
                 'nombre_edificio': nombre_edificios[i] if i < len(nombre_edificios) else '',
                 'direccion_edificio': direccion_edificios[i] if i < len(direccion_edificios) else '',
                 'cuit_edificio': cuit_edificios[i] if i < len(cuit_edificios) else '',
-                'tipo_edificio': tipo_edificios[i] if i < len(tipo_edificios) else ''
+                'tipo_edificio': tipo_edificios[i] if i < len(tipo_edificios) else '', 
+                'fecha_baja_edificio': fecha_baja_edificios[i] if i < len(fecha_baja_edificios) else ''
             }
             edificios.append(edificio)
         
-        id_vendedor_asignado = cliente[17] if len(cliente) > 17 else ''
+        nombre_vendedor_asignado = cliente[18] if len(cliente) > 18 else ''
 
         ids_observaciones = cliente[20].split(', ') if cliente[20] else []
         descripciones_observaciones = cliente[21].split('|') if cliente[21] else []
@@ -84,8 +87,8 @@ def listarClientes(request):
             'contacto_cliente': cliente[10] if len(cliente) > 11 else '',
             'tipo_contacto': cliente[11] if len(cliente) > 12 else '',
             'edificios': edificios,  
-            'vendedor_asignado': id_vendedor_asignado,  
-            'id_vendedor_asignado': cliente[16] if len(cliente) > 16 else '',
+            'vendedor_asignado': nombre_vendedor_asignado,  
+            'id_vendedor_asignado': cliente[17] if len(cliente) > 17 else '',
             'observaciones': observaciones, 
             'id_persona': idpersona
         }
@@ -106,7 +109,6 @@ def listarClientes(request):
 
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
-    print(resultados_modificados)
         
     return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'empleados': empleados})
 
@@ -307,6 +309,23 @@ def eliminarContactoCliente(request, id_contacto):
             return JsonResponse({'error': f'Error al eliminar el contacto: {str(e)}'}, status=500)
     else:
         return HttpResponse(status=405)
+    
+
+def editarEdificio(request, id_edificio):
+    clientes = Clientes()
+    if request.method == 'POST':
+        nombre_edificio = request.POST.get('nombre_edificio')
+        direccion_edificio = request.POST.get('direccion_edificio')
+        cuit_edificio = request.POST.get('cuit_edificio')
+        tipo_edificio = request.POST.get('tipo_edificio')
+        actualizado = clientes.editarEdificio(
+            id_edificio, nombre_edificio, direccion_edificio, cuit_edificio, tipo_edificio
+        )
+        if not actualizado:
+            return HttpResponse("Hubo un error al editar el cliente.")
+        return redirect('/clientes/')
+    else:
+        return redirect('/clientes/')
     
 def eliminarEdificio(request, id_edificio):
 
