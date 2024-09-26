@@ -36,7 +36,7 @@ def agregarPresupuesto(request):
             {
                 'id_servicio': id_servicio,
                 'cantidad': cantidad,
-                'precio_unitario': costos_extra,
+                'costo_extra_presupuesto': costos_extra,
                 'precio_total': precio_total
             }
             for id_servicio, cantidad, costos_extra, precio_total in zip(
@@ -84,12 +84,12 @@ def mostrar_edificios(request, id_cliente):
     return JsonResponse(edificios, safe=False)
 
 def obtener_servicios(request):
-    categorias = CategoriaServicio.objects.prefetch_related('servicio').all()
+    categorias = CategoriaServicio.objects.prefetch_related('servicios').all()
     
     response_data = []
     
     for categoria in categorias:
-        servicios = categoria.servicio.all()
+        servicios = categoria.servicios.all()
         servicios_data = [
             {
                 'id': servicio.id_servicio,
@@ -151,10 +151,10 @@ def editarPresupuesto(request):
                 'id_detalle_presupuesto': lista_id_detalles,
                 'id_servicio': id_servicio,
                 'cantidad': cantidad,
-                'precio_unitario': precio_unitario,
+                'costos_extra': costos_extra,
                 'precio_total': precio_total
             }
-            for lista_id_detalles, id_servicio, cantidad, precio_unitario, precio_total in zip(
+            for lista_id_detalles, id_servicio, cantidad, costos_extra, precio_total in zip(
                 lista_id_detalles,
                 lista_id_servicio,
                 lista_cantidad_detalle_presupuesto,
@@ -198,7 +198,7 @@ def obtenerPresupuesto(request, id_presupuesto):
             {   
                 'id_detalle_presupuesto': detalle.id_detalle_presupuesto,
                 'cantidad': detalle.cantidad_detalle_presupuesto,
-                'costo_extra': detalle.precio_unitario_detalle_presupuesto,
+                'costo_extra': detalle.costo_extra_presupuesto,
                 'precio_total': detalle.precio_total_detalle_presupuesto,
                 'id_servicio': detalle.id_servicio
             }

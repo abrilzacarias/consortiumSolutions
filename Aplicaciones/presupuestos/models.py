@@ -50,8 +50,8 @@ class Presupuesto(models.Model):
 
 
                 for detalle in lista_detalles:
-                    sqlInsertarDetalle = "INSERT INTO detalle_presupuesto (cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio) VALUES (%s, %s, %s, %s, %s);"
-                    cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                    sqlInsertarDetalle = "INSERT INTO detalle_presupuesto (cantidad_detalle_presupuesto, costo_extra_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio) VALUES (%s, %s, %s, %s, %s);"
+                    cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['costo_extra_presupuesto'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
                     connection.commit()
                 
                 print(id_presupuesto)
@@ -87,19 +87,19 @@ class Presupuesto(models.Model):
                         sqlActualizarDetalle = """
                             UPDATE detalle_presupuesto
                             SET cantidad_detalle_presupuesto = %s,
-                                precio_unitario_detalle_presupuesto = %s,
+                                costo_extra_presupuesto = %s,
                                 precio_total_detalle_presupuesto = %s
                             WHERE id_presupuesto = %s AND id_servicio = %s;
                         """
-                        cursor.execute(sqlActualizarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                        cursor.execute(sqlActualizarDetalle, [detalle['cantidad'], detalle['costos_extra'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
                     else:
                         # Insertar nuevo detalle si no existe
                         sqlInsertarDetalle = """
                             INSERT INTO detalle_presupuesto
-                            (cantidad_detalle_presupuesto, precio_unitario_detalle_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio)
+                            (cantidad_detalle_presupuesto, costo_extra_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio)
                             VALUES (%s, %s, %s, %s, %s);
                         """
-                        cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['precio_unitario'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                        cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['costos_extra'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
                 
                 connection.commit()
                 print("Actualización y commit completados con éxito")
@@ -112,7 +112,7 @@ class Presupuesto(models.Model):
 class DetallePresupuesto(models.Model):
     id_detalle_presupuesto = models.AutoField(primary_key=True)
     cantidad_detalle_presupuesto = models.IntegerField()
-    precio_unitario_detalle_presupuesto = models.DecimalField(max_digits=10, decimal_places=0)
+    costo_extra_presupuesto = models.DecimalField(max_digits=10, decimal_places=0)
     precio_total_detalle_presupuesto = models.DecimalField(max_digits=10, decimal_places=0)
     id_presupuesto = models.ForeignKey('Presupuesto', models.DO_NOTHING, db_column='id_presupuesto')
     id_servicio = models.IntegerField()
@@ -125,23 +125,34 @@ class DetallePresupuesto(models.Model):
     def listarDetallePresupuesto(cls):
         with connection.cursor() as cursor:
             sqlListarDetallePresupuesto = """
-                    SELECT dp.id_detalle_presupuesto, dp.cantidad_detalle_presupuesto, dp.precio_unitario_detalle_presupuesto, dp.precio_total_detalle_presupuesto, dp.id_presupuesto, dp.id_servicio, s.nombre_servicio
+                    SELECT 
+                        dp.id_detalle_presupuesto, 
+                        dp.cantidad_detalle_presupuesto, 
+                        dp.costo_extra_presupuesto, 
+                        dp.precio_total_detalle_presupuesto, 
+                        dp.id_presupuesto, 
+                        dp.id_servicio, 
+                        s.nombre_servicio,
+                        s.precio_base_servicio 
                     FROM detalle_presupuesto dp 
                     JOIN presupuesto p ON dp.id_presupuesto = p.id_presupuesto
                     JOIN servicio s ON dp.id_servicio = s.id_servicio;
-                    """
+                """
             cursor.execute(sqlListarDetallePresupuesto)
             resultados = cursor.fetchall()
             detalle_presupuesto = []
+            
         for resultado in resultados:
             detalle_presupuesto_modificado = {
-            'id_detalle_presupuesto': resultado[0],
-            'cantidad_detalle_presupuesto': resultado[1],
-            'precio_unitario_detalle_presupuesto': resultado[2],
-            'precio_total_detalle_presupuesto': resultado[3],
-            'id_presupuesto': resultado[4],
-            'id_servicio': resultado[5],
-            'nombre_servicio': resultado[6]
+                'id_detalle_presupuesto': resultado[0],
+                'cantidad_detalle_presupuesto': resultado[1],
+                'costo_extra_presupuesto': resultado[2],
+                'precio_total_detalle_presupuesto': resultado[3],
+                'id_presupuesto': resultado[4],
+                'id_servicio': resultado[5],
+                'nombre_servicio': resultado[6],
+                'precio_servicio': float(resultado[7])  # Agrega el precio del servicio
             }
             detalle_presupuesto.append(detalle_presupuesto_modificado)
+        
         return detalle_presupuesto
