@@ -7,6 +7,7 @@ from datetime import datetime
 # Obtener la fecha y hora actual en la zona horaria local
 current_datetime = timezone.localtime(timezone.now())
 
+
 class Persona(models.Model):
     id_persona = models.AutoField(primary_key=True)
     cuitl_persona = models.CharField(max_length=11, blank=True, null=True)
@@ -264,14 +265,25 @@ class Clientes():
     def agregarObservacion(self, id_cliente, descripcion_observacion):
         try:
             with connection.cursor() as cursor:
-                sqlInsertarObservacionCliente = "INSERT INTO observacion (descripcion_observacion, fecha_hora_observacion, id_cliente, id_detalle_presupuesto, id_detalle_venta) VALUES (%s, %s, %s, NULL, NULL);"
-                cursor.execute(sqlInsertarObservacionCliente, [descripcion_observacion, current_datetime, id_cliente])
-                idObservacion = cursor.lastrowid  
-                connection.commit()
+                # Agrega el marcador de posición para la hora
+                sqlInsertarObservacionCliente = "INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_preventa, id_detalle_venta, id_cliente) VALUES (%s, %s, %s, NULL, NULL, %s);"
+                
+                current_date = timezone.localtime(timezone.now()).date()
+                current_time = timezone.localtime(timezone.now()).time()
+                # Ahora pasas los tres valores que corresponden a los tres marcadores de posición
+                cursor.execute(sqlInsertarObservacionCliente, [descripcion_observacion, current_date, current_time, id_cliente])
+                
+                idObservacion = cursor.lastrowid  # Obtiene el ID de la última fila insertada
+                connection.commit()  # Asegura que se realice la inserción
+                
                 return idObservacion
         except Exception as e:
             print("Error al insertar:", str(e))
             return None
+        
+  
+
+
         
     def obtenerClientePorId(self, id_cliente):
         with connection.cursor() as cursor:
