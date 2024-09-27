@@ -1,0 +1,36 @@
+<title>Ventas</title>
+<body>
+    <h1>Listado de Ventas</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Número de Factura</th>
+                <th>Fecha y Hora de Venta</th>
+                <th>Nombre del Edificio</th>
+                <th>Método de Pago</th>
+                <th>Nombre del Empleado</th>
+                <th>Monto Total</th>
+                <th>Nombre del Servicio</th>
+                <th>Precio</th>
+                <th>Cantidad</th>
+                <th>Costo Extra</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for venta in ventas %}
+                <tr>
+                    <td>{{ venta.numero_factura }}</td>
+                    <td>{{ venta.fecha_hora_venta }}</td>
+                    <td>{{ venta.nombre_edificio }}</td>
+                    <td>{{ venta.nombre_metodo_pago }}</td>
+                    <td>{{ venta.nombre_empleado }}</td>
+                    <td>{{ venta.monto_total_venta }}</td>
+                    <td>{{ venta.nombre_servicio }}</td>
+                    <td>{{ venta.precio }}</td>
+                    <td>{{ venta.cantidad_detalle_venta }}</td>
+                    <td>{{ venta.costo_extra_detalle_venta }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
