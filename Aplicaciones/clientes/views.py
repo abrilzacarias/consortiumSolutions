@@ -57,10 +57,12 @@ def listarClientes(request):
         
         nombre_vendedor_asignado = cliente[18] if len(cliente) > 18 else ''
 
-        ids_observaciones = cliente[20].split(', ') if cliente[20] else []
-        descripciones_observaciones = cliente[21].split('|') if cliente[21] else []
-        fechas_observaciones = cliente[22].split(', ') if cliente[22] else []
-        horas_observaciones  = cliente[23].split(', ') if cliente[22] else []
+        ids_observaciones = cliente[21].split(', ') if cliente[21] else []
+        descripciones_observaciones = cliente[22].split('|') if cliente[22] else []
+        fechas_observaciones = cliente[23].split(', ') if cliente[23] else []
+        horas_observaciones  = cliente[24].split(', ') if cliente[24] else []
+
+        
         
         observaciones = []
         for i in range(len(ids_observaciones)):
@@ -70,7 +72,7 @@ def listarClientes(request):
                 'fecha_observacion': fechas_observaciones[i] if i < len(fechas_observaciones) else '',
                 'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else ''
             }
-
+            observaciones.append(observacion)
         
         idpersona = clientes.obtenerIdPersona(cliente[0])
         cliente_modificado = {
@@ -133,8 +135,7 @@ def agregarCliente(request):
         
         # Agregar el cliente y obtener el id_cliente
         id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos, vendedor_asignado)
-        print(f"CLIENTE: {id_cliente}")
-        
+       
         if id_cliente:
             
             # Ahora que tienes el id_cliente, agrega la designación del vendedor si hay uno asignado
