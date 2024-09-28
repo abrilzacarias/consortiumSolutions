@@ -27,6 +27,13 @@ def listarActividades(request):
         {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Alta Vendedor', 'descripcion_actividad': 'Se registró un nuevo vendedor.'},
         {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Observación', 'descripcion_actividad': 'Se agregó una observación al presupuesto de Rels B.'},
         {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Baja Cliente', 'descripcion_actividad': 'Un cliente fue dado de baja.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Baja Cliente', 'descripcion_actividad': 'Un cliente fue dado de baja.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Alta Vendedor', 'descripcion_actividad': 'Se registró un nuevo vendedor.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Observación', 'descripcion_actividad': 'Se agregó una observación a la cuenta de un Brenda.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Alta Cliente', 'descripcion_actividad': 'Nuevo cliente registrado.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Alta Vendedor', 'descripcion_actividad': 'Se registró un nuevo vendedor.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Observación', 'descripcion_actividad': 'Se agregó una observación al presupuesto de Rels B.'},
+        {'fecha_actividad': datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 'tipo_actividad': 'Baja Cliente', 'descripcion_actividad': 'Un cliente fue dado de baja.'}
     ]
 
     context = {
