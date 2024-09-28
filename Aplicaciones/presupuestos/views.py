@@ -47,7 +47,7 @@ def agregarPresupuesto(request):
                 lista_precio_total_detalle_presupuesto
             )
         ]
-        print(lista_detalles)
+        #print(lista_detalles)
         id_presupuesto = Presupuesto.insertarPresupuesto(monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
         if id_presupuesto:
            messages.success(request, 'El presupuesto se agregó correctamente.')
@@ -67,21 +67,18 @@ def mostrar_vendedores(request, method='GET'):
             'id_persona__apellido_persona'  # Accediendo al apellido de la tabla Persona
         )
     )
-    for vendedor in vendedores:
-        print(vendedor)
 
     return JsonResponse(vendedores, safe=False)
 
 
 def mostrar_clientes(request, method='GET'):
     servicios = list(Cliente.objects.select_related('id_persona').values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona'))
-    for servicio in servicios:
-        print(servicio)
+    
     return JsonResponse(servicios, safe=False)
 
 def mostrar_edificios(request, id_cliente):
     edificios = list(Edificio.objects.filter(id_cliente=id_cliente).values('id_edificio', 'nombre_edificio'))
-    print(edificios)
+    
     return JsonResponse(edificios, safe=False)
 
 def obtener_servicios(request):
@@ -112,7 +109,7 @@ def eliminarPresupuesto(request, id_presupuesto):
         
         # Verifica si el presupuesto está referenciado en MensajePresupuesto
         detalles = DetallePresupuesto.objects.filter(id_presupuesto=presupuesto.id_presupuesto)
-        print(detalles)
+        #print(detalles)
         if detalles.exists():
              detalles.delete()
              presupuesto.delete()
@@ -231,3 +228,17 @@ def enviarVentas(request, id_presupuesto):
     else:
         print("Error al crear la venta.")  # Imprimir mensaje de error
         return redirect('/presupuestos/')
+
+def eliminarDetallePresupuesto(request, id_detalle):
+    if request.method == 'DELETE':
+        # Obtener el detalle correspondiente
+        detalle = get_object_or_404(DetallePresupuesto, id_detalle_presupuesto=id_detalle)
+
+        # Intentar eliminar el detalle
+        try:
+            detalle.delete()
+            return JsonResponse({'message': 'El detalle de presupuesto se eliminó correctamente.'}, status=200)
+        except Exception as e:
+            return JsonResponse({'message': f'Error al eliminar el detalle de presupuesto: {str(e)}'}, status=500)
+
+    return JsonResponse({'message': 'Método no permitido.'}, status=405)

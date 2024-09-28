@@ -75,7 +75,7 @@ function addNewService(servicios) {
             <input name="subtotales_editar[]" type="hidden" class="subtotal-service-value-editar" value="0.00">
         </div>
         <div class="w-auto">
-            <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+            <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn-editar">-</button>
         </div>
     `;
 
@@ -87,7 +87,7 @@ function addNewService(servicios) {
     // Añadir eventos para recalcular el total cuando cambie algún valor
     $(nuevoServicio).on('change', 'select, input', calcularTotalEditar);
 
-    nuevoServicio.querySelector('.remove-service-btn').addEventListener('click', function() {
+    nuevoServicio.querySelector('.remove-service-btn-editar').addEventListener('click', function() {
         nuevoServicio.remove();
         calcularTotalEditar();
     });
@@ -181,7 +181,7 @@ function setupEditPresupuestoHandlers(buttonElement) {
                                 <input name="subtotales_editar[]" type="hidden" class="subtotal-service-value-editar" value="${parseFloat(detalle.precio_total).toFixed(2)}">
                             </div>
                             <div class="w-auto">
-                                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+                                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn-editar" data-detalle-id="${detalle.id_detalle_presupuesto}">-</button>
                             </div>
                         `;
 
@@ -192,6 +192,54 @@ function setupEditPresupuestoHandlers(buttonElement) {
 
                         // Añadir eventos para recalcular el total cuando cambie algún valor
                         $(nuevoServicio).on('change', 'select, input', calcularTotalEditar);
+
+                        nuevoServicio.querySelector('.remove-service-btn-editar').addEventListener('click', function() {
+                            // Mostrar alerta de confirmación
+                            if (confirm('¿Estás seguro de que deseas eliminar este detalle de presupuesto?')) {
+                                // Obtener el ID del detalle que deseas eliminar
+                                const detalleId = nuevoServicio.querySelector('.remove-service-btn-editar').dataset.detalleId; 
+                                
+                                // Realizar la solicitud fetch para eliminar el detalle
+                                fetch(`/presupuestos/eliminar_detalle/${detalleId}/`, {
+                                    method: 'DELETE', // Usar el método DELETE
+                                    headers: {
+                                        'X-CSRFToken': getCookie('csrftoken') // Asegúrate de enviar el token CSRF
+                                    }
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        return response.json(); // Convertir la respuesta a JSON
+                                    }
+                                    throw new Error('Error al eliminar el detalle de presupuesto');
+                                })
+                                .then(data => {
+                                    alert(data.message); // Mostrar mensaje basado en la respuesta del servidor
+                                    nuevoServicio.remove(); // Eliminar el servicio de la vista
+                                    calcularTotalEditar(); // Llamar a la función para recalcular total
+                                })
+                                .catch(error => {
+                                    alert(error.message); // Mostrar error si ocurre
+                                });
+                            }
+                        });
+                        
+                        // Función para obtener el token CSRF
+                        function getCookie(name) {
+                            let cookieValue = null;
+                            if (document.cookie && document.cookie !== '') {
+                                const cookies = document.cookie.split(';');
+                                for (let i = 0; i < cookies.length; i++) {
+                                    const cookie = cookies[i].trim();
+                                    // Comprobar si esta cookie comienza con el nombre que buscamos
+                                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                                        break;
+                                    }
+                                }
+                            }
+                            return cookieValue;
+                        }
+                        
                     });
 
                     // Recalcular el total inicial
