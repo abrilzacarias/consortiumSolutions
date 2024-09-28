@@ -1,0 +1,50 @@
+<div class="flex justify-between items-center mx-4 text-white">
+
+    <span class="text-sm font-normal text-gray-400">
+        Mostrando
+        <span class="font-semibold text-gray-400">{{ datos.start_index }}-{{ datos.end_index }}</span>
+        de
+        <span class="font-semibold text-gray-400">{{ datos.paginator.count }}</span>
+    </span>
+
+    <nav class="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4" aria-label="Table navigation">
+        <ul class="inline-flex items-stretch -space-x-px">
+            {% if datos.has_previous %}
+                <li>
+                    <a href="?page=1" class="flex items-center justify-center h-full px-3 ml-0 bg-dark rounded-l-lg border hover:bg-gray-700 hover:text-white bg-gray-800 border-gray-700 text-gray-400">
+                        Primera
+                        
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ datos.previous_page_number }}" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight bg-gray border hover:bg-gray-700 bg-gray-800 border-gray-700 text-gray-400 hover:text-white">
+                        &laquo;
+                    </a>
+                </li>
+            {% endif %}
+
+            {% for page in datos.paginator.page_range %}
+                <li>
+                    <a href="?page={{ page }}" class="flex items-center justify-center text-sm py-2 px-3 leading-tight 
+                        bg-gray-800 border border-gray-700 text-gray-400 hover:bg-gray-700 hover:text-white">
+                        {{ page }}
+                    </a>
+                </li>
+            {% endfor %}
+
+            {% if datos.has_next %}
+                <li>
+                    <a href="?page={{ datos.next_page_number }}" class="flex items-center justify-center h-full py-1.5 px-3 leading-tight bg-gray border hover:bg-gray-700 bg-gray-800 border-gray-700 text-gray-400 hover:text-white">
+                        &raquo;
+                    </a>
+                </li>
+                <li>
+                    <a href="?page={{ datos.paginator.num_pages }}" class="flex items-center justify-center h-full px-3 ml-0 bg-dark rounded-r-lg border hover:bg-gray-700 hover:text-white bg-gray-800 border-gray-700 text-gray-400">
+                        Última
+                    </a>
+                </li>
+                
+            {% endif %}
+        </ul>
+    </nav>
+</div>

@@ -6,11 +6,9 @@ from django.contrib import messages
 from ..clientes.models import Cliente, Edificio
 from ..empleados.models import Empleado
 from ..servicios.models import CategoriaServicio
+from ..inicio.views import paginacionTablas
 
-# Create your views here.
 def home(request):
-    # Llamamos al método listarVentas para obtener las ventas
     ventas = Venta.listarVentas()
-    
-    # Retornamos la plantilla con las ventas en el contexto
-    return render(request, 'ventasViews.html', {'ventas': ventas})
+    context = paginacionTablas(request, ventas, 'ventas')
+    return render(request, 'ventasViews.html', context)

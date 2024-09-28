@@ -4,6 +4,7 @@ import datetime
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect
+from ..inicio.views import paginacionTablas
 
 def home(request):
     empleados = Empleado().mostrarEmpleados()
@@ -20,7 +21,9 @@ def home(request):
         ]
     tipoEmpleados = TipoEmpleado.objects.all()
 
-    return render(request, 'empleadoViews.html', {'empleados': empleados, 'tipo_empleados': tipoEmpleados})
+    context = paginacionTablas(request, empleados, 'empleados')
+    context['tipo_empleados'] = tipoEmpleados
+    return render(request, 'empleadoViews.html', context)
 
 
 def agregarEmpleado(request):

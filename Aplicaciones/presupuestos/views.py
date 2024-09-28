@@ -5,11 +5,12 @@ from django.contrib import messages
 from ..clientes.models import Cliente, Edificio
 from ..empleados.models import Empleado
 from ..servicios.models import CategoriaServicio
-# Create your views here.
+from ..inicio.views import paginacionTablas
+
 def home(request):
     presupuestos = Presupuesto.listarPresupuestos()
-    #print(detalle_presupuesto)
-    return render(request, 'listarPresupuestos.html', {'presupuestos': presupuestos})
+    context = paginacionTablas(request, presupuestos, 'presupuestos')
+    return render(request, 'listarPresupuestos.html', context)
 
 def detalle_presupuesto(request, id_presupuesto): 
     detalle_presupuesto = [detalle for detalle in DetallePresupuesto.listarDetallePresupuesto() if detalle['id_presupuesto'] == id_presupuesto]
