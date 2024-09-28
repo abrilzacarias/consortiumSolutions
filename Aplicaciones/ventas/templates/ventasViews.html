@@ -1,38 +1,116 @@
-<title>Ventas</title>
-<body>
-    <h1>Listado de Ventas</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Número de Factura</th>
-                <th>Fecha y Hora de Venta</th>
-                <th>Nombre del Edificio</th>
-                <th>Método de Pago</th>
-                <th>Nombre del Empleado</th>
-                <th>Monto Total</th>
-                <th>Nombre del Servicio</th>
-                <th>Estado de la Venta</th>
-                <th>Precio</th>
-                <th>Cantidad</th>
-                <th>Costo Extra</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for venta in ventas %}
-                <tr>
-                    <td>{{ venta.numero_factura }}</td>
-                    <td>{{ venta.fecha_hora_venta }}</td>
-                    <td>{{ venta.nombre_edificio }}</td>
-                    <td>{{ venta.nombre_metodo_pago }}</td>
-                    <td>{{ venta.nombre_empleado }}</td>
-                    <td>{{ venta.monto_total_venta }}</td>
-                    <td>{{ venta.nombre_servicio }}</td>
-                    <td>{{ venta.descripcion_estado_venta }}</td>
-                    <td>{{ venta.precio }}</td>
-                    <td>{{ venta.cantidad_detalle_venta }}</td>
-                    <td>{{ venta.costo_extra_detalle_venta }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+{% extends 'layout.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas</title>
+    {% load static %}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
+    <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
+        <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+            <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                    <div class="w-full md:w-1/2">
+                        <form class="flex items-center">
+                            <label for="simple-search" class="sr-only">Buscar</label>
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="simple-search" class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white" placeholder="Buscar ventas" required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs text-white-700 uppercase bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-4">Número de Factura</th>
+                                <th scope="col" class="px-4 py-3">Fecha y Hora de Venta</th>
+                                <th scope="col" class="px-4 py-3">Nombre del Edificio</th>
+                                <th scope="col" class="px-4 py-3">Método de Pago</th>
+                                <th scope="col" class="px-4 py-3">Nombre del Empleado</th>
+                                <th scope="col" class="px-4 py-3">Monto Total</th>
+                                <th scope="col" class="px-4 py-3">Nombre del Servicio</th>
+                                <th scope="col" class="px-4 py-3">Estado de la Venta</th>
+                                <th scope="col" class="px-4 py-3">Precio</th>
+                                <th scope="col" class="px-4 py-3">Cantidad</th>
+                                <th scope="col" class="px-4 py-3">Costo Extra</th>
+                                <th scope="col" class="px-4 py-3">
+                                    <span class="sr-only">Acciones</span>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for venta in ventas %}
+                            <tr class="border-b">
+                                <td class="px-4 py-3">{{ venta.numero_factura }}</td>
+                                <td class="px-4 py-3">{{ venta.fecha_hora_venta }}</td>
+                                <td class="px-4 py-3">{{ venta.nombre_edificio }}</td>
+                                <td class="px-4 py-3">{{ venta.nombre_metodo_pago }}</td>
+                                <td class="px-4 py-3">{{ venta.nombre_empleado }}</td>
+                                <td class="px-4 py-3">{{ venta.monto_total_venta }}</td>
+                                <td class="px-4 py-3">{{ venta.nombre_servicio }}</td>
+                                <td class="px-4 py-3">{{ venta.descripcion_estado_venta }}</td>
+                                <td class="px-4 py-3">{{ venta.precio }}</td>
+                                <td class="px-4 py-3">{{ venta.cantidad_detalle_venta }}</td>
+                                <td class="px-4 py-3">{{ venta.costo_extra_detalle_venta }}</td>
+                                <td class="px-4 py-3 flex items-center justify-end">
+                                    <button id="{{ venta.id_venta }}-dropdown-button" data-dropdown-toggle="{{ venta.id_venta }}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none" type="button">
+                                        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                        </svg>
+                                    </button>
+                                    <div id="{{ venta.id_venta }}-dropdown" class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
+                                        <ul class="py-1 text-sm text-gray-700" aria-labelledby="{{ venta.id_venta }}-dropdown-button">
+                                            <li>
+                                                <button type="button" data-modal-target="editarVentaModal" data-modal-toggle="editarVentaModal" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700" data-id-venta-editar="{{ venta.id_venta }}" onclick="setupEditVentaHandlers(this)">
+                                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                                    </svg>
+                                                    Editar
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" data-modal-target="verVentaModal" data-modal-toggle="verVentaModal" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700" data-id-venta="{{ venta.id_venta }}" onclick="verDetallesVenta(this)">
+                                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M5 4a2 2 0 100 4 2 2 0 000-4zM2 10a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 10z" />
+                                                    </svg>
+                                                    Ver
+                                                </button>
+                                            </li>
+                                            <li>
+                                                <button type="button" data-id-venta-eliminar="{{ venta.id_venta }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-red-600" onclick="eliminarVenta(this)">
+                                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2h1v10a2 2 0 002 2h6a2 2 0 002-2V6h1a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM6 6v10h8V6H6z" clip-rule="evenodd" />
+                                                    </svg>
+                                                    Eliminar
+                                                </button>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
 </body>
+</html>
+{% endblock content %}
