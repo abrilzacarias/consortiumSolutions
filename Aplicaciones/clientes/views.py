@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required
 from datetime import datetime
-
+from ..inicio.views import paginacionTablas
 
 empleado = Empleado()
 clientes = Clientes()
@@ -111,8 +111,11 @@ def listarClientes(request):
 
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
+
+    context = paginacionTablas(request, resultados_modificados, 'resultados')
+    context['empleados'] = empleados
         
-    return render(request, 'clientesviews.html', {'resultados': resultados_modificados, 'empleados': empleados})
+    return render(request, 'clientesviews.html', context)
 
 def agregarCliente(request):
     if request.method == 'POST':
