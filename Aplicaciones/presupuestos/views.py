@@ -125,37 +125,30 @@ def eliminarPresupuesto(request, id_presupuesto):
 
     return redirect('/presupuestos/')  # Redirige en caso de solicitud no POST
 
+
 def editarPresupuesto(request):
     if request.method == 'POST':
         id_presupuesto = request.POST.get('id_presupuesto')
-        print(id_presupuesto)
         monto_total_presupuesto = request.POST.get('totalCostEditar')
         id_edificio = request.POST.get('edificio_asignado_editar')
         id_empleado = request.POST.get('vendedor_asignado_editar')
-        
+
         lista_cantidad_detalle_presupuesto = request.POST.getlist('cantidades_editar[]')
         costos_extra = request.POST.getlist('costos_extra_editar[]')
         lista_precio_total_detalle_presupuesto = request.POST.getlist('subtotales_editar[]')
         lista_id_servicio = request.POST.getlist('servicios_editar[]')
         lista_id_detalles = request.POST.getlist('id_detalles_editar[]')
-        print(monto_total_presupuesto)
-        print(id_edificio)
-        print(id_empleado)
-        print(lista_cantidad_detalle_presupuesto)
-        print(f"costos_extra: {costos_extra}")
-        print(f"lista_precio_total_detalle_presupuesto: {lista_precio_total_detalle_presupuesto}")
-        print(f'lista_id_servicio: {lista_id_servicio}')
-        print(f'lista_id_detalles: {lista_id_detalles}')
-        
+
+        # Lógica para crear la lista de detalles del presupuesto
         lista_detalles = [
-            {   
-                'id_detalle_presupuesto': lista_id_detalles,
+            {
+                'id_detalle_presupuesto': id_detalle,
                 'id_servicio': id_servicio,
                 'cantidad': cantidad,
-                'costos_extra': costos_extra,
+                'costos_extra': costo_extra,
                 'precio_total': precio_total
             }
-            for lista_id_detalles, id_servicio, cantidad, costos_extra, precio_total in zip(
+            for id_detalle, id_servicio, cantidad, costo_extra, precio_total in zip(
                 lista_id_detalles,
                 lista_id_servicio,
                 lista_cantidad_detalle_presupuesto,
@@ -164,15 +157,25 @@ def editarPresupuesto(request):
             )
         ]
 
-        print(f'lista_detalles: {lista_detalles}')
+        # Obtener el tipo de acción: editar o enviar a ventas
+        action_type = request.POST.get('action_type')
 
-        resultado = Presupuesto.actualizarPresupuesto(id_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
-        if resultado:
-            messages.success(request, 'El presupuesto se actualizó correctamente.')
+        if action_type == 'editar':
+            # Si el botón presionado es "Editar Presupuesto"
+            resultado = Presupuesto.actualizarPresupuesto(id_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
+            if resultado:
+                messages.success(request, 'El presupuesto se actualizó correctamente.')
+            else:
+                messages.error(request, 'Hubo un error al actualizar el presupuesto.')
             return redirect('/presupuestos/')
-        else:
-            messages.error(request, 'Hubo un error al actualizar el presupuesto.')
-        return redirect('/presupuestos/')
+
+        elif action_type == 'enviarVentas':
+            # Redirigir a la vista de enviar a ventas
+            return redirect('presupuestos:enviarVentas', id_presupuesto=id_presupuesto)
+
+    return redirect('/presupuestos/')
+
+
 
 def obtenerPresupuesto(request, id_presupuesto):
     if request.method == 'GET':
@@ -217,3 +220,14 @@ def obtenerPresupuesto(request, id_presupuesto):
 
     # Manejar casos donde el método de solicitud no sea GET
     return JsonResponse({'error': 'Método de solicitud no válido'}, status=405)
+
+
+def enviarVentas(request, id_presupuesto):
+    print(f"ID Presupuesto recibido en enviarVentas: {id_presupuesto}")  # Imprimir el id_presupuesto
+    id_venta = Presupuesto.enviarVentas(id_presupuesto)
+    if id_venta:
+        print(f"Venta creada con ID: {id_venta}")  # Imprimir el id de la venta creada
+        return redirect('/ventas/')
+    else:
+        print("Error al crear la venta.")  # Imprimir mensaje de error
+        return redirect('/presupuestos/')

@@ -284,58 +284,63 @@ stylesheet
             <form id="editarPresupuestoForm" action="{% url 'presupuestos:editarPresupuesto' %}" method="POST"> 
                 {% csrf_token %}
                 <input type="hidden" id="id_presupuesto_editar" name="id_presupuesto" value="">
+                
+                <!-- Campo oculto para determinar la acción -->
+                <input type="hidden" id="action_type" name="action_type" value="editar">
+            
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div id="vendedorSection" class="mb-4">
                         <label for="vendedor_asignado_editar" class="block text-sm mb-2 font-medium text-white">Vendedor Asignado</label>
                         <select id="vendedor_asignado_editar" class="select2" name="vendedor_asignado_editar" autocomplete="off">
                         </select>
                     </div>
-                    <div>
-                        
-                    </div>
+            
                     <div>
                         <label for="cliente_asignado_editar" class="block text-sm mb-2 font-medium text-white">Cliente</label>
                         <select id="cliente_asignado_editar" class="select2" name="cliente_asignado_editar" autocomplete="off">
                         </select>
                     </div>
+            
                     <div>
                         <label for="edificio_asignado_editar" class="block text-sm mb-2 font-medium text-white">Edificio</label>
                         <select id="edificio_asignado_editar" class="select2" name="edificio_asignado_editar" autocomplete="off">
                             <option value="">Seleccione un edificio</option>
                         </select>
                     </div>
-                
                 </div>
-
-                <!-- Servicios - Ahora fuera del grid y ocupando todo el ancho -->
+            
+                <!-- Servicios -->
                 <div id="serviciosSection" class="mb-6">
                     <label class="block text-sm font-medium text-gray-200 mb-2">Servicios</label>
                     <div id="serviciosContainerEditar" class="space-y-3">
                         <!-- Aquí se generarán dinámicamente los servicios -->
                     </div>
                     <div class="flex mt-3">
-                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-yellow-400 rounded-lg hover:bg-yellow-500 focus:ring-4 focus:outline-none focus:ring-yellow-300" id="addServiceBtn">
-                            Agregar Otro Servicio
-                        </button>
-                    </div>  
+                        <button type="button" class="px-4 py-2 text-sm font-medium text-white bg-yellow-400  rounded-lg hover:bg-yellow-700 focus:ring-4 focus:outline-none focus:ring-blue-300" id="addServiceBtnEditar">Agregar Otro Servicio</button>
+                    </div>
                     <p id="totalCostDisplayEditar" class="text-white mt-4">Total: $0.00</p>
                     <input type="hidden" id="totalCostEditar" name="totalCostEditar" value="0.00">
                 </div>
             
-                <div class="flex justify-end space-x-4">
-                    <button type="submit" class="text-white bg-blue-600 inline-flex items-center hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                <!-- Botones -->
+                <div class="flex space-x-4">
+                    <button type="submit" class="text-white bg-blue-600 inline-flex items-center hover:bg-blue-700 font-medium rounded-lg text-sm px-5 py-2.5 text-center" 
+                        onclick="document.getElementById('action_type').value='editar';">
                         <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
-                        Guardar Presupuesto
+                        Editar Presupuesto
                     </button>
-                    <button type="button" class="text-white bg-green-700 inline-flex items-center hover:bg-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+            
+                    <button type="submit" class="text-white bg-green-700 inline-flex items-center hover:bg-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center" 
+                        onclick="document.getElementById('action_type').value='enviarVentas';">
                         <svg class="mr-1 w-6 h-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                             <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                         Enviar a Ventas
                     </button>
-            </form> 
+                </div>
+            </form>
         </div>
     </div>
 </div>

@@ -19,10 +19,11 @@ class Presupuesto(models.Model):
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
             sqlListarPresupuestos = """
-                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto FROM presupuesto pr
+                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto FROM presupuesto pr
                     JOIN edificio e ON e.id_edificio = pr.id_edificio
                     JOIN empleado emp ON emp.id_empleado = pr.id_empleado
-                    JOIN persona per ON per.id_persona = emp.id_persona;
+                    JOIN persona per ON per.id_persona = emp.id_persona
+                    WHERE pr.estado_presupuesto = 0;
                     """
             cursor.execute(sqlListarPresupuestos)
             resultados = cursor.fetchall()
@@ -33,7 +34,8 @@ class Presupuesto(models.Model):
                 'fecha_hora_presupuesto': resultado[1],
                 'nombre_edificio': resultado[2],
                 'nombre_persona': resultado[3],
-                'monto_total_presupuesto': resultado[4]
+                'monto_total_presupuesto': resultado[4],
+                
             }
             presupuestos.append(presupuesto_modificado)
         return presupuestos
@@ -107,6 +109,94 @@ class Presupuesto(models.Model):
         except Exception as e:
             print("Error al actualizar presupuesto:", str(e))
             return False
+        
+    def generarNumeroFactura():
+        # Obtener el número secuencial más alto ya existente en la base de datos
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT MAX(numero_factura) FROM venta;")
+            resultado = cursor.fetchone()
+            if resultado[0] is not None:
+                ultimo_numero_factura = int(resultado[0].split('-')[1])  # Extraer el número
+            else:
+                ultimo_numero_factura = 0  # Si no hay facturas, empezar en 0
+
+        nuevo_numero_factura = ultimo_numero_factura + 1  # Incrementar el número secuencial
+        return f"FACT-{str(nuevo_numero_factura).zfill(3)}"  # Formato FACT-001
+
+
+    @classmethod
+    def enviarVentas(cls, id_presupuesto):
+        try:
+            # Obtener el presupuesto y sus detalles
+            with connection.cursor() as cursor:
+                # Consulta para obtener el presupuesto
+                sqlPresupuesto = """
+                    SELECT id_presupuesto, fecha_hora_presupuesto, monto_total_presupuesto, id_edificio, id_empleado 
+                    FROM presupuesto
+                    WHERE id_presupuesto = %s;
+                """
+                cursor.execute(sqlPresupuesto, [id_presupuesto])
+                presupuesto = cursor.fetchone()
+
+                if presupuesto:
+                    # Generar número de factura en el formato FACT-001
+                    numeroFactura = cls.generarNumeroFactura()  
+
+                    # Insertar el presupuesto en la tabla de ventas
+                    sqlInsertarVenta = """
+                        INSERT INTO venta (numero_factura, fecha_hora_venta, monto_total_venta, id_edificio, id_empleado, id_presupuesto)
+                        VALUES (%s, %s, %s, %s, %s, %s);
+                    """
+                    cursor.execute(sqlInsertarVenta, [numeroFactura, presupuesto[1], presupuesto[2], presupuesto[3], presupuesto[4], id_presupuesto])
+                    id_venta = cursor.lastrowid
+
+                    # Obtener los detalles del presupuesto
+                    sqlDetallePresupuesto = """
+                        SELECT id_detalle_presupuesto, cantidad_detalle_presupuesto, costo_extra_presupuesto, precio_total_detalle_presupuesto, id_servicio
+                        FROM detalle_presupuesto
+                        WHERE id_presupuesto = %s;
+                    """
+                    cursor.execute(sqlDetallePresupuesto, [id_presupuesto])
+                    detalles_presupuesto = cursor.fetchall()
+
+                    # Insertar los detalles en detalle_venta
+                    for detalle in detalles_presupuesto:
+                        sqlInsertarDetalleVenta = """
+                            INSERT INTO detalle_venta (cantidad_detalle_venta, costo_extra_detalle_venta, precio_total_detalle_venta, id_venta, id_servicio)
+                            VALUES (%s, %s, %s, %s, %s);
+                        """
+                        cursor.execute(sqlInsertarDetalleVenta, [detalle[1], detalle[2], detalle[3], id_venta, detalle[4]])
+
+                        id_detalle_venta = cursor.lastrowid  # Obtener el último ID de detalle_venta insertado
+
+                        # Ahora insertar en la tabla intermedia de estado de venta
+                        sqlInsertarEstadoVenta = """
+                            INSERT INTO registro_estado_venta (fecha_hora_registro_estado_venta, id_detalle_venta, id_estado_venta, id_empleado)
+                            VALUES (%s, %s, %s, %s);
+                        """
+                        
+                        try:
+                            cursor.execute(sqlInsertarEstadoVenta, [
+                                None,  # fecha_hora_registro_estado_venta inicial nulo
+                                id_detalle_venta, 
+                                None,  # id_estado_venta inicial nulo
+                                presupuesto[4]  # Asignar id_empleado
+                            ])
+                        except Exception as e:
+                            print("Error al insertar en registro_estado_venta:", str(e))
+
+                    # Confirmar las transacciones
+                    connection.commit()
+
+                    return id_venta
+                else:
+                    print("No se encontró el presupuesto.")
+                    return None
+        except Exception as e:
+            print("Error al enviar ventas:", str(e))
+            connection.rollback()
+            return None
+
 
 
 class DetallePresupuesto(models.Model):
@@ -156,3 +246,4 @@ class DetallePresupuesto(models.Model):
             detalle_presupuesto.append(detalle_presupuesto_modificado)
         
         return detalle_presupuesto
+
