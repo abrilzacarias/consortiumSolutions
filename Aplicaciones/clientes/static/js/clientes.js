@@ -1,40 +1,37 @@
- $(document).ready(function() {
-  $('#tableClientes').DataTable({
-    language: {
-      info: 'Mostrando página _PAGE_ de _PAGES_',
-      infoEmpty: 'No hay vendedores cargados.',
-      infoFiltered: '(Se ha filtrado de _MAX_ registros totales.)',
-      lengthMenu: 'Mostrar _MENU_ registros por página.',
-      zeroRecords: 'No se ha encontrado ningún registro.',
-      search: 'Buscar: '
-    },
-    lengthMenu: [
-      [5, 10, 25, -1],
-      [5, 10, 25, 'Todos']
-  ],
-  scrollX: true
-  });
+// Asegurarse de que el DOM esté completamente cargado antes de ejecutar el código
+document.addEventListener('DOMContentLoaded', function () {
+    // Obtener los botones y los elementos de cliente
+    const btnTodos = document.getElementById('btn-todos');
+    const btnProspectos = document.getElementById('btn-prospectos');
+    const btnClientes = document.getElementById('btn-clientes');
+    const clientes = document.querySelectorAll('.border-b-cliente'); // Seleccionamos todos los clientes
 
-
-});
-
-document.addEventListener('DOMContentLoaded', (event) => {
-  const btnsFiltro = document.querySelectorAll('.btn-filtro');
-  
-   btnsFiltro.forEach(btn => {
-        btn.addEventListener('click', () => {
-
-          const tipoCliente = btn.dataset.tipoCliente;
-          
-          const filasClientes = document.querySelectorAll('tbody tr');
-          console.log(filasClientes)
-          filasClientes.forEach(fila => {
-            if (fila.dataset.tipoCliente === tipoCliente || tipoCliente === 'todos') {
-              fila.style.display = 'table-row';
-            } else {
-              fila.style.display = 'none';
-            }
-          });
+    // Función para mostrar todos los clientes
+    btnTodos.addEventListener('click', () => {
+        clientes.forEach(cliente => {
+            cliente.style.display = 'table-row'; // Mostrar todos
         });
-      })
     });
+
+    // Función para mostrar solo prospectos
+    btnProspectos.addEventListener('click', () => {
+        clientes.forEach(cliente => {
+            if (cliente.getAttribute('data-tipo') === '0') {
+                cliente.style.display = 'table-row'; // Mostrar prospectos
+            } else {
+                cliente.style.display = 'none'; // Ocultar otros
+            }
+        });
+    });
+
+    // Función para mostrar solo clientes
+    btnClientes.addEventListener('click', () => {
+        clientes.forEach(cliente => {
+            if (cliente.getAttribute('data-tipo') === '1') {
+                cliente.style.display = 'table-row'; // Mostrar clientes
+            } else {
+                cliente.style.display = 'none'; // Ocultar otros
+            }
+        });
+    });
+});

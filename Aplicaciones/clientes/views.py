@@ -207,8 +207,6 @@ def editarCliente(request, id_cliente):
                         'descripcion_contacto': descripcion_contacto
                     })
 
-        # Agregar print para ver los contactos que están llegando
-        print("Datos de contacto editados o nuevos:", contactos_data)
         
         # Verificar que el cliente existe
         cliente_actual = clientes.obtenerClientePorId(id_cliente)

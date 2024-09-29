@@ -9,7 +9,6 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/clientes.css' %}" />
     <script src="{% static 'js/clientes.js' %}"></script>
-
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
@@ -34,6 +33,11 @@
                                     <input type="text" id="simple-search" class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
                                 </div>
                             </form>
+                            <div class="flex flex-wrap justify-center space-x-2 mt-4">
+                                <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-todos">Todos</button>
+                                <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-prospectos">Prospectos</button>
+                                <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-clientes">Clientes</button>
+                            </div>
                         </div>
                         <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                             <button type="button" id="agregarClienteBoton" data-modal-target="agregarClienteModal" data-modal-toggle="agregarClienteModal" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
@@ -64,16 +68,22 @@
                                         </th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody id="tabla-resultados-clientes">
                                     {% for cliente in resultados %}
                                     
-                                    <tr class="border-b">
+                                    <tr class="border-b-cliente" data-tipo="{{ cliente.tipo_cliente }}">
                                         <td class="px-4 py-3">{{cliente.nombre_cliente}} {{cliente.apellido_cliente}}</td>
                                         
                                         <td class="px-4 py-3">{{cliente.cuit_cliente}}</td>
                                         <td class="px-4 py-3 max-w-[12rem] truncate">{{cliente.direccion_cliente}}</td>
                                         <td class="px-4 py-3">{{cliente.clave_cliente}}</td>
-                                        <td class="px-4 py-3">{{cliente.tipo_cliente}}</td>
+                                        <td class="px-4 py-3">    {% if cliente.tipo_cliente == 0 %}
+                                            Prospecto
+                                        {% elif cliente.tipo_cliente == 1 %}
+                                            Cliente
+                                        {% else %}
+                                            {{ cliente.tipo_cliente }}
+                                        {% endif %} </td>
                                         <td class="px-4 py-3">{{cliente.matricula_cliente}}</td>
                                         <td class="px-4 py-3">{{cliente.fecha_vencimiento}}</td>
                                         <td class="px-4 py-3">{% if cliente.contactos %}
@@ -443,12 +453,12 @@
                             <td class="px-4 py-3"> {{edificio.cuit_edificio}}</td>
                             <td class="px-4 py-3"> {{edificio.tipo_edificio}}</td>
                             <td class="px-4 py-3 flex items-center justify-end">
-                                <button id="{{edificio.id_edificio}}-dropdown-button" data-dropdown-toggle="{{edificio.id_edificio}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                                <button id="edificio-{{edificio.id_edificio}}-dropdown-button" data-dropdown-toggle="edificio-{{edificio.id_edificio}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                     <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                         <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                     </svg>
                                 </button>
-                                <div id="{{edificio.id_edificio}}-dropdown" class="hidden z-10 w-44  bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
+                                <div id="edificio-{{edificio.id_edificio}}-dropdown" class="hidden z-10 w-44  bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
                                     <ul class="py-1 text-sm" aria-labelledby="{{edificio.id_edificio}}-dropdown-button">
                                         <li>
                                             <button type="button" data-modal-target="editarEdificioModal_{{ edificio.id_edificio }}" data-modal-toggle="editarEdificioModal_{{ edificio.id_edificio }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
