@@ -63,11 +63,10 @@ def mostrar_vendedores(request, method='GET'):
     vendedores = list(
         Empleado.objects.select_related('id_persona').filter(tipo_empleado_id=1).values(
             'id_empleado',
-            'id_persona__nombre_persona',  # Accediendo al nombre de la tabla Persona
-            'id_persona__apellido_persona'  # Accediendo al apellido de la tabla Persona
+            'id_persona__nombre_persona',
+            'id_persona__apellido_persona'
         )
     )
-
     return JsonResponse(vendedores, safe=False)
 
 
