@@ -177,3 +177,9 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'consortiumsolutionsarg@gmail.com'
 EMAIL_HOST_PASSWORD = 'ypqc mowx oqfy delw'
 
+
+
+
+API_TOKEN = "b6f0ac307a7b6da895b6e329bc5d3f83"
+API_KEY = "64949"
+USER_TOKEN = "b436f25f0f4b57cd11e428d84dc1e88b653c4129e6b08addff425399829b4c7f"
