@@ -19,6 +19,15 @@ def paginacionTablas(request, datos, nombre_variable, items_por_pagina=10):
     }
 
     return context
+
+def buscarActividades(request):
+    query = request.GET.get('busqueda', '')  # Toma el parámetro 'q' del GET
+    if query:
+        resultados = Empleado.objects.filter(nombre__icontains=query)  # Realiza la búsqueda
+    else:
+        resultados = Empleado.objects.none()  # Si no hay consulta, no muestra resultados
+
+    return render(request, 'buscar.html', {'resultados': resultados, 'query': query})
     
 @login_required
 def listarActividades(request):
