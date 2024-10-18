@@ -46,6 +46,7 @@
                     <table class="w-full text-sm text-left text-gray-400">
                         <thead class="text-xs text-white-700 uppercase bg-gray-700">
                             <tr>
+                                <th scope="col" class="px-4 py-4">N° Factura</th>
                                 <th scope="col" class="px-4 py-4">Fecha y Hora de Venta</th>
                                 <th scope="col" class="px-4 py-3">Nombre del Edificio</th>
                                 <th scope="col" class="px-4 py-3">Nombre del Empleado</th>
@@ -58,6 +59,7 @@
                         <tbody>
                             {% for venta in ventas %}
                             <tr class="border-b">
+                                <td class="px-4 py-3">{{ venta.numero_factura }}</td>
                                 <td class="px-4 py-3">{{ venta.fecha_hora_venta }}</td>
                                 <td class="px-4 py-3">{{ venta.nombre_edificio }}</td>
                                 <td class="px-4 py-3">{{ venta.nombre_empleado }}</td>
@@ -144,6 +146,7 @@
                     </button>
                 </div>
                 <!-- Tabla de los detalles de venta -->
+               <!-- <p class="text-gray-400">Total de detalles: {{ venta.detalles|length }}</p> <!-- Aquí se muestra la longitud -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-400">
                         <thead class="text-xs text-white-700 uppercase bg-gray-700">
@@ -157,14 +160,16 @@
                             </tr>
                         </thead>
                         <tbody>
+                            {% for detalle in venta.detalles %}
                             <tr>
                                 <td class="px-4 py-3">{{ venta.nombre_metodo_pago }}</td>
-                                <td class="px-4 py-3">{{ venta.nombre_servicio }}</td>
-                                <td class="px-4 py-3">{{ venta.cantidad_detalle_venta }}</td>
-                                <td class="px-4 py-3">{{ venta.precio }}</td>
-                                <td class="px-4 py-3">{{ venta.costo_extra_detalle_venta }}</td>
-                                <td class="px-4 py-3">{{ venta.descripcion_estado_venta }}</td>
+                                <td class="px-4 py-3">{{ detalle.nombre_servicio }}</td>
+                                <td class="px-4 py-3">{{ detalle.cantidad_detalle_venta }}</td>
+                                <td class="px-4 py-3">{{ detalle.precio_detalle_venta }}</td>
+                                <td class="px-4 py-3">{{ detalle.costo_extra_detalle_venta }}</td>
+                                <td class="px-4 py-3">{{ detalle.descripcion_estado_venta }}</td>
                             </tr>
+                            {% endfor %}
                         </tbody>
                     </table>
                 </div>
@@ -177,6 +182,7 @@
     <script>
         function verDetallesVenta(button) {
             const ventaId = button.getAttribute('data-id-venta');
+            console.log("ID de venta:", ventaId);
             const modalId = `verVentaModal-${ventaId}`;
             const modal = document.getElementById(modalId);
             if (modal.classList.contains('hidden')) {
@@ -187,6 +193,7 @@
                 modal.classList.remove('flex');
             }
         }
+
 
         function setupEditVentaHandlers(button) {
             const ventaId = button.getAttribute('data-id-venta-editar');
