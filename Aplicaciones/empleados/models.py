@@ -1,7 +1,25 @@
 from django.db import models, connection
 from django.utils import timezone
+from django.contrib.auth import get_user_model
+from django.utils.crypto import get_random_string
+from django.contrib.auth.models import Group
+from django.conf import settings
+from django.core.mail import send_mail
 
 current_datetime = timezone.localtime(timezone.now())
+
+def enviar_correo_credenciales_usuario(correo_electronico, password):
+    asunto = 'Credenciales de acceso al sistema ConsortiumSolutions'
+    mensaje = (
+        f'Tu cuenta ha sido creada exitosamente.\n\n'
+        f'Correo electrónico: {correo_electronico}\n'
+        f'Contraseña: {password}\n\n'
+        f'Por favor, inicia sesión con las credenciales proporcionadas.\n'
+    )
+    remitente = settings.EMAIL_HOST_USER 
+
+    # Enviar el correo
+    send_mail(asunto, mensaje, remitente, [correo_electronico])
 
 def dictfetchall(cursor):
     "Return all rows from a cursor as a dict"
@@ -82,18 +100,11 @@ class Empleado(models.Model):
             result = cursor.fetchone()
         return result is not None
 
-    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, id_tipo_empleado, listaContactos):
+    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, id_tipo_empleado, listaContactos, correo_electronico):
         nombre = nombre_persona.capitalize()
         apellido = apellido_persona.capitalize()
+        User = get_user_model()
         try:
-            print("Valores recibidos:")
-            print(f"nombre_persona: {nombre_persona}")
-            print(f"apellido_persona: {apellido_persona}")
-            print(f"cuitl_persona: {cuitl_persona}")
-            print(f"direccion_persona: {direccion_persona}")
-            print(f"id_tipo_empleado: {id_tipo_empleado}")
-            print(f"contactos_data: {listaContactos}")
-            
             # Verificar si la persona ya existe como empleado
             if not self.empleadoExiste(cuitl_persona):
                 with connection.cursor() as cursor:
@@ -110,20 +121,52 @@ class Empleado(models.Model):
 
                         print("ID de nueva persona:", idPersona)
 
-                        # Insertar nuevo Empleado
-                        cursor.execute("""
-                            INSERT INTO empleado (fecha_alta_empleado, fecha_baja_empleado, id_persona, id_tipo_empleado)
-                            VALUES (%s, %s, %s, %s)
-                        """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, id_tipo_empleado])
-                        print("Nuevo empleado insertado.")
+                        try:
+                            password = get_random_string(8)
+                            # Crear el usuario
+                            user = User.objects.create_user(
+                                correo_electronico=correo_electronico,
+                                password=password,
+                                nombre_usuario=f'{nombre}{password[:3]}'.lower() 
+                            )
+                            print(user)
+                            id_usuario = user.id_usuario 
+                            print("ID del usuario creado:", id_usuario)
 
-                        # Insertar contactos
-                        for tipoContacto, contacto in listaContactos:
+                            print(password)
+                            # Asignar el rol al usuario
+                            if id_tipo_empleado:
+                                rol = Group.objects.get(id=id_tipo_empleado)  # Obtiene el grupo (rol) por id
+                                user.groups.add(rol)
+                                print("Rol asignado al usuario:", rol.name)
+
+                            # Insertar nuevo Empleado con id_usuario
                             cursor.execute("""
-                                INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona)
-                                VALUES (%s, %s, %s)
-                            """, [contacto, tipoContacto, idPersona])
-                            print("Contacto insertado:", contacto, tipoContacto)
+                                INSERT INTO empleado (
+                                    fecha_alta_empleado, fecha_baja_empleado, id_persona, 
+                                    id_tipo_empleado, id_usuario
+                                ) VALUES (%s, %s, %s, %s, %s)
+                            """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, id_tipo_empleado, id_usuario])
+
+                            # Insertar contactos
+                            for tipoContacto, contacto in listaContactos:
+                                cursor.execute("""
+                                    INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona)
+                                    VALUES (%s, %s, %s)
+                                """, [contacto, tipoContacto, idPersona])
+                            
+                            #insertar correo electronico aparte
+                            cursor.execute("""
+                                    INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona)
+                                    VALUES (%s, %s, %s)
+                                """, [correo_electronico, 1, idPersona])
+                            
+
+                            enviar_correo_credenciales_usuario(correo_electronico, password)
+                        except Exception as e:
+                            connection.rollback()
+                            print("Error:", str(e))
+                            return False
 
                         connection.commit()
                         print("Transacción de inserción completada.")
@@ -251,22 +294,33 @@ class Empleado(models.Model):
 
     def eliminarEmpleado(self, idEmpleado):
         try:
+            print("Eliminando empleado con ID:", idEmpleado)
             with connection.cursor() as cursor:
-                # Obtener id_persona asociado al id_empleado
+                # Actualizar la fecha de baja del empleado
                 cursor.execute("""
-                    SELECT id_persona FROM empleado WHERE id_empleado = %s;
-                """, [idEmpleado])
-                result = cursor.fetchone()
+                    UPDATE empleado 
+                    SET fecha_baja_empleado = %s 
+                    WHERE id_empleado = %s;
+                """, [current_datetime, idEmpleado])
 
-                if result:
-                    id_persona = result[0]
+                # Verificar si alguna fila fue afectada
+                if cursor.rowcount > 0:
+                    print(f"Empleado con ID {idEmpleado} encontrado y actualizado.")
 
-                    # Actualizar la fecha de baja en la tabla empleado
+                    # Obtener el ID del usuario asociado al empleado para darlo de baja tambien
                     cursor.execute("""
-                        UPDATE empleado SET fecha_baja_empleado = %s WHERE id_empleado = %s;
-                    """, [current_datetime, idEmpleado])
+                        SELECT id_usuario FROM empleado WHERE id_empleado = %s;
+                    """, [idEmpleado])
+                    user_result = cursor.fetchone()
 
-                    # Actualizar la fecha de baja en la tabla persona
+                    if user_result:
+                        id_usuario = user_result[0]
+                        User = get_user_model()
+
+                        # Desactivar el usuario (eliminación lógica)
+                        User.objects.filter(id_usuario=id_usuario).update(is_active=False)
+                        print(f"Usuario con ID {id_usuario} desactivado.")
+
                     connection.commit()
                     print("Empleado eliminado correctamente.")
                     return True
@@ -278,4 +332,3 @@ class Empleado(models.Model):
             print("Error al eliminar el empleado:", str(e))
             connection.rollback()
             return False
-

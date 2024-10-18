@@ -100,3 +100,24 @@ def enviar_factura_prueba(request):
 
     return JsonResponse(data.decode("utf-8"), safe=False)
 
+
+def editarVenta(request, id_venta):
+    if request.method == 'POST':
+        metodo_pago = request.POST.get('metodo_pago')
+        estado_venta = request.POST.get('estado_venta')
+        # ... (obten el resto de los datos necesarios y actualiza la venta)
+        
+        # Lógica para actualizar la venta
+        # Asegúrate de usar el id_venta para encontrar la venta correspondiente y hacer la actualización
+        try:
+            venta = Venta.objects.get(id_venta=id_venta)
+            venta.metodo_pago = metodo_pago
+            venta.estado_venta = estado_venta
+            venta.save()
+            messages.success(request, 'La venta se actualizó correctamente.')
+        except Venta.DoesNotExist:
+            messages.error(request, 'No se encontró la venta.')
+        
+        return redirect('/ventas/')
+
+    return redirect('/ventas/')  # Redirige si no es una petición POST

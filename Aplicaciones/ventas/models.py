@@ -76,5 +76,102 @@ class Venta(models.Model):
                 ventas[numero_factura]['detalles'].append(detalle)
 
             return list(ventas.values())
+        
+        
+    @classmethod
+    def editarVenta(cls, id_presupuesto, nuevo_monto_total, nuevo_id_edificio, nuevo_id_empleado, lista_detalles):
+        try:
+            current_datetime = now()
 
+            with connection.cursor() as cursor:
+                # Actualizar el presupuesto principal
+                sqlActualizarPresupuesto = """
+                    UPDATE presupuesto
+                    SET fecha_hora_presupuesto = %s,
+                        monto_total_presupuesto = %s,
+                        id_edificio = %s,
+                        id_empleado = %s
+                    WHERE id_presupuesto = %s;
+                """
+                cursor.execute(sqlActualizarPresupuesto, [current_datetime, nuevo_monto_total, nuevo_id_edificio, nuevo_id_empleado, id_presupuesto])
+
+                # Procesar los detalles
+                for detalle in lista_detalles:
+                    if detalle['id_detalle_presupuesto'] == 'null':
+                        detalle['id_detalle_presupuesto'] = None
+                        
+                    if detalle['id_detalle_presupuesto']:
+                        # Actualizar el detalle si ya existe
+                        sqlActualizarDetalle = """
+                            UPDATE detalle_presupuesto
+                            SET cantidad_detalle_presupuesto = %s,
+                                costo_extra_presupuesto = %s,
+                                precio_total_detalle_presupuesto = %s
+                            WHERE id_presupuesto = %s AND id_servicio = %s;
+                        """
+                        cursor.execute(sqlActualizarDetalle, [detalle['cantidad'], detalle['costos_extra'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
+                    else:
+                        # Insertar nuevo detalle si no existe
+                        sqlInsertarDetalle = """
+                            INSERT INTO detalle_presupuesto
+                            (cantidad_detalle_presupuesto, costo_extra_presupuesto, precio_total_detalle_presupuesto, id_presupuesto, id_servicio)
+                            VALUES (%s, %s, %s, %s, %s);
+                        """
+                        cursor.execute(sqlInsertarDetalle, [detalle['cantidad'], detalle['costos_extra'], detalle['precio_total'], id_presupuesto, detalle['id_servicio']])
                 
+                connection.commit()
+                print("Actualización y commit completados con éxito")
+            return True
+        except Exception as e:
+            print("Error al actualizar presupuesto:", str(e))
+            return False
+
+
+    def editarVenta(request):
+        if request.method == 'POST':
+            id_presupuesto = request.POST.get('id_presupuesto')
+            monto_total_presupuesto = request.POST.get('totalCostEditar')
+            id_edificio = request.POST.get('edificio_asignado_editar')
+            id_empleado = request.POST.get('vendedor_asignado_editar')
+
+            lista_cantidad_detalle_presupuesto = request.POST.getlist('cantidades_editar[]')
+            costos_extra = request.POST.getlist('costos_extra_editar[]')
+            lista_precio_total_detalle_presupuesto = request.POST.getlist('subtotales_editar[]')
+            lista_id_servicio = request.POST.getlist('servicios_editar[]')
+            lista_id_detalles = request.POST.getlist('id_detalles_editar[]')
+
+            # Lógica para crear la lista de detalles del presupuesto
+            lista_detalles = [
+                {
+                    'id_detalle_presupuesto': id_detalle,
+                    'id_servicio': id_servicio,
+                    'cantidad': cantidad,
+                    'costos_extra': costo_extra,
+                    'precio_total': precio_total
+                }
+                for id_detalle, id_servicio, cantidad, costo_extra, precio_total in zip(
+                    lista_id_detalles,
+                    lista_id_servicio,
+                    lista_cantidad_detalle_presupuesto,
+                    costos_extra,
+                    lista_precio_total_detalle_presupuesto
+                )
+            ]
+
+            # Obtener el tipo de acción: editar o enviar a ventas
+            action_type = request.POST.get('action_type')
+
+            if action_type == 'editar':
+                # Si el botón presionado es "Editar Presupuesto"
+                resultado = Presupuesto.actualizarPresupuesto(id_presupuesto, monto_total_presupuesto, id_edificio, id_empleado, lista_detalles)
+                if resultado:
+                    messages.success(request, 'El presupuesto se actualizó correctamente.')
+                else:
+                    messages.error(request, 'Hubo un error al actualizar el presupuesto.')
+                return redirect('/presupuestos/')
+
+            elif action_type == 'enviarVentas':
+                # Redirigir a la vista de enviar a ventas
+                return redirect('presupuestos:enviarVentas', id_presupuesto=id_presupuesto)
+
+        return redirect('/presupuestos/')

@@ -39,21 +39,12 @@ def agregarEmpleado(request):
         fecha_alta_empleado = fechaYHoraActual.strftime("%Y-%m-%d")
         fecha_baja_empleado = request.POST.get('fecha_baja_empleado', None)
         id_tipo_empleado = request.POST.get('tipo_empleado')  # Recibe el tipo de empleado: "Facturador", "Asesor de Ventas", etc.
+        correo_electronico = request.POST.get('correo_electronico') #se usa para crear el USER
         
         # Datos de contacto
         tiposContacto = request.POST.getlist('tipo_contacto[]')
         contactos = request.POST.getlist('contacto[]')
         listaContactos = list(zip(tiposContacto, contactos))
-        
-        print("Datos recibidos en la vista:")
-        print("Nombre:", nombre_persona)
-        print("Apellido:", apellido_persona)
-        print("CUIT:", cuitl_persona)
-        print("Dirección:", direccion_persona)
-        print("Tipo de empleado:", id_tipo_empleado)
-        print("Fecha de alta empleado:", fecha_alta_empleado)
-        print("Fecha de baja empleado:", fecha_baja_empleado)
-        print("Lista de contactos:", listaContactos)
 
         # Verificar si el empleado ya existe
         empleado = Empleado()
@@ -64,11 +55,10 @@ def agregarEmpleado(request):
             id_empleado = empleado.agregarEmpleado(
                 nombre_persona, apellido_persona, cuitl_persona,
                 direccion_persona, fecha_alta_empleado, fecha_baja_empleado,
-                id_tipo_empleado, listaContactos
+                id_tipo_empleado, listaContactos, correo_electronico
             )
-            
             if id_empleado:
-                messages.success(request, 'El empleado se agregó correctamente.')
+                messages.success(request, 'El empleado se agregó correctamente y se enviaron las credenciales de acceso al correo electrónico indicado.')
                 return redirect('/empleados/')  # Redirigir a la lista de empleados
             else:
                 messages.error(request, 'Error al agregar el empleado.')
@@ -130,7 +120,7 @@ def editarEmpleado(request, id_empleado):
 
 def eliminarEmpleado(request, id_empleado):
     Empleado().eliminarEmpleado(id_empleado)
-    return redirect('empleados:home')
+    return redirect('/empleados/')
 
 
 def eliminarContactoEmpleado(request, id_contacto):
