@@ -42,7 +42,7 @@ class Venta(models.Model):
                     """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            print(resultados)
+            
             ventas = {}
 
             for resultado in resultados:
@@ -66,7 +66,7 @@ class Venta(models.Model):
                     }
 
                 detalle = {
-                    'id_detalle_venta': id_detalle_venta,  # Agregado
+                    'id_detalle_venta': resultado[13],  # Agregado
                     'nombre_servicio': resultado[10],
                     'cantidad_detalle_venta': resultado[11],
                     'precio_detalle_venta': resultado[12],
