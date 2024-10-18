@@ -11,15 +11,22 @@ import http.client, json
 from datetime import datetime
 
 def home(request):
-    ventas = Venta.listarVentas()
-    
-    context = paginacionTablas(request, ventas, 'ventas')
-    return render(request, 'ventasViews.html', context)
+      ventas = Venta.listarVentas()
+     # print(ventas)
+      context = paginacionTablas(request, ventas, 'ventas')
+      return render(request, 'ventasViews.html', context)
 
 def enviar_factura_prueba(request): 
     # Datos ficticios para la prueba
-    ventas = Venta.listarVentas()[0]  # Selecciona la primera venta para esta prueba
+    ventas = Venta.listarVentas()  # Obtiene todas las ventas
     
+    # Asegúrate de que haya al menos una venta para evitar errores
+    if not ventas:
+        return JsonResponse({'error': 'No hay ventas disponibles'}, status=404)
+
+    # Selecciona la primera venta para esta prueba
+    venta = ventas[0]
+
     payload = {
    "usertoken":"b436f25f0f4b57cd11e428d84dc1e88b653c4129e6b08addff425399829b4c7f",
    "apikey":"64949",
@@ -90,4 +97,3 @@ def enviar_factura_prueba(request):
     data = res.read()
 
     return JsonResponse(data.decode("utf-8"), safe=False)
-

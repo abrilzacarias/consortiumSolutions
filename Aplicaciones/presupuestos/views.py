@@ -71,9 +71,14 @@ def mostrar_vendedores(request, method='GET'):
 
 
 def mostrar_clientes(request, method='GET'):
-    servicios = list(Cliente.objects.select_related('id_persona').values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona'))
+    servicios = list(
+        Cliente.objects.select_related('id_persona')
+        .filter(fecha_baja_cliente__isnull=True)
+        .values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona')
+    )
     
     return JsonResponse(servicios, safe=False)
+
 
 def mostrar_edificios(request, id_cliente):
     edificios = list(Edificio.objects.filter(id_cliente=id_cliente).values('id_edificio', 'nombre_edificio'))
