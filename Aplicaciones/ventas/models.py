@@ -47,7 +47,6 @@ class Venta(models.Model):
                     'descripcion_estado_venta': resultado[15],
                 }
                 ventas.append(venta_modificada)
-        print(ventas)
         return ventas
 
             

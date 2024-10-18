@@ -32,7 +32,7 @@ def enviar_factura_prueba(request):
       "domicilio": ventas['direccion_edificio'],
       "provincia":"2",
       "envia_por_mail":"N",
-      "condicion_pago":"202",  
+      "condicion_pago":ventas['cod_metodo_pago'],  
       "condicion_iva":"CF"     
    },
    "comprobante": {
@@ -41,7 +41,7 @@ def enviar_factura_prueba(request):
       "tipo":"FACTURA C",
       "operacion":"V",
       "punto_venta":"00679",  
-      "numero":"00000015",
+      "numero":"00000018",
       "moneda":"PES",
       "cotizacion": 1,
       "periodo_facturado_desde":ventas['fecha_hora_venta'].strftime("%d/%m/%Y"),
@@ -61,6 +61,18 @@ def enviar_factura_prueba(request):
             },
             "leyenda":""
          },
+         {
+            "cantidad": "1",
+            "producto": {
+               "descripcion": "Costo extra por servicio",
+               "unidad_bulto": "1",
+               "lista_precios": "Lista de precios API 3",
+               "codigo": "99999",  # Usar un código genérico o uno especial
+               "precio_unitario_sin_iva": str(ventas['costo_extra_detalle_venta']),
+               "alicuota": "0"
+            },
+            "leyenda": ""
+                }
       ],
       "bonificacion":"0.00",
       "leyenda_gral":" ",
