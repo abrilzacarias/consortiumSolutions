@@ -54,6 +54,8 @@ class Cliente(models.Model):
     id_persona = models.ForeignKey('Persona', models.DO_NOTHING, db_column='id_persona')
     id_matricula = models.ForeignKey('Matricula', models.DO_NOTHING, db_column='id_matricula', blank=True, null=True)
     id_empleado = models.ForeignKey('empleados.Empleado', models.DO_NOTHING, db_column='id_empleado', blank=True, null=True)
+    
+    fecha_baja_cliente = models.DateField(null=True, blank=True)
     class Meta:
         managed = False
         db_table = 'cliente'
