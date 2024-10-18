@@ -1,3 +1,35 @@
+//para mostrar el mensaje de exito o error al agregar
+function showModal() {
+    const modal = document.getElementById('small-modal');
+    modal.classList.remove('hidden');
+}
+
+function hideModal() {
+    const modal = document.getElementById('small-modal');
+    modal.classList.add('hidden');
+}
+
+document.addEventListener('DOMContentLoaded', function () {
+    const messagesData = document.getElementById('messages-data');
+    const hasMessages = messagesData.dataset.hasMessages === 'true';
+    
+    if (hasMessages) {
+        showModal();
+    }
+
+    const closeButtons = document.querySelectorAll('[data-modal-hide="small-modal"]');
+    closeButtons.forEach(button => {
+        button.addEventListener('click', hideModal);
+    });
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('small-modal');
+        if (event.target === modal) {
+            hideModal();
+        }
+    });
+});
+
 document.addEventListener('DOMContentLoaded', function() {
     // Función para crear un nuevo grupo de contacto en agregar nuevo empleado
     const crearGrupoInputContactoAgregar = (idUnico) => `
