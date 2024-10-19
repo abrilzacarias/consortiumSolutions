@@ -16,19 +16,51 @@ def home(request):
       context = paginacionTablas(request, ventas, 'ventas')
       return render(request, 'ventasViews.html', context)
 
-def enviar_factura_prueba(request): 
-    # Datos ficticios para la prueba
-    ventas = Venta.listarVentas()  # Obtiene todas las ventas
+def enviar_factura_prueba(request, id_venta): 
+    # Obtiene todas las ventas
+    ventas = Venta.listarVentas()  
     
-    # Asegúrate de que haya al menos una venta para evitar errores
-    if not ventas:
-        return JsonResponse({'error': 'No hay ventas disponibles'}, status=404)
+    # Busca la venta específica por id_venta
+    venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
 
-    # Selecciona la primera venta para esta prueba
-    venta = ventas[0]
+    # Asegúrate de que se encontró la venta
+    if not venta:
+        return JsonResponse({'error': 'Venta no encontrada'}, status=404)
 
-    # Accede al primer detalle de la venta
-    detalle_venta = venta['detalles'][0]
+    # Asegúrate de que haya al menos un detalle en la venta
+    if not venta.get('detalles'):
+        return JsonResponse({'error': 'No hay detalles disponibles para esta venta'}, status=404)
+
+    # Preparar el detalle en el formato necesario
+    detalles_payload = []
+    for detalle_venta in venta['detalles']:
+        detalles_payload.append({
+            "cantidad": str(detalle_venta['cantidad_detalle_venta']),
+            "producto": {
+                "descripcion": detalle_venta['nombre_servicio'],
+                "unidad_bulto": "1",
+                "lista_precios": "Lista de precios API 3",
+                "codigo": "1",  # Código del servicio, si está disponible
+                "precio_unitario_sin_iva": str(detalle_venta['precio_detalle_venta']),
+                "alicuota": "0"
+            },
+            "leyenda": ""
+        })
+        
+        # Añadir costo extra si está presente
+        if 'costo_extra_detalle_venta' in detalle_venta:
+            detalles_payload.append({
+                "cantidad": "1",
+                "producto": {
+                    "descripcion": "Costo extra por servicio",
+                    "unidad_bulto": "1",
+                    "lista_precios": "Lista de precios API 3",
+                    "codigo": "99999",  # Usar un código genérico o uno especial
+                    "precio_unitario_sin_iva": str(detalle_venta['costo_extra_detalle_venta']),
+                    "alicuota": "0"
+                },
+                "leyenda": ""
+            })
 
     payload = {
         "usertoken": "b436f25f0f4b57cd11e428d84dc1e88b653c4129e6b08addff425399829b4c7f",
@@ -51,39 +83,14 @@ def enviar_factura_prueba(request):
             "tipo": "FACTURA C",
             "operacion": "V",
             "punto_venta": "00679",  
-            "numero": "00000019",
+            "numero": "00000021",
             "moneda": "PES",
             "cotizacion": 1,
             "periodo_facturado_desde": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
             "periodo_facturado_hasta": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
             "rubro": "Servicios",
             "rubro_grupo_contable": "Servicios",
-            "detalle": [
-                {
-                    "cantidad": str(detalle_venta['cantidad_detalle_venta']),
-                    "producto": {
-                        "descripcion": detalle_venta['nombre_servicio'],
-                        "unidad_bulto": "1",
-                        "lista_precios": "Lista de precios API 3",
-                        "codigo": "1",  # Código del servicio, si está disponible
-                        "precio_unitario_sin_iva": str(detalle_venta['precio_detalle_venta']),
-                        "alicuota": "0"
-                    },
-                    "leyenda": ""
-                },
-                {
-                    "cantidad": "1",
-                    "producto": {
-                        "descripcion": "Costo extra por servicio",
-                        "unidad_bulto": "1",
-                        "lista_precios": "Lista de precios API 3",
-                        "codigo": "99999",  # Usar un código genérico o uno especial
-                        "precio_unitario_sin_iva": str(detalle_venta['costo_extra_detalle_venta']),
-                        "alicuota": "0"
-                    },
-                    "leyenda": ""
-                }
-            ],
+            "detalle": detalles_payload,  # Usamos todos los detalles aquí
             "bonificacion": "0.00",
             "leyenda_gral": " ",
             "total": str(venta['monto_total_venta'])

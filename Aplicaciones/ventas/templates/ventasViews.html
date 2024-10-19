@@ -111,6 +111,22 @@
                                                     Detalles
                                                 </button>
                                             </li>
+                                            <li>
+                                                <form action="{% url 'ventas:enviar_factura_prueba' venta.id_venta %}" method="POST">
+                                                    {% csrf_token %}
+                                                    <button type="submit"
+                                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
+                                                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
+                                                            viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
+                                                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                                                  d="M5 4a2 2 0 100 4 2 2 0 000-4zM2 10a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 10z" />
+                                                        </svg>
+                                                        Generar Factura
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            
                                         </ul>
                                     </div>
                                 </td>
