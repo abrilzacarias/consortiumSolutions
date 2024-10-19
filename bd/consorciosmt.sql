@@ -3,9 +3,9 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 10-09-2024 a las 02:42:35
--- Versión del servidor: 10.4.32-MariaDB
--- Versión de PHP: 8.2.12
+-- Tiempo de generación: 19-10-2024 a las 02:04:49
+-- Versión del servidor: 10.4.28-MariaDB
+-- Versión de PHP: 8.2.4
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -18,7 +18,7 @@ SET time_zone = "+00:00";
 /*!40101 SET NAMES utf8mb4 */;
 
 --
--- Base de datos: `consorciosmtof`
+-- Base de datos: `consorciosmt`
 --
 
 DELIMITER $$
@@ -45,8 +45,15 @@ CREATE TABLE `administrador` (
   `id_persona` int(11) NOT NULL,
   `id_usuario` int(11) NOT NULL,
   `fecha_alta_administrador` date NOT NULL,
-  `fecha_baja_administrador` date NOT NULL
+  `fecha_baja_administrador` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `administrador`
+--
+
+INSERT INTO `administrador` (`id_administrador`, `id_persona`, `id_usuario`, `fecha_alta_administrador`, `fecha_baja_administrador`) VALUES
+(1, 20, 1, '2024-09-16', NULL);
 
 -- --------------------------------------------------------
 
@@ -367,7 +374,8 @@ CREATE TABLE `categoria_servicio` (
 --
 
 INSERT INTO `categoria_servicio` (`id_categoria_servicio`, `nombre_categoria_servicio`, `estado_servicio`) VALUES
-(1, 'Limpieza', 0);
+(1, 'Limpieza', 0),
+(2, 'Reparaciones', 0);
 
 -- --------------------------------------------------------
 
@@ -381,15 +389,33 @@ CREATE TABLE `cliente` (
   `conversion_cliente` tinyint(4) NOT NULL,
   `id_persona` int(11) NOT NULL,
   `id_matricula` int(11) DEFAULT NULL,
-  `fecha_baja_cliente` datetime DEFAULT NULL
+  `fecha_baja_cliente` datetime DEFAULT NULL,
+  `id_empleado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `cliente`
 --
 
-INSERT INTO `cliente` (`id_cliente`, `clave_afgip_cliente`, `conversion_cliente`, `id_persona`, `id_matricula`, `fecha_baja_cliente`) VALUES
-(1, '123456', 0, 2, 1, NULL);
+INSERT INTO `cliente` (`id_cliente`, `clave_afgip_cliente`, `conversion_cliente`, `id_persona`, `id_matricula`, `fecha_baja_cliente`, `id_empleado`) VALUES
+(1, '123456', 0, 2, 1, '2024-09-30 13:00:45', 1),
+(2, '14785236', 0, 20, 2, '2024-09-30 13:00:45', NULL),
+(3, '4235235', 0, 21, 3, '2024-09-30 13:00:45', NULL),
+(4, '856856', 0, 22, 4, '2024-09-30 13:00:45', NULL),
+(5, '43242354', 0, 23, 5, '2024-09-28 19:09:55', NULL),
+(6, '2523532', 0, 24, 6, '2024-09-30 13:00:45', NULL),
+(7, '12345', 0, 25, 7, '2024-09-30 13:00:45', NULL),
+(8, '2560', 0, 26, 8, '2024-09-30 13:00:45', NULL),
+(9, '1234', 0, 27, 9, '2024-09-16 15:32:48', NULL),
+(10, '43242354', 0, 28, 10, '2024-09-30 13:00:45', NULL),
+(11, '43242354', 0, 29, 11, '2024-09-16 19:19:03', NULL),
+(12, '5235', 1, 30, 12, '2024-09-30 13:00:45', NULL),
+(13, '2563', 0, 31, 13, '2024-09-30 13:00:45', NULL),
+(14, 'egewgewg', 0, 34, 16, '2024-09-30 13:00:45', NULL),
+(15, '43242354', 0, 35, 17, '2024-09-30 13:00:45', 5),
+(16, '909090909999999', 0, 36, 18, '2024-09-30 13:00:45', NULL),
+(17, '123400', 0, 38, 19, NULL, NULL),
+(18, '342346', 1, 39, 20, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -403,6 +429,60 @@ CREATE TABLE `contacto` (
   `id_tipo_contacto` int(11) NOT NULL,
   `id_persona` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `contacto`
+--
+
+INSERT INTO `contacto` (`id_contacto`, `descripcion_contacto`, `id_tipo_contacto`, `id_persona`) VALUES
+(29, 'canobren080603@gmail.com', 1, 6),
+(52, 'bren5348573468436@g.es', 1, 7),
+(54, 'vsdvdsv@bren.com', 1, 9),
+(55, '424423432', 2, 7),
+(56, '3704546716', 2, 9),
+(57, 'fe@rjt.cgt', 1, 7),
+(58, 'fgkjewkjgwe@gmail.com', 1, 10),
+(59, '3212456789', 2, 10),
+(60, 'https://campus.ucp.edu.ar/mod/assign/view.php?id=539729', 3, 11),
+(62, 'canobren080603@gmail.com', 1, 12),
+(64, 'canobren080603@gmail.com', 1, 13),
+(65, 'canobren080603@gmail.com', 1, 14),
+(66, 'canobren080603@gmail.com', 1, 15),
+(67, 'marti24@gmail.com', 1, 16),
+(68, '3704905457', 2, 16),
+(69, 'canobren080603@gmail.com', 1, 17),
+(70, '3704546815', 2, 17),
+(71, 'aldo@ortega.com', 1, 4),
+(72, 'canobren080603@gmail.com', 1, 5),
+(73, 'holasoymartu@gmail.com', 1, 1),
+(74, 'fjjj@gmail.cpm', 1, 18),
+(75, '1242141412', 2, 18),
+(76, 'canobren080603@gmail.com', 1, 19),
+(79, 'canobren080603@gmail.com', 1, 20),
+(80, 'marianabcano@hotmail.com', 1, 21),
+(81, 'canobren080603@gmail.com', 1, 22),
+(82, 'https://campus.ucp.edu.ar/mod/assign/view.php?id=539729', 3, 23),
+(83, 'marianabcano@hotmail.com', 1, 24),
+(84, 'abrilzacaria1504@gmail.com', 1, 25),
+(85, 'abrilzacaria1504@gmail.com', 1, 26),
+(86, 'https://campus.ucp.edu.ar/mod/assign/view.php?id=539729', 1, 27),
+(87, 'marianabcano@hotmail.com', 1, 28),
+(88, 'https://campus.ucp.edu.ar/mod/assign/view.php?id=539729', 1, 29),
+(89, 'marianabcano@hotmail.com', 1, 30),
+(90, 'canobren080603@gmail.com', 1, 31),
+(91, '3705020440', 1, 34),
+(92, 'paulodybala@bren.com', 1, 35),
+(93, '3705020440', 2, 11),
+(94, 'https://mail.google.com/mail/u/0/?pli=1#inbox', 3, 4),
+(95, '3704905457', 2, 35),
+(96, 'camilaEditado@gmail.com', 1, 36),
+(97, '1234235230000000', 2, 36),
+(98, 'michelvera@gmail.com', 1, 37),
+(99, 'victoria@gmail.com', 1, 38),
+(100, '3704123654', 2, 38),
+(101, 'fabri@gmail.com', 1, 39),
+(102, '26168662500', 2, 40),
+(103, 'paulita.villalba2904@gmail.com', 1, 40);
 
 -- --------------------------------------------------------
 
@@ -418,6 +498,29 @@ CREATE TABLE `designacion` (
   `id_administrador` int(11) NOT NULL,
   `id_cliente` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `designacion`
+--
+
+INSERT INTO `designacion` (`id_designacion`, `fecha_alta_designacion`, `fecha_baja_designacion`, `id_empleado`, `id_administrador`, `id_cliente`) VALUES
+(1, '2024-09-16', '2024-09-16', 5, 1, 1),
+(8, '2024-09-16', NULL, 5, 1, 9),
+(9, '2024-09-16', NULL, 5, 1, 9),
+(10, '2024-09-16', NULL, 20, 1, 11),
+(11, '2024-09-16', NULL, 13, 1, 11),
+(25, '2024-09-16', '2024-09-16', 6, 1, 1),
+(26, '2024-09-16', NULL, 17, 1, 1),
+(27, '2024-09-16', '2024-09-16', 12, 1, 12),
+(28, '2024-09-28', NULL, 12, 1, 12),
+(29, '2024-09-16', NULL, 6, 1, 13),
+(30, '2024-09-16', NULL, 6, 1, 14),
+(31, '2024-09-24', NULL, 5, 1, 15),
+(32, '2024-09-26', NULL, 5, 1, 2),
+(33, '2024-09-26', NULL, 20, 1, 3),
+(34, '2024-09-29', NULL, 5, 1, 16),
+(35, '2024-09-30', NULL, 21, 1, 17),
+(36, '2024-09-30', NULL, 6, 1, 18);
 
 -- --------------------------------------------------------
 
@@ -441,7 +544,7 @@ CREATE TABLE `detalle_factura` (
 CREATE TABLE `detalle_presupuesto` (
   `id_detalle_presupuesto` int(11) NOT NULL,
   `cantidad_detalle_presupuesto` int(11) NOT NULL,
-  `precio_unitario_detalle_presupuesto` decimal(10,2) DEFAULT NULL,
+  `costo_extra_presupuesto` decimal(10,2) DEFAULT NULL,
   `precio_total_detalle_presupuesto` decimal(10,0) NOT NULL,
   `id_presupuesto` int(11) NOT NULL,
   `id_servicio` int(11) NOT NULL
@@ -451,8 +554,9 @@ CREATE TABLE `detalle_presupuesto` (
 -- Volcado de datos para la tabla `detalle_presupuesto`
 --
 
-INSERT INTO `detalle_presupuesto` (`id_detalle_presupuesto`, `cantidad_detalle_presupuesto`, `precio_unitario_detalle_presupuesto`, `precio_total_detalle_presupuesto`, `id_presupuesto`, `id_servicio`) VALUES
-(2, 1, 500.00, 500, 1, 1);
+INSERT INTO `detalle_presupuesto` (`id_detalle_presupuesto`, `cantidad_detalle_presupuesto`, `costo_extra_presupuesto`, `precio_total_detalle_presupuesto`, `id_presupuesto`, `id_servicio`) VALUES
+(9, 1, 80.00, 150, 7, 7),
+(10, 1, 2.00, 72, 8, 7);
 
 -- --------------------------------------------------------
 
@@ -463,11 +567,19 @@ INSERT INTO `detalle_presupuesto` (`id_detalle_presupuesto`, `cantidad_detalle_p
 CREATE TABLE `detalle_venta` (
   `id_detalle_venta` int(11) NOT NULL,
   `cantidad_detalle_venta` int(11) NOT NULL,
-  `precio_unitario_detalle_venta` decimal(10,0) NOT NULL,
+  `costo_extra_detalle_venta` decimal(10,0) NOT NULL,
   `precio_total_detalle_venta` decimal(10,0) NOT NULL,
   `id_venta` int(11) NOT NULL,
   `id_servicio` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `detalle_venta`
+--
+
+INSERT INTO `detalle_venta` (`id_detalle_venta`, `cantidad_detalle_venta`, `costo_extra_detalle_venta`, `precio_total_detalle_venta`, `id_venta`, `id_servicio`) VALUES
+(13, 1, 80, 150, 29, 7),
+(14, 1, 2, 72, 30, 7);
 
 -- --------------------------------------------------------
 
@@ -618,7 +730,12 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('aqh7rpotuvwxbsauylv98hfdvelcpwrx', '.eJxVjEsOAiEQBe_C2hB-Irh07xlI03TLqIFkmFkZ766TzEK3r6reSyRYl5rWQXOaijgLJQ6_WwZ8UNtAuUO7dYm9LfOU5abInQ557YWel939O6gw6remUIIFnXXQxrEBhoDFuewjc3beK1RIZNl6E_3Rl0gYMJ40B45sicX7A_lgOLI:1snnsg:_0RtyCRv76l9vhgKJlDFTynI-ySIuZFR1W3V0b8jBD4', '2024-09-23 23:33:14.324434');
+('58vc394jvrlrx8ref3yu0mn5hhjby3a0', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t1wuq:l3luAG1EnE3z0snmyQtLSYbw2RrQvLx_2Fp3582C5Bs', '2024-11-02 00:01:56.365854'),
+('94yplox2z3lfkabooo4zsfzuccccyw69', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1spcKh:OR0lO32pn7sa5lAuhCnILLtYQ5bKFM9w7KPmDqAkZ9Q', '2024-09-28 23:37:39.912116'),
+('aqh7rpotuvwxbsauylv98hfdvelcpwrx', '.eJxVjEsOAiEQBe_C2hB-Irh07xlI03TLqIFkmFkZ766TzEK3r6reSyRYl5rWQXOaijgLJQ6_WwZ8UNtAuUO7dYm9LfOU5abInQ557YWel939O6gw6remUIIFnXXQxrEBhoDFuewjc3beK1RIZNl6E_3Rl0gYMJ40B45sicX7A_lgOLI:1snnsg:_0RtyCRv76l9vhgKJlDFTynI-ySIuZFR1W3V0b8jBD4', '2024-09-23 23:33:14.324434'),
+('jcc36bf3a6e6oydvjlhdb3hz84oht5hk', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1sp9Kf:gEuwNrp_X8Zd0jjfkhTZW-D2iO9C2bSjmCx540DBOro', '2024-09-27 16:39:41.071466'),
+('r4qkd4lddec76te6m4lu4m0dyt1bz59k', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1suP4D:77LxbFwQkxHA7bvI84uRF592ZptmOhyI10h8rPOCp8Y', '2024-10-12 04:28:25.023349'),
+('yc0m5po0s5fqrumcqgl8lnk58nycf6ep', '.eJxVjDkOwjAUBe_iGlnEiTdK-pzB8t9wADlSnFSIu0OkFNC-mXkvlfK2lrQ1XtJE6qLO6vS7QcYH1x3QPdfbrHGu6zKB3hV90KbHmfh5Pdy_g5Jb-dZDbzGwMWKsMxBy5xgiChJ78UiD5EBMHXgSIRsjIULsDSI7AfZGvT8WaDn5:1t1ogS:r0_fKg7umxDdZVGFIEOPc0A2eKJHINGUvCgkDCB-TbM', '2024-11-01 15:14:32.958756');
 
 -- --------------------------------------------------------
 
@@ -633,7 +750,7 @@ CREATE TABLE `edificio` (
   `cuit_edificio` varchar(45) NOT NULL,
   `id_tipo_edificio` int(11) NOT NULL,
   `id_cliente` int(11) NOT NULL,
-  `fecha_baja_edificio` date NOT NULL
+  `fecha_baja_edificio` date DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -641,7 +758,7 @@ CREATE TABLE `edificio` (
 --
 
 INSERT INTO `edificio` (`id_edificio`, `nombre_edificio`, `direccion_edificio`, `cuit_edificio`, `id_tipo_edificio`, `id_cliente`, `fecha_baja_edificio`) VALUES
-(1, 'Palermo Twins', 'Paraguay 4440', '11111111111', 1, 1, '0000-00-00');
+(10, 'Palermo Twins', 'Paraguay 4440', '30575791758', 1, 18, NULL);
 
 -- --------------------------------------------------------
 
@@ -654,7 +771,7 @@ CREATE TABLE `empleado` (
   `fecha_alta_empleado` date NOT NULL,
   `fecha_baja_empleado` date DEFAULT NULL,
   `id_persona` int(11) NOT NULL,
-  `id_usuario` int(11) NOT NULL,
+  `id_usuario` int(11) DEFAULT NULL,
   `id_tipo_empleado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
@@ -663,7 +780,27 @@ CREATE TABLE `empleado` (
 --
 
 INSERT INTO `empleado` (`id_empleado`, `fecha_alta_empleado`, `fecha_baja_empleado`, `id_persona`, `id_usuario`, `id_tipo_empleado`) VALUES
-(1, '2024-09-07', NULL, 1, 1, 1);
+(1, '2024-09-07', '2024-09-13', 1, 1, 2),
+(2, '2024-09-05', '2024-09-30', 2, 1, 2),
+(3, '2024-09-05', '2024-09-30', 1, 1, 2),
+(5, '2024-09-13', NULL, 4, NULL, 3),
+(6, '2024-09-14', NULL, 5, NULL, 2),
+(7, '2024-09-14', NULL, 6, NULL, 1),
+(8, '2024-09-14', NULL, 7, NULL, 1),
+(9, '2024-09-14', '2024-09-30', 8, NULL, 1),
+(10, '2024-09-15', '2024-09-30', 9, NULL, 1),
+(11, '2024-09-15', '2024-09-30', 10, NULL, 1),
+(12, '2024-09-15', '2024-09-30', 11, NULL, 3),
+(13, '2024-09-15', '2024-09-30', 12, NULL, 1),
+(14, '2024-09-15', '2024-09-30', 13, NULL, 1),
+(15, '2024-09-15', '2024-09-30', 14, NULL, 1),
+(16, '2024-09-15', '2024-09-30', 15, NULL, 1),
+(17, '2024-09-15', '2024-09-30', 16, NULL, 1),
+(18, '2024-09-15', '2024-09-30', 17, NULL, 1),
+(19, '2024-09-15', '2024-09-30', 18, NULL, 1),
+(20, '2024-09-15', '2024-09-30', 19, NULL, 1),
+(21, '2024-09-30', NULL, 37, NULL, 1),
+(46, '2024-10-18', NULL, 40, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -676,6 +813,13 @@ CREATE TABLE `estado_venta` (
   `descripcion_estado_venta` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Volcado de datos para la tabla `estado_venta`
+--
+
+INSERT INTO `estado_venta` (`id_estado_venta`, `descripcion_estado_venta`) VALUES
+(1, 'EN PROCESO');
+
 -- --------------------------------------------------------
 
 --
@@ -687,7 +831,8 @@ CREATE TABLE `factura` (
   `numero_factura` int(11) NOT NULL,
   `fecha_emision_factura` date NOT NULL,
   `id_venta` int(11) NOT NULL,
-  `id_tipo_factura` int(11) NOT NULL
+  `id_tipo_factura` int(11) NOT NULL,
+  `link_descarga_factura` varchar(500) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 -- --------------------------------------------------------
@@ -713,10 +858,8 @@ CREATE TABLE `login_myuser` (
 --
 
 INSERT INTO `login_myuser` (`password`, `last_login`, `id_usuario`, `correo_electronico`, `nombre_usuario`, `is_active`, `is_staff`, `is_superuser`, `date_joined`) VALUES
-('pbkdf2_sha256$720000$IngWsmZrUahTcNNcGXV3jN$JQqZDcpU3VFnbaRSLh2PVrzNpn2RXDXFrO+E0vbh0yY=', '2024-08-22 00:18:11.012310', 1, 'abrilzacarias6@gmail.com', 'abril15', 1, 0, 0, '2024-08-21 16:29:41.819462'),
-('pbkdf2_sha256$720000$esFNRTpiZOotC9HMloRgqt$qPrawkgxIGmtdTeexoEhIdiKre2cfiIVlg3iSIxLSP8=', '2024-08-22 00:25:10.340340', 2, 'abrilzacarias2004@gmail.com', 'abril2004', 1, 1, 1, '2024-08-21 17:52:47.188778'),
-('pbkdf2_sha256$720000$lgHIar7Df2MQyQlcL30u63$ikJ/lVFdJSLMmMNkLOMsroNO+s6UQDozsv3O+zM1vQw=', '2024-08-22 00:18:51.925507', 3, 'marito@gmail.com', 'marito', 1, 0, 0, '2024-08-21 17:58:11.489204'),
-('pbkdf2_sha256$720000$X0BCAadhoqRstNhs7ITeBz$PeR2HES8CdcVL/GHqMdSGfuNzNhqUywolfy+5o01MmA=', '2024-09-09 23:33:14.316104', 0, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-07 21:18:01.487553');
+('pbkdf2_sha256$720000$6paySt5EXc5UPqhxb3tj1A$48RXNEnDVusnz9OBohWKwl35XMTFrSCSv2r34NLmiiw=', '2024-10-19 00:01:56.364762', 1, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-28 22:09:34.921987'),
+('pbkdf2_sha256$720000$zKdpSrbUDdCC3ZnRcrafCg$1ST8MUUm58RxDyCdaRB6AAgsdbTJ0e4gJ7YbJbhhQjc=', NULL, 2, 'paulita.villalba2904@gmail.com', 'paulapaa', 1, 0, 0, '2024-10-19 00:03:24.660143');
 
 -- --------------------------------------------------------
 
@@ -735,7 +878,9 @@ CREATE TABLE `login_myuser_groups` (
 --
 
 INSERT INTO `login_myuser_groups` (`id`, `myuser_id`, `group_id`) VALUES
-(1, 1, 1);
+(1, 1, 1),
+(1, 1, 1),
+(0, 2, 2);
 
 -- --------------------------------------------------------
 
@@ -766,7 +911,26 @@ CREATE TABLE `matricula` (
 --
 
 INSERT INTO `matricula` (`id_matricula`, `numero_matricula`, `vencimiento_matricula`) VALUES
-(1, '12345678', '2024-09-27');
+(1, '12345678', '2024-09-27'),
+(2, '1234445', '2024-09-17'),
+(3, '4241242141', '2024-09-16'),
+(4, '1234445', '2024-09-16'),
+(5, '123444', '2024-09-16'),
+(6, '5523523', '2024-09-18'),
+(7, '123444', '2024-09-16'),
+(8, '2345', '2024-09-16'),
+(9, '4124214', '2024-09-16'),
+(10, '1234445', '2024-09-17'),
+(11, '2547', '2024-09-24'),
+(12, '532523', '2024-09-16'),
+(13, '2563', '2024-09-17'),
+(14, '2568', '2024-09-17'),
+(15, '523525', '2024-09-16'),
+(16, 'gdgwegw', '2024-09-16'),
+(17, '1234445', '2024-09-19'),
+(18, '66666660', '2024-10-12'),
+(19, '453573', '2024-10-19'),
+(20, '777777', '2024-09-27');
 
 -- --------------------------------------------------------
 
@@ -776,8 +940,20 @@ INSERT INTO `matricula` (`id_matricula`, `numero_matricula`, `vencimiento_matric
 
 CREATE TABLE `metodo_pago` (
   `id_metodo_pago` int(11) NOT NULL,
-  `nombre_metodo_pago` varchar(70) NOT NULL
+  `nombre_metodo_pago` varchar(70) NOT NULL,
+  `cod_metodo_pago` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `metodo_pago`
+--
+
+INSERT INTO `metodo_pago` (`id_metodo_pago`, `nombre_metodo_pago`, `cod_metodo_pago`) VALUES
+(2, 'Contado', 201),
+(3, 'A plazos (30 días)', 202),
+(4, 'Tarjeta de Crédito', 203),
+(5, 'Transferencia Bancaria', 204),
+(6, 'Cheque', 205);
 
 -- --------------------------------------------------------
 
@@ -794,6 +970,15 @@ CREATE TABLE `observacion` (
   `id_detalle_venta` int(11) DEFAULT NULL,
   `id_cliente` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `observacion`
+--
+
+INSERT INTO `observacion` (`id_observacion`, `descripcion_observacion`, `fecha_observacion`, `hora_observacion`, `id_detalle_preventa`, `id_detalle_venta`, `id_cliente`) VALUES
+(1, 'aaaaaaa', '2024-09-28', '19:49:15', NULL, NULL, 1),
+(2, 'harry no saca album', '2024-09-29', '15:20:55', NULL, NULL, 16),
+(3, 'Victoria no se encontraba en su oficina ', '2024-09-30', '13:35:03', NULL, NULL, 17);
 
 -- --------------------------------------------------------
 
@@ -814,8 +999,46 @@ CREATE TABLE `persona` (
 --
 
 INSERT INTO `persona` (`id_persona`, `cuitl_persona`, `nombre_persona`, `apellido_persona`, `direccion_persona`) VALUES
-(1, '27456429187', 'mari', 'acosta', 'casa'),
-(2, '27123456780', 'abril', 'zacaria', 'federacion');
+(1, '24555145252', 'Brendaawwfg', 'Canoooooo', 'B°20 De JULIO MZA 60 C5'),
+(2, '27123456780', 'abriltty', 'zacaria', 'federacion'),
+(3, '27458523691', 'Rthtehtrhtr', 'Herthehhrh', 'B°20 De JULIO MZA 60 C5'),
+(4, '27577330254', 'Aldo', 'Ortega', 'B°20 De JULIO MZA 60 C6'),
+(5, '20539058524', 'Brenda', 'Cano', 'B°20 De JULIO MZA 60 C5'),
+(6, '27852963143', 'Freddy', 'Cano', 'B°20 De JULIO MZA 60 C5'),
+(7, '27449230929', 'Nica', 'Barrio', 'B°20 De JULIO MZA 60 C5'),
+(8, '21458563201', 'Chulo', 'Badgyal', 'B°20 De JULIO MZA 60 C5'),
+(9, '53252525252', 'Egergerg', 'Gewgwegweg', 'ewggewgewgw'),
+(10, '14785236912', 'Hola', 'Chau', 'B°20 De JULIO MZA 60 C5'),
+(11, '20214567893', 'Reik', 'Rojas', 'B° otra mitad'),
+(12, '12345678902', 'Mana', 'Rellena', 'B°20 De JULIO MZA 60 C5'),
+(13, '12345667812', 'Mientes', 'Tan bien', 'B°20 De JULIO MZA 60 C5'),
+(14, '23456789123', 'Emilia', 'Mernes', 'B°20 De JULIO MZA 60 C5'),
+(15, '21345678232', 'Estar', 'Sin ti', 'barrio nuevo'),
+(16, '45678321457', 'No pido', 'Nada mas', 'junto a ti '),
+(17, '27449230928', 'Fabian', 'Te amo', 'B°20 De JULIO MZA 60 C5'),
+(18, '31232143214', 'Hola', 'Soybren', 'B°20 De JULIO MZA 60 C5'),
+(19, '12345678731', 'Julian', 'Alvarez', 'el remanso'),
+(20, '25798571258', 'Brenda', 'Cano', 'B°20 De JULIO MZA 60 C5'),
+(21, '12421424124', 'Hola', 'Duki', 'B°20 De JULIO MZA 60 C5'),
+(22, '5235235', 'Gregherhr', 'Erherhyrehe', 'eryeryery'),
+(23, '52353252', 'Gergerge', 'Herherhre', 'HOAL'),
+(24, 'y3232523', 'Tergeygrey', 'Eryreyery', '5235235235'),
+(25, '2345678901', 'Mari', 'Acosta', 'B°20 De JULIO MZA 60 C5'),
+(26, '4534567891', 'Duki', 'Lombardo', 'B°20 De JULIO MZA 60 C5'),
+(27, '42141242', 'Pr', 'Rulay', 'B°20 De JULIO MZA 60 C5'),
+(28, '2757733021', 'Lola', 'Duko', 'B°20 De JULIO MZA 60 C5'),
+(29, '123456531', 'Paula', 'Villalba', 'B°20 De JULIO MZA 60 C5'),
+(30, '5325325235', 'Gerheher', 'Herhreher', '523525'),
+(31, '202578963210', 'Santi', 'Aranda', 'Arsenal'),
+(32, '25789631452', 'Vic', 'Corti', 'B°20 De JULIO MZA 60 C5'),
+(33, '2423432235', 'Vic', 'Cano', 'B°20 De JULIO MZA 60 C5'),
+(34, 'wgwgew', 'Vic', 'Cano', 'gewgewg'),
+(35, '27449230923', 'Brendapppppp', 'Cano', 'B°20 De JULIO MZA 60 C5'),
+(36, '2567890650', 'Harry editado', 'Styles editado', 'London England'),
+(37, '11111111110', 'Michel', 'Vera', 'Buenos Aires'),
+(38, '27456429180', 'Victoria', 'Maidana', 'centro'),
+(39, '12345678978', 'Fabricio', 'Gomez', 'Barrio Simón Bolívar '),
+(40, '56768489499', 'Paula', 'Villalba', 'av');
 
 -- --------------------------------------------------------
 
@@ -828,16 +1051,17 @@ CREATE TABLE `presupuesto` (
   `fecha_hora_presupuesto` datetime NOT NULL,
   `monto_total_presupuesto` decimal(10,0) NOT NULL,
   `id_edificio` int(11) NOT NULL,
-  `id_empleado` int(11) NOT NULL
+  `id_empleado` int(11) NOT NULL,
+  `estado_presupuesto` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `presupuesto`
 --
 
-INSERT INTO `presupuesto` (`id_presupuesto`, `fecha_hora_presupuesto`, `monto_total_presupuesto`, `id_edificio`, `id_empleado`) VALUES
-(1, '2024-09-08 01:00:58', 60000, 1, 1),
-(2, '2024-09-08 01:43:58', 7, 1, 1);
+INSERT INTO `presupuesto` (`id_presupuesto`, `fecha_hora_presupuesto`, `monto_total_presupuesto`, `id_edificio`, `id_empleado`, `estado_presupuesto`) VALUES
+(7, '2024-10-17 20:17:38', 150, 10, 7, 1),
+(8, '2024-10-19 00:01:37', 72, 10, 8, 1);
 
 -- --------------------------------------------------------
 
@@ -847,11 +1071,19 @@ INSERT INTO `presupuesto` (`id_presupuesto`, `fecha_hora_presupuesto`, `monto_to
 
 CREATE TABLE `registro_estado_venta` (
   `id_registro_estado_venta` int(11) NOT NULL,
-  `fecha_hora_registro_estado_venta` datetime NOT NULL,
+  `fecha_hora_registro_estado_venta` datetime DEFAULT NULL,
   `id_detalle_venta` int(11) NOT NULL,
-  `id_estado_venta` int(11) NOT NULL,
+  `id_estado_venta` int(11) DEFAULT NULL,
   `id_empleado` int(11) NOT NULL COMMENT 'solo modifica el asesor de ventas'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `registro_estado_venta`
+--
+
+INSERT INTO `registro_estado_venta` (`id_registro_estado_venta`, `fecha_hora_registro_estado_venta`, `id_detalle_venta`, `id_estado_venta`, `id_empleado`) VALUES
+(9, NULL, 13, NULL, 7),
+(10, NULL, 14, NULL, 8);
 
 -- --------------------------------------------------------
 
@@ -865,15 +1097,16 @@ CREATE TABLE `servicio` (
   `requiere_pago_servicio` tinyint(4) NOT NULL,
   `precio_base_servicio` decimal(10,0) DEFAULT NULL,
   `id_categoria_servicio` int(11) NOT NULL,
-  `estado_servicio` tinyint(4) NOT NULL
+  `estado_servicio` tinyint(4) NOT NULL,
+  `cod_servicio` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `servicio`
 --
 
-INSERT INTO `servicio` (`id_servicio`, `nombre_servicio`, `requiere_pago_servicio`, `precio_base_servicio`, `id_categoria_servicio`, `estado_servicio`) VALUES
-(1, 'Pisos', 1, 0, 1, 1);
+INSERT INTO `servicio` (`id_servicio`, `nombre_servicio`, `requiere_pago_servicio`, `precio_base_servicio`, `id_categoria_servicio`, `estado_servicio`, `cod_servicio`) VALUES
+(7, 'Reparación de pisos', 1, 70, 2, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -885,6 +1118,15 @@ CREATE TABLE `tipo_contacto` (
   `id_tipo_contacto` int(11) NOT NULL,
   `descripcion_tipo_contacto` varchar(65) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `tipo_contacto`
+--
+
+INSERT INTO `tipo_contacto` (`id_tipo_contacto`, `descripcion_tipo_contacto`) VALUES
+(1, 'Correo Electronico'),
+(2, 'Telefono'),
+(3, 'Pagina Web');
 
 -- --------------------------------------------------------
 
@@ -979,10 +1221,31 @@ CREATE TABLE `venta` (
   `fecha_hora_venta` datetime NOT NULL,
   `monto_total_venta` decimal(10,0) NOT NULL,
   `id_edificio` int(11) NOT NULL,
-  `id_metodo_pago` int(11) NOT NULL,
+  `id_metodo_pago` int(11) DEFAULT NULL,
   `id_empleado` int(11) NOT NULL,
   `id_presupuesto` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `venta`
+--
+
+INSERT INTO `venta` (`id_venta`, `numero_factura`, `fecha_hora_venta`, `monto_total_venta`, `id_edificio`, `id_metodo_pago`, `id_empleado`, `id_presupuesto`) VALUES
+(29, 'FACT-001', '2024-10-17 20:17:38', 150, 10, 2, 7, 7),
+(30, 'FACT-002', '2024-10-19 00:01:37', 72, 10, NULL, 8, 8);
+
+--
+-- Disparadores `venta`
+--
+DELIMITER $$
+CREATE TRIGGER `insertar_venta_estado_presupuesto` AFTER INSERT ON `venta` FOR EACH ROW BEGIN
+    -- Actualiza el estado del presupuesto a 1 (vendido)
+    UPDATE presupuesto
+    SET estado_presupuesto = 1
+    WHERE id_presupuesto = NEW.id_presupuesto;
+END
+$$
+DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -1026,18 +1289,20 @@ CREATE TABLE `vista_detallada_clientes` (
 ,`vencimiento_matricula` date
 ,`contactos` mediumtext
 ,`tipo_contacto` mediumtext
+,`id_edificios` mediumtext
 ,`nombre_edificios` mediumtext
 ,`direccion_edificios` mediumtext
 ,`cuit_edificios` mediumtext
 ,`tipo_edificio` mediumtext
-,`vendedor_asignado` varchar(91)
 ,`id_empleado_asignado` int(11)
+,`nombre_empleado_asignado` varchar(91)
 ,`fecha_alta_empleado` date
 ,`fecha_baja_empleado` date
-,`ids_observaciones` mediumtext
-,`descripciones_observaciones` mediumtext
-,`fechas_observaciones` mediumtext
-,`horas_observaciones` mediumtext
+,`id_observacion` mediumtext
+,`descripcion_observacion` mediumtext
+,`fecha_observacion` mediumtext
+,`hora_observacion` mediumtext
+,`fecha_baja_edificios` mediumtext
 );
 
 -- --------------------------------------------------------
@@ -1053,6 +1318,34 @@ CREATE TABLE `vista_edificios` (
 ,`direccion_edificios` mediumtext
 ,`cuit_edificios` mediumtext
 ,`tipo_edificio` mediumtext
+,`fecha_baja_edificios` mediumtext
+);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura Stand-in para la vista `vista_ventas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `vista_ventas` (
+`id_venta` int(11)
+,`numero_factura` varchar(45)
+,`fecha_hora_venta` datetime
+,`nombre_edificio` varchar(45)
+,`cuit_edificio` varchar(45)
+,`direccion_edificio` varchar(45)
+,`nombre_metodo_pago` varchar(70)
+,`cod_metodo_pago` int(11)
+,`nombre_empleado` varchar(91)
+,`monto_total_venta` decimal(10,0)
+,`nombre_servicio` varchar(70)
+,`cod_servicio` int(11)
+,`precio` decimal(10,0)
+,`id_detalle_venta` int(11)
+,`cantidad_detalle_venta` int(11)
+,`costo_extra_detalle_venta` decimal(10,0)
+,`fecha_hora_registro_estado_venta` datetime
+,`descripcion_estado_venta` varchar(45)
 );
 
 -- --------------------------------------------------------
@@ -1080,7 +1373,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vista_detallada_clientes`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_detallada_clientes`  AS SELECT `c`.`id_cliente` AS `id_cliente`, `p`.`nombre_persona` AS `nombre_persona`, `p`.`apellido_persona` AS `apellido_persona`, `p`.`cuitl_persona` AS `cuitl_persona`, `p`.`direccion_persona` AS `direccion_persona`, `c`.`clave_afgip_cliente` AS `clave_afgip_cliente`, `c`.`conversion_cliente` AS `conversion_cliente`, `c`.`fecha_baja_cliente` AS `fecha_baja_cliente`, `m`.`numero_matricula` AS `numero_matricula`, `m`.`vencimiento_matricula` AS `vencimiento_matricula`, `vc`.`contactos` AS `contactos`, `vc`.`tipo_contacto` AS `tipo_contacto`, `ve`.`nombre_edificios` AS `nombre_edificios`, `ve`.`direccion_edificios` AS `direccion_edificios`, `ve`.`cuit_edificios` AS `cuit_edificios`, `ve`.`tipo_edificio` AS `tipo_edificio`, concat(`p_vendedor`.`nombre_persona`,' ',`p_vendedor`.`apellido_persona`) AS `vendedor_asignado`, `e`.`id_empleado` AS `id_empleado_asignado`, `e`.`fecha_alta_empleado` AS `fecha_alta_empleado`, `e`.`fecha_baja_empleado` AS `fecha_baja_empleado`, group_concat(distinct `o`.`id_observacion` order by `o`.`id_observacion` ASC separator ', ') AS `ids_observaciones`, group_concat(distinct `o`.`descripcion_observacion` order by `o`.`id_observacion` ASC separator '|') AS `descripciones_observaciones`, group_concat(distinct `o`.`fecha_observacion` order by `o`.`id_observacion` ASC separator ', ') AS `fechas_observaciones`, group_concat(distinct `o`.`hora_observacion` order by `o`.`id_observacion` ASC separator ', ') AS `horas_observaciones` FROM ((((((((`cliente` `c` join `persona` `p` on(`p`.`id_persona` = `c`.`id_persona`)) left join `matricula` `m` on(`c`.`id_matricula` = `m`.`id_matricula`)) left join `vista_contactos` `vc` on(`vc`.`id_persona` = `p`.`id_persona`)) left join `vista_edificios` `ve` on(`ve`.`id_cliente` = `c`.`id_cliente`)) left join `designacion` `d` on(`d`.`id_cliente` = `c`.`id_cliente` and `d`.`fecha_baja_designacion` is null)) left join `empleado` `e` on(`d`.`id_empleado` = `e`.`id_empleado` and `e`.`id_tipo_empleado` = 1)) left join `persona` `p_vendedor` on(`e`.`id_persona` = `p_vendedor`.`id_persona`)) left join `observacion` `o` on(`o`.`id_cliente` = `c`.`id_cliente`)) WHERE `c`.`fecha_baja_cliente` is null GROUP BY `c`.`id_cliente`, `p`.`nombre_persona`, `p`.`apellido_persona`, `p`.`cuitl_persona`, `p`.`direccion_persona`, `c`.`clave_afgip_cliente`, `c`.`conversion_cliente`, `c`.`fecha_baja_cliente`, `m`.`numero_matricula`, `m`.`vencimiento_matricula`, `vc`.`contactos`, `vc`.`tipo_contacto`, `ve`.`nombre_edificios`, `ve`.`direccion_edificios`, `ve`.`cuit_edificios`, `ve`.`tipo_edificio`, `p_vendedor`.`nombre_persona`, `p_vendedor`.`apellido_persona`, `e`.`id_empleado`, `e`.`fecha_alta_empleado`, `e`.`fecha_baja_empleado` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_detallada_clientes`  AS SELECT `c`.`id_cliente` AS `id_cliente`, `p`.`nombre_persona` AS `nombre_persona`, `p`.`apellido_persona` AS `apellido_persona`, `p`.`cuitl_persona` AS `cuitl_persona`, `p`.`direccion_persona` AS `direccion_persona`, `c`.`clave_afgip_cliente` AS `clave_afgip_cliente`, `c`.`conversion_cliente` AS `conversion_cliente`, `c`.`fecha_baja_cliente` AS `fecha_baja_cliente`, `m`.`numero_matricula` AS `numero_matricula`, `m`.`vencimiento_matricula` AS `vencimiento_matricula`, `vc`.`contactos` AS `contactos`, `vc`.`tipo_contacto` AS `tipo_contacto`, group_concat(distinct `ve`.`id_edificios` order by `ve`.`id_edificios` ASC separator ', ') AS `id_edificios`, group_concat(distinct `ve`.`nombre_edificios` order by `ve`.`nombre_edificios` ASC separator ', ') AS `nombre_edificios`, group_concat(distinct `ve`.`direccion_edificios` order by `ve`.`direccion_edificios` ASC separator ', ') AS `direccion_edificios`, group_concat(distinct `ve`.`cuit_edificios` order by `ve`.`cuit_edificios` ASC separator ', ') AS `cuit_edificios`, group_concat(distinct `ve`.`tipo_edificio` order by `ve`.`tipo_edificio` ASC separator ', ') AS `tipo_edificio`, `d`.`id_empleado` AS `id_empleado_asignado`, concat(`p_empleado`.`nombre_persona`,' ',`p_empleado`.`apellido_persona`) AS `nombre_empleado_asignado`, `e`.`fecha_alta_empleado` AS `fecha_alta_empleado`, `e`.`fecha_baja_empleado` AS `fecha_baja_empleado`, group_concat(distinct `o`.`id_observacion` order by `o`.`id_observacion` ASC separator ', ') AS `id_observacion`, group_concat(distinct `o`.`descripcion_observacion` order by `o`.`descripcion_observacion` ASC separator '|') AS `descripcion_observacion`, group_concat(`o`.`fecha_observacion` order by `o`.`fecha_observacion` ASC separator ', ') AS `fecha_observacion`, group_concat(`o`.`hora_observacion` order by `o`.`hora_observacion` ASC separator ', ') AS `hora_observacion`, `ve`.`fecha_baja_edificios` AS `fecha_baja_edificios` FROM ((((((((`cliente` `c` join `persona` `p` on(`c`.`id_persona` = `p`.`id_persona`)) left join `matricula` `m` on(`c`.`id_matricula` = `m`.`id_matricula`)) left join `vista_contactos` `vc` on(`vc`.`id_persona` = `p`.`id_persona`)) left join `vista_edificios` `ve` on(`ve`.`id_cliente` = `c`.`id_cliente`)) left join `designacion` `d` on(`d`.`id_cliente` = `c`.`id_cliente`)) left join `empleado` `e` on(`d`.`id_empleado` = `e`.`id_empleado`)) left join `persona` `p_empleado` on(`e`.`id_persona` = `p_empleado`.`id_persona`)) left join `observacion` `o` on(`o`.`id_cliente` = `c`.`id_cliente`)) WHERE `c`.`fecha_baja_cliente` is null GROUP BY `c`.`id_cliente` ;
 
 -- --------------------------------------------------------
 
@@ -1089,7 +1382,16 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vista_edificios`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_edificios`  AS SELECT `e`.`id_cliente` AS `id_cliente`, group_concat(`e`.`id_edificio` separator ', ') AS `id_edificios`, group_concat(`e`.`nombre_edificio` separator ', ') AS `nombre_edificios`, group_concat(`e`.`direccion_edificio` separator ', ') AS `direccion_edificios`, group_concat(`e`.`cuit_edificio` separator ', ') AS `cuit_edificios`, group_concat(`te`.`nombre_tipo_edificio` separator ', ') AS `tipo_edificio` FROM (`edificio` `e` left join `tipo_edificio` `te` on(`e`.`id_tipo_edificio` = `te`.`id_tipo_edificio`)) GROUP BY `e`.`id_cliente` ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_edificios`  AS SELECT `e`.`id_cliente` AS `id_cliente`, group_concat(`e`.`id_edificio` separator ', ') AS `id_edificios`, group_concat(`e`.`nombre_edificio` separator ', ') AS `nombre_edificios`, group_concat(`e`.`direccion_edificio` separator ', ') AS `direccion_edificios`, group_concat(`e`.`cuit_edificio` separator ', ') AS `cuit_edificios`, group_concat(`te`.`nombre_tipo_edificio` separator ', ') AS `tipo_edificio`, group_concat(`e`.`fecha_baja_edificio` separator ', ') AS `fecha_baja_edificios` FROM (`edificio` `e` left join `tipo_edificio` `te` on(`e`.`id_tipo_edificio` = `te`.`id_tipo_edificio`)) GROUP BY `e`.`id_cliente` ;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura para la vista `vista_ventas`
+--
+DROP TABLE IF EXISTS `vista_ventas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_ventas`  AS SELECT `v`.`id_venta` AS `id_venta`, `v`.`numero_factura` AS `numero_factura`, `v`.`fecha_hora_venta` AS `fecha_hora_venta`, `e`.`nombre_edificio` AS `nombre_edificio`, `e`.`cuit_edificio` AS `cuit_edificio`, `e`.`direccion_edificio` AS `direccion_edificio`, `mp`.`nombre_metodo_pago` AS `nombre_metodo_pago`, `mp`.`cod_metodo_pago` AS `cod_metodo_pago`, concat(`p`.`nombre_persona`,' ',`p`.`apellido_persona`) AS `nombre_empleado`, `v`.`monto_total_venta` AS `monto_total_venta`, `s`.`nombre_servicio` AS `nombre_servicio`, `s`.`cod_servicio` AS `cod_servicio`, `s`.`precio_base_servicio` AS `precio`, `dv`.`id_detalle_venta` AS `id_detalle_venta`, `dv`.`cantidad_detalle_venta` AS `cantidad_detalle_venta`, `dv`.`costo_extra_detalle_venta` AS `costo_extra_detalle_venta`, `rev`.`fecha_hora_registro_estado_venta` AS `fecha_hora_registro_estado_venta`, `es`.`descripcion_estado_venta` AS `descripcion_estado_venta` FROM ((((((((`venta` `v` left join `empleado` `emp` on(`v`.`id_empleado` = `emp`.`id_empleado`)) left join `persona` `p` on(`emp`.`id_persona` = `p`.`id_persona`)) left join `edificio` `e` on(`v`.`id_edificio` = `e`.`id_edificio`)) left join `metodo_pago` `mp` on(`v`.`id_metodo_pago` = `mp`.`id_metodo_pago`)) left join `detalle_venta` `dv` on(`v`.`id_venta` = `dv`.`id_venta`)) left join `servicio` `s` on(`dv`.`id_servicio` = `s`.`id_servicio`)) left join `registro_estado_venta` `rev` on(`dv`.`id_detalle_venta` = `rev`.`id_detalle_venta`)) left join `estado_venta` `es` on(`rev`.`id_estado_venta` = `es`.`id_estado_venta`)) ;
 
 --
 -- Índices para tablas volcadas
@@ -1151,7 +1453,8 @@ ALTER TABLE `categoria_servicio`
 ALTER TABLE `cliente`
   ADD PRIMARY KEY (`id_cliente`),
   ADD KEY `fk_cliente_persona1` (`id_persona`),
-  ADD KEY `fk_cliente_matricula1` (`id_matricula`);
+  ADD KEY `fk_cliente_matricula1` (`id_matricula`),
+  ADD KEY `fk_cliente_empelado1` (`id_empleado`);
 
 --
 -- Indices de la tabla `contacto`
@@ -1235,8 +1538,8 @@ ALTER TABLE `edificio`
 ALTER TABLE `empleado`
   ADD PRIMARY KEY (`id_empleado`),
   ADD KEY `fk_empleado_persona1` (`id_persona`),
-  ADD KEY `fk_empleado_usuario1` (`id_usuario`),
-  ADD KEY `fk_empleado_tipo_empleado1` (`id_tipo_empleado`);
+  ADD KEY `fk_empleado_tipo_empleado1` (`id_tipo_empleado`),
+  ADD KEY `fk_empleado_usuario1_idx` (`id_usuario`);
 
 --
 -- Indices de la tabla `estado_venta`
@@ -1251,6 +1554,12 @@ ALTER TABLE `factura`
   ADD PRIMARY KEY (`id_factura`),
   ADD KEY `fk_factura_venta1` (`id_venta`),
   ADD KEY `fk_factura_tipo_factura1` (`id_tipo_factura`);
+
+--
+-- Indices de la tabla `login_myuser`
+--
+ALTER TABLE `login_myuser`
+  ADD PRIMARY KEY (`id_usuario`);
 
 --
 -- Indices de la tabla `matricula`
@@ -1358,7 +1667,7 @@ ALTER TABLE `venta`
 -- AUTO_INCREMENT de la tabla `administrador`
 --
 ALTER TABLE `administrador`
-  MODIFY `id_administrador` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_administrador` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `archivo_venta`
@@ -1370,25 +1679,25 @@ ALTER TABLE `archivo_venta`
 -- AUTO_INCREMENT de la tabla `categoria_servicio`
 --
 ALTER TABLE `categoria_servicio`
-  MODIFY `id_categoria_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_categoria_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `cliente`
 --
 ALTER TABLE `cliente`
-  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_cliente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de la tabla `contacto`
 --
 ALTER TABLE `contacto`
-  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
 
 --
 -- AUTO_INCREMENT de la tabla `designacion`
 --
 ALTER TABLE `designacion`
-  MODIFY `id_designacion` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_designacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_factura`
@@ -1400,25 +1709,25 @@ ALTER TABLE `detalle_factura`
 -- AUTO_INCREMENT de la tabla `detalle_presupuesto`
 --
 ALTER TABLE `detalle_presupuesto`
-  MODIFY `id_detalle_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_detalle_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
 
 --
 -- AUTO_INCREMENT de la tabla `edificio`
 --
 ALTER TABLE `edificio`
-  MODIFY `id_edificio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_edificio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
 
 --
 -- AUTO_INCREMENT de la tabla `factura`
@@ -1427,34 +1736,58 @@ ALTER TABLE `factura`
   MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT de la tabla `login_myuser`
+--
+ALTER TABLE `login_myuser`
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT de la tabla `matricula`
 --
 ALTER TABLE `matricula`
-  MODIFY `id_matricula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_matricula` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT de la tabla `metodo_pago`
+--
+ALTER TABLE `metodo_pago`
+  MODIFY `id_metodo_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `observacion`
+--
+ALTER TABLE `observacion`
+  MODIFY `id_observacion` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
 
 --
 -- AUTO_INCREMENT de la tabla `presupuesto`
 --
 ALTER TABLE `presupuesto`
-  MODIFY `id_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+
+--
+-- AUTO_INCREMENT de la tabla `registro_estado_venta`
+--
+ALTER TABLE `registro_estado_venta`
+  MODIFY `id_registro_estado_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT de la tabla `servicio`
 --
 ALTER TABLE `servicio`
-  MODIFY `id_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id_servicio` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_contacto`
 --
 ALTER TABLE `tipo_contacto`
-  MODIFY `id_tipo_contacto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipo_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `tipo_destinatario_factura`
@@ -1479,6 +1812,12 @@ ALTER TABLE `tipo_factura`
 --
 ALTER TABLE `usuario`
   MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de la tabla `venta`
+--
+ALTER TABLE `venta`
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- Restricciones para tablas volcadas
@@ -1507,6 +1846,7 @@ ALTER TABLE `archivo_venta`
 -- Filtros para la tabla `cliente`
 --
 ALTER TABLE `cliente`
+  ADD CONSTRAINT `fk_cliente_empelado1` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`),
   ADD CONSTRAINT `fk_cliente_matricula1` FOREIGN KEY (`id_matricula`) REFERENCES `matricula` (`id_matricula`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_cliente_persona1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
@@ -1521,7 +1861,6 @@ ALTER TABLE `contacto`
 -- Filtros para la tabla `designacion`
 --
 ALTER TABLE `designacion`
-  ADD CONSTRAINT `fk_cliente_has_vendedor_cliente1` FOREIGN KEY (`id_designacion`) REFERENCES `cliente` (`id_cliente`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_designacion_administrador1` FOREIGN KEY (`id_administrador`) REFERENCES `administrador` (`id_administrador`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_designacion_cliente1` FOREIGN KEY (`id_cliente`) REFERENCES `cliente` (`id_cliente`),
   ADD CONSTRAINT `fk_designacion_empleado1` FOREIGN KEY (`id_empleado`) REFERENCES `empleado` (`id_empleado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
@@ -1558,8 +1897,7 @@ ALTER TABLE `edificio`
 --
 ALTER TABLE `empleado`
   ADD CONSTRAINT `fk_empleado_persona1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_empleado_tipo_empleado1` FOREIGN KEY (`id_tipo_empleado`) REFERENCES `tipo_empleado` (`id_tipo_empleado`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_empleado_usuario1` FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_empleado_tipo_empleado1` FOREIGN KEY (`id_tipo_empleado`) REFERENCES `tipo_empleado` (`id_tipo_empleado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Filtros para la tabla `factura`

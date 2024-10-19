@@ -228,6 +228,7 @@ def enviarVentas(request, id_presupuesto):
     id_venta = Presupuesto.enviarVentas(id_presupuesto)
     if id_venta:
         print(f"Venta creada con ID: {id_venta}")  # Imprimir el id de la venta creada
+        messages.success(request, 'El presupuesto se ha transferido a ventas exitosamente.')
         return redirect('/ventas/')
     else:
         print("Error al crear la venta.")  # Imprimir mensaje de error
