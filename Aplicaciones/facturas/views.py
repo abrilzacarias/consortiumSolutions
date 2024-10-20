@@ -44,14 +44,14 @@ def generar_link_pago():
     preference = sdk.preference().create(preference_data)
 
     # Imprime la respuesta completa para depuración
-    print("Respuesta de Mercado Pago:", preference)
+    '''print("Respuesta de Mercado Pago:", preference)'''
 
     # Obtén el link de pago si existe
     payment_link = preference["response"].get("init_point")
 
-    if payment_link:
+    '''if payment_link:
         print("Link de Pago:", payment_link)
     else:
-        print("No se pudo obtener el link de pago.")
+        print("No se pudo obtener el link de pago.")'''
     
     return payment_link
