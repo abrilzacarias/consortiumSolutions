@@ -6,7 +6,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ventas</title>
+    <title>Facturas</title>
     {% load static %}
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
@@ -73,6 +73,10 @@
             </div>
         </div>
     </section>
+    <!-- Enlace de pago -->
+<div class="mt-4">
+    <a href="{{ payment_link }}" class="text-blue-500 hover:underline" target="_blank">Generar Link de Pago</a>
+</div>
 
 </body>
 </html>
