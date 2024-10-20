@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     'Aplicaciones.clientes',
     'Aplicaciones.presupuestos',
     'Aplicaciones.ventas',
+    'Aplicaciones.facturas',
     'tailwind',
     'theme',
     'django_browser_reload',
