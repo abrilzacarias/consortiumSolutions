@@ -1,0 +1,79 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ventas</title>
+    {% load static %}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0/dist/js/select2.min.js"></script>
+</head>
+
+<body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
+    <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
+        <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+            <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
+                    <div class="w-full md:w-1/2">
+                        <form class="flex items-center">
+                            <label for="simple-search" class="sr-only">Buscar</label>
+                            <div class="relative w-full">
+                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor"
+                                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd"
+                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
+                                            clip-rule="evenodd" />
+                                    </svg>
+                                </div>
+                                <input type="text" id="simple-search"
+                                    class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white"
+                                    placeholder="Buscar facturas" required>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Tabla principal listado de ventas !! -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-sm text-left text-gray-400">
+                        <thead class="text-xs text-white-700 uppercase bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-4">N° Comprobante</th>
+                                <th scope="col" class="px-4 py-4">Fecha Emisión</th>
+                                <th scope="col" class="px-4 py-3">Cliente</th>
+                                <th scope="col" class="px-4 py-3">Edificio</th>
+                                <th scope="col" class="px-4 py-3">Ticket</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for key, factura in facturas.items %}
+                            <tr class="border-b">
+                                <td class="px-4 py-3">{{ factura.numero_comprobante }}</td>
+                                <td class="px-4 py-3">{{ factura.fecha_emision }}</td>
+                                <td class="px-4 py-3">{{ factura.nombre_cliente }} {{ factura.apellido_cliente }}</td>
+                                <td class="px-4 py-3">{{ factura.nombre_edificio }}</td>
+                                <td class="px-4 py-3">
+                                    <a href="{{ factura.descarga_ticket }}" class="text-blue-500 hover:underline" target="_blank">Descargar</a>
+
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <!-- Paginación HTML -->
+                {% include 'paginacion.html' %}
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
+{% endblock %}

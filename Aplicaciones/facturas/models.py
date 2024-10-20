@@ -30,6 +30,19 @@ class DetalleFactura(models.Model):
 class Facturas:
     
     @staticmethod
+
+    def listarFacturas():
+        with connection.cursor() as cursor:
+            sqlListarPresupuestos = """
+                    SELECT * FROM vista_facturas;
+                    """
+            cursor.execute(sqlListarPresupuestos)
+            resultados = cursor.fetchall()
+            
+        return resultados
+
+
+
     def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura):
         with connection.cursor() as cursor:
             cursor.execute("""

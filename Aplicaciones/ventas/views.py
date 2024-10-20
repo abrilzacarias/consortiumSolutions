@@ -9,21 +9,17 @@ from datetime import datetime
 
 def home(request):
       ventas = Venta.listarVentas()
-      print(ventas)
       context = paginacionTablas(request, ventas, 'ventas')
       return render(request, 'ventasViews.html', context)
 
 def enviar_factura_prueba(request, id_venta): 
     # Obtiene todas las ventas
     ventas = Venta.listarVentas()  
-    
     # Busca la venta específica por id_venta
     venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
-
     # Asegúrate de que se encontró la venta
     if not venta:
         return JsonResponse({'error': 'Venta no encontrada'}, status=404)
-
     # Asegúrate de que haya al menos un detalle en la venta
     if not venta.get('detalles'):
         return JsonResponse({'error': 'No hay detalles disponibles para esta venta'}, status=404)
@@ -105,7 +101,6 @@ def enviar_factura_prueba(request, id_venta):
     link_descarga_factura = response_data.get('comprobante_ticket_url', '')
     numero_comprobante = response_data.get('comprobante_nro', '')
     numero_comprobante_final = numero_comprobante.split("-")[1] 
-    print(f'AAAAAAAAAAA{link_descarga_factura}')
 
     print(response_data)
     Facturas.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura)
