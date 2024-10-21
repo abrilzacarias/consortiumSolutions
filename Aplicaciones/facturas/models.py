@@ -5,6 +5,14 @@ from django.utils import timezone
 
 
 # Create your models here.
+class EstadoFactura(models.Model):
+    id_estado_factura = models.AutoField(primary_key=True)
+    descripcion_estado_factura = models.CharField(max_length=50)
+
+    class Meta:
+        db_table = 'estado_factura'  # Nombre de la tabla en la base de datos
+        managed = False 
+
 class Factura(models.Model):
     id_factura = models.AutoField(primary_key=True)  
     numero_comprobante = models.IntegerField()  
@@ -12,10 +20,12 @@ class Factura(models.Model):
     id_venta = models.IntegerField() 
     id_tipo_factura = models.IntegerField()  # Puedes crear un modelo para tipos de factura
     link_descarga = models.CharField(max_length=500) 
+    id_estado_factura = models.ForeignKey(EstadoFactura, default=1, on_delete=models.CASCADE)
 
     class Meta:
         db_table = 'factura'  # Nombre de la tabla en la base de datos
         managed = False 
+
 
 class DetalleFactura(models.Model):
     id_detalle_factura = models.AutoField(primary_key=True)   # Puede ser un ID único para cada detalle
