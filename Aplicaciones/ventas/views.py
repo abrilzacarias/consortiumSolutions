@@ -79,7 +79,7 @@ def enviar_factura_prueba(request, id_venta):
             "tipo": "FACTURA C",
             "operacion": "V",
             "punto_venta": "00679",  
-            "numero": "00000029",
+            "numero": "00000030",
             "moneda": "PES",
             "cotizacion": 1,
             "periodo_facturado_desde": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
@@ -103,9 +103,10 @@ def enviar_factura_prueba(request, id_venta):
     response_data = json.loads(data.decode("utf-8"))
     link_descarga_factura = response_data.get('comprobante_ticket_url', '')
     numero_comprobante = response_data.get('comprobante_nro', '')
+  
     numero_comprobante_final = numero_comprobante.split("-")[1] 
 
-    print(response_data)
+
     Facturas.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura)
     
 

@@ -1,26 +1,29 @@
 from django.shortcuts import render
-from .models import Facturas
+from .models import Facturas, EstadoFactura
 import mercadopago
 
 def listarFacturas(request):
     resultados = Facturas.listarFacturas()
-    
+    estados_factura = EstadoFactura.objects.all()
+    print(estados_factura)
     facturas = {
-        str(entry[0]): {  # Usar el numero_comprobante como clave
+        str(entry[0]): {  # Usar id como clave
             'numero_comprobante': entry[1],
             'fecha_emision': entry[2],
             'nombre_cliente': entry[3],
             'apellido_cliente': entry[4],
             'nombre_edificio': entry[5],
-            'descarga_ticket': entry[6]
+            'descarga_ticket': entry[6],
+            'id_estado_factura' : entry[7],
+            'descripcion_estado_factura' : entry[8]
         }
         for entry in resultados
     }
-
+    
     # Llama a la función para generar el link de pago
     payment_link = generar_link_pago()
 
-    return render(request, 'vistaFacturas.html', {'facturas': facturas, 'payment_link': payment_link}) 
+    return render(request, 'vistaFacturas.html', {'facturas': facturas, 'estados_factura': estados_factura, 'payment_link': payment_link}) 
 
 def generar_link_pago():
     sdk = mercadopago.SDK("TEST-1083456035276298-101922-810a2e0aeb770bbf8ed3191b3cd59702-566328219")
