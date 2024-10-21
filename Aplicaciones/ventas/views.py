@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Venta  # Asegúrate de importar Venta
+from .models import MetodoPago, Venta  # Asegúrate de importar la clase MetodoPago
 from django.contrib import messages
 from ..facturas.models import Facturas
 from ..inicio.views import paginacionTablas
@@ -8,9 +8,12 @@ import http.client, json
 from datetime import datetime
 
 def home(request):
-      ventas = Venta.listarVentas()
-      context = paginacionTablas(request, ventas, 'ventas')
-      return render(request, 'ventasViews.html', context)
+    ventas = Venta.listarVentas()
+    metodos_pago = MetodoPago.obtenerMetodosPago()  # Asegúrate de incluir esto
+    context = paginacionTablas(request, ventas, 'ventas')
+    context['metodos_pago'] = metodos_pago  # Agrega métodos de pago al contexto
+    return render(request, 'ventasViews.html', context)
+
 
 def enviar_factura_prueba(request, id_venta): 
     # Obtiene todas las ventas
@@ -109,23 +112,34 @@ def enviar_factura_prueba(request, id_venta):
     return JsonResponse(data.decode("utf-8"), safe=False)
 
 
-def editarVenta(request, id_venta):
-    if request.method == 'POST':
-        metodo_pago = request.POST.get('metodo_pago')
-        estado_venta = request.POST.get('estado_venta')
-        # ... (obten el resto de los datos necesarios y actualiza la venta)
-        
-        # Lógica para actualizar la venta
-        # Asegúrate de usar el id_venta para encontrar la venta correspondiente y hacer la actualización
-        try:
-            venta = Venta.objects.get(id_venta=id_venta)
-            venta.metodo_pago = metodo_pago
-            venta.estado_venta = estado_venta
-            venta.save()
-            messages.success(request, 'La venta se actualizó correctamente.')
-        except Venta.DoesNotExist:
-            messages.error(request, 'No se encontró la venta.')
-        
-        return redirect('/ventas/')
 
-    return redirect('/ventas/')  # Redirige si no es una petición POST
+def editarMetodoPago(request, id_venta):
+    if request.method == 'POST':
+        # Imprimir todos los datos que llegan en el POST
+        print(request.POST)  # Esto te mostrará todos los datos enviados por el formulario
+
+        # Obtener el nuevo método de pago del formulario
+        id_nuevo_metodo_pago = request.POST.get('metodo_pago')  # Cambia 'id_metodo_pago' por 'metodo_pago'
+        
+        # Llama al método de clase para actualizar el método de pago
+        Venta.actualizarMetodoPago(id_nuevo_metodo_pago, id_venta)
+        
+        # Redirige a la vista principal de ventas
+        return redirect('ventas:home')  # Asegúrate de que 'ventas:home' esté definido en tus URLs
+
+    else:
+        # En caso de que sea un GET, obtén los métodos de pago y la venta
+        metodos_pago = MetodoPago.obtenerMetodosPago()
+        venta = get_object_or_404(Venta, id_venta=id_venta)
+
+        # Prepara el contexto para la plantilla
+        context = {
+            'metodos_pago': metodos_pago,
+            'venta': venta,
+        }
+        return render(request, 'ventas/ventasViews.html', context)
+
+
+
+
+
