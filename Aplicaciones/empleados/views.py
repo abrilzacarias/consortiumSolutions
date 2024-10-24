@@ -75,6 +75,14 @@ def editarEmpleado(request, id_empleado):
 
         # Recopilación de los contactos existentes y nuevos
         contactos_data = []
+        correo_id = request.POST.get('id_contacto_correo')
+        correo_descripcion = request.POST.get('descripcion_contacto_correo')
+        if correo_descripcion:
+            contactos_data.append({
+                'id_contacto': correo_id,
+                'tipo_contacto_id': 1,  # Asumiendo que 1 es para correo
+                'descripcion_contacto': correo_descripcion
+            })
         for key, value in request.POST.items():
             if key.startswith('tipo_contacto_'):
                 contacto_id = key.split('_')[-1]
@@ -88,7 +96,6 @@ def editarEmpleado(request, id_empleado):
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-
             elif key.startswith('nuevo_contacto_tipo_'):
                 unique_id = key.split('_')[-1]
                 tipo_contacto_id = value
@@ -100,7 +107,6 @@ def editarEmpleado(request, id_empleado):
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-
         # Agregar print para ver los contactos que están llegando
         print("Datos de contacto editados o nuevos:", contactos_data)
 

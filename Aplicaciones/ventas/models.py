@@ -44,10 +44,9 @@ class Venta(models.Model):
                     """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            print (resultados)
             
             ventas = {}
-            
+
             for resultado in resultados:
                 numero_factura = resultado[1]  # Suponiendo que el número de factura es el segundo elemento
                 id_venta = resultado[0]         # Primer elemento es el id_venta
@@ -61,21 +60,20 @@ class Venta(models.Model):
                         'nombre_edificio': resultado[3],
                         'cuit_edificio': resultado[4],
                         'direccion_edificio': resultado[5],
-                        'id_metodo_pago': resultado[6],
-                        'nombre_metodo_pago': resultado[7],
-                        'cod_metodo_pago': resultado[8],
-                        'nombre_empleado': resultado[9],
-                        'monto_total_venta': resultado[10],
+                        'nombre_metodo_pago': resultado[6],
+                        'cod_metodo_pago': resultado[7],
+                        'nombre_empleado': resultado[8],
+                        'monto_total_venta': resultado[9],
                         'detalles': []
                     }
 
                 detalle = {
-                    'id_detalle_venta': resultado[14],  # Agregado
-                    'nombre_servicio': resultado[11],
-                    'cantidad_detalle_venta': resultado[12],
-                    'precio_detalle_venta': resultado[13],
-                    'costo_extra_detalle_venta': resultado[16],  # Agregado
-                    'descripcion_estado_venta': resultado[18],  # Descripción del estado de venta
+                    'id_detalle_venta': resultado[13],  # Agregado
+                    'nombre_servicio': resultado[10],
+                    'cantidad_detalle_venta': resultado[11],
+                    'precio_detalle_venta': resultado[12],
+                    'costo_extra_detalle_venta': resultado[15],  # Agregado
+                    'descripcion_estado_venta': resultado[17],  # Descripción del estado de venta
                 }
                 ventas[numero_factura]['detalles'].append(detalle)
 

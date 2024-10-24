@@ -82,129 +82,92 @@
     
     <!-- Navbar end -->
 
-    <!-- Sidebar start-->
     <div id="containerSidebar" class="z-40">
       <div class="navbar-menu relative z-40">
         <nav id="sidebar" class="fixed left-0 bottom-0 flex w-2/3 -translate-x-full flex-col overflow-y-auto bg-gray-800 pt-6 pb-8 sm:max-w-xs lg:w-80">
-          <!-- one category / navigation group -->
           <div class="pb-24">
             <ul class="text-sm font-medium">
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'inicio:listarActividades' %}">
-                  <img
-                    class="activities-icon"
-                    alt=""
-                    src="{% static 'public/activities.svg' %}"
-                  />
-                  <span class="ml-3">Últimas Actividades</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'clientes:listarClientes' %}">
-                  <img
-                    class="clients-1-icon"
-                    alt=""
-                    src="{% static 'public/clients-1.svg' %}"
-                  />
-                  <span class="ml-3">Clientes</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'ventas:home' %}"
-                >
-                  <img
-                    class="ventas-1-icon"
-                    alt=""
-                    src="{% static 'public/ventas-1.svg' %}"
-                  />
-                  <span class="ml-3">Ventas</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'presupuestos:home' %}"
-                >
-                  <img
-                    class="vuesaxoutlinemessages-2-icon"
-                    alt=""
-                    src="{% static 'public/preventas-1.svg' %}"
-                  />
-                  <span class="ml-3">Presupuestos</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'empleados:home' %}"
-                >
-                  <img
-                    class="empleados-1-icon"
-                    alt=""
-                    src="{% static 'public/vendedores-1.svg' %}"
-                  />
-                  <span class="ml-3">Empleados</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'servicios:home' %}"
-                >
-                  <img
-                    class="vuesaxlinearmenu-icon"
-                    alt=""
-                    src="{% static 'public/servicios-1.svg' %}"
-                  />
-                  <span class="ml-3">Servicios</span>
-                </a>
-              </li>
-              <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700"
-                  href="{% url 'facturas:listarFacturas' %}"
-                >
-                  <img
-                    class="vuesaxlinearmenu-icon"
-                    alt=""
-                    src="{% static 'public/facturacion.svg' %}"
-                  />
-                  <span class="ml-3">Facturas</span>
-                </a>
-              </li>
+    
+              <!-- Siempre visible para superuser -->
+              {% if user.is_superuser %}
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'inicio:listarActividades' %}">
+                    <img class="activities-icon" src="{% static 'public/activities.svg' %}" alt="" />
+                    <span class="ml-3">Últimas Actividades</span>
+                  </a>
+                </li>
+    
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'empleados:home' %}">
+                    <img class="empleados-1-icon" src="{% static 'public/vendedores-1.svg' %}" alt="" />
+                    <span class="ml-3">Empleados</span>
+                  </a>
+                </li>
+    
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'servicios:home' %}">
+                    <img class="vuesaxlinearmenu-icon" src="{% static 'public/servicios-1.svg' %}" alt="" />
+                    <span class="ml-3">Servicios</span>
+                  </a>
+                </li>
+              {% endif %}
+    
+              <!-- Sección visible para Vendedor -->
+              {% if 'Vendedor' in grupos_usuario or user.is_superuser %}
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'clientes:listarClientes' %}">
+                    <img class="clients-1-icon" src="{% static 'public/clients-1.svg' %}" alt="" />
+                    <span class="ml-3">Clientes</span>
+                  </a>
+                </li>
+    
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'presupuestos:home' %}">
+                    <img class="vuesaxoutlinemessages-2-icon" src="{% static 'public/preventas-1.svg' %}" alt="" />
+                    <span class="ml-3">Presupuestos</span>
+                  </a>
+                </li>
+              {% endif %}
+    
+              <!-- Sección visible para Asesor de Ventas -->
+              {% if 'Asesor de Ventas' in grupos_usuario or user.is_superuser %}
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'ventas:home' %}">
+                    <img class="ventas-1-icon" src="{% static 'public/ventas-1.svg' %}" alt="" />
+                    <span class="ml-3">Ventas</span>
+                  </a>
+                </li>
+              {% endif %}
+    
+              <!-- Sección visible para Facturador -->
+              {% if 'Facturador' in grupos_usuario or user.is_superuser %}
+                <li>
+                  <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-blue-700" href="{% url 'facturas:listarFacturas' %}">
+                    <img class="vuesaxlinearmenu-icon" src="{% static 'public/facturacion.svg' %}" alt="" />
+                    <span class="ml-3">Facturas</span>
+                  </a>
+                </li>
+              {% endif %}
+    
             </ul>
           </div>
-          <!-- navigation group end-->
-
+    
+          <!-- Cerrar Sesión -->
           <div>
             <ul class="mb-8 text-sm font-medium">
               <li>
-                <a
-                  class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-red-700"
-                  href="{% url 'logout' %}"
-                >
-                  <img
-                    class="vuesaxlinearlogout-icon"
-                    alt=""
-                    src="{% static 'public/cerrarsesion-1.svg' %}"
-                  />
+                <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-red-700" href="{% url 'logout' %}">
+                  <img class="vuesaxlinearlogout-icon" src="{% static 'public/cerrarsesion-1.svg' %}" alt="" />
                   <span class="ml-3">Cerrar Sesión</span>
                 </a>
               </li>
             </ul>
           </div>
-          <!-- example copies end -->
+    
         </nav>
       </div>
-      
     </div>
-    <!-- Sidebar end -->
+    
 
     <main class="flex-1 mt-3 px-4 bg-gray-900">
       {% block content %}
