@@ -80,8 +80,8 @@
                                         <ul class="py-1 text-sm text-gray-700"
                                             aria-labelledby="{{ venta.id_venta }}-dropdown-button">
                                             <li>
-                                                <button type="button" data-modal-target="editarVentaModal-{{ venta.id_venta }}"
-                                                    data-modal-toggle="editarVentaModal-{{ venta.id_venta }}"
+                                                <button type="button" data-modal-target="editarMetodoPagoModal-{{ venta.id_venta }}"
+                                                    data-modal-toggle="editarMetodoPagoModal-{{ venta.id_venta }}"
                                                     class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700"
                                                     data-id-venta-editar="{{ venta.id_venta }}"
                                                     onclick="setupEditVentaHandlers(this)">
@@ -142,7 +142,7 @@
     </section>
 
     {% for venta in ventas %}
-    <div id="editarVentaModal-{{ venta.id_venta }}" tabindex="-1" aria-hidden="true"
+    <div id="editarMetodoPagoModal-{{ venta.id_venta }}" tabindex="-1" aria-hidden="true"
         class="fixed inset-0 hidden justify-center items-center z-50 w-full h-full overflow-x-hidden overflow-y-auto">
         <div class="relative p-4 w-full max-w-2xl max-h-full">
             <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
@@ -150,7 +150,7 @@
                     <h3 class="text-lg font-semibold text-white">Actualizar Método de Pago</h3>
                     <!-- ... (código del botón de cierre) ... -->
                                          <!-- Botón de cerrar (cruz) en la parte superior derecha -->
-                    <button data-modal-toggle="editarVentaModal-{{ venta.id_venta }}" type="button"
+                    <button data-modal-toggle="editarMetodoPagoModal-{{ venta.id_venta }}" type="button"
                     class="text-gray-400 bg-transparent hover:bg-gray-600 hover:text-white rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"
                     aria-label="Close">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
@@ -238,19 +238,26 @@
                                 <td class="px-4 py-3">{{ detalle.cantidad_detalle_venta }}</td>
                                 <td class="px-4 py-3">{{ detalle.precio_detalle_venta }}</td>
                                 <td class="px-4 py-3">{{ detalle.costo_extra_detalle_venta }}</td>
-                                <td class="px-4 py-3">{{ detalle.descripcion_estado_venta }}</td>
+                                <td class="px-4 py-3">{{ detalle.descripcion_estado_venta|default:"No definido" }}</td>
                                 <td class="px-4 py-3">
                                     <!-- Selector de estado -->
-                                    <select id="estado_venta_{{ detalle.id_detalle }}" name="estado_venta" 
-                                            class="border border-gray-300 text-sm rounded-lg block w-full p-2 bg-gray-700 placeholder-gray-400 text-white"
-                                            onchange="handleChange(this, '{{ detalle.id_detalle }}')">
-                                        <option value="">Seleccionar Estado</option>
-                                        {% for estado in estados %}
-                                            <option value="{{ estado.id_estado_venta }}" {% if detalle.estado_venta == estado.descripcion_estado_venta %}selected{% endif %}>
-                                                {{ estado.descripcion_estado_venta }}
-                                            </option>
-                                        {% endfor %}
-                                    </select>
+                                    <form action="{% url 'ventas:cambiarEstadoRegistroVenta' detalle.id_detalle_venta %}" method="POST">
+                                        {% csrf_token %}
+                                        <select id="estado_venta_{{ detalle.id_detalle }}" 
+                                                name="estado_venta"
+                                                class="border border-gray-300 text-sm rounded-lg block w-full p-2 {% if detalle.id_estado_venta == 4 %}bg-gray-600{% else %}bg-gray-700{% endif %} placeholder-gray-400 text-white"
+                                                onchange="this.form.submit()"
+                                                {% if detalle.id_estado_venta == 4 %}disabled{% endif %}>
+                                            <option value="">Seleccionar Estado</option>
+                                            {% for estado in estados_venta %}
+                                                <option value="{{ estado.id }}" 
+                                                        {% if detalle.estado_venta == estado.nombre %}selected{% endif %}>
+                                                    {{ estado.nombre }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                    </form>
+                                
                                     <!-- Botón para enviar el cambio de estado 
                                     <button type="button" 
                                             class="text-white bg-green-700 inline-flex items-center hover:bg-green-800 font-medium rounded-lg text-s px-3 py-1.5 mt-1" 

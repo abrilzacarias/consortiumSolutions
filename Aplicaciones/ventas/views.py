@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import MetodoPago, Venta  # Asegúrate de importar la clase MetodoPago
+from .models import MetodoPago, Venta, EstadoVenta, RegistroEstadoVenta  # Asegúrate de importar la clase MetodoPago
 from django.contrib import messages
 from ..facturas.models import Facturas
 from ..inicio.views import paginacionTablas
@@ -9,9 +9,13 @@ from datetime import datetime
 
 def home(request):
     ventas = Venta.listarVentas()
-    metodos_pago = MetodoPago.obtenerMetodosPago()  # Asegúrate de incluir esto
+    metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
+    estados_venta = EstadoVenta.obtenerEstadosVenta()
     context = paginacionTablas(request, ventas, 'ventas')
     context['metodos_pago'] = metodos_pago  # Agrega métodos de pago al contexto
+    context['estados_venta'] = estados_venta
+    # Asegúrate de que en tu vista 'home' o en la vista correspondiente
+    #context['detalles'] = detalle_venta_queryset  # Asegúrate de que incluye el id_estado_venta
     return render(request, 'ventasViews.html', context)
 
 
@@ -112,8 +116,6 @@ def enviar_factura_prueba(request, id_venta):
 
     return JsonResponse(data.decode("utf-8"), safe=False)
 
-
-
 def editarMetodoPago(request, id_venta):
     if request.method == 'POST':
         # Imprimir todos los datos que llegan en el POST
@@ -142,5 +144,18 @@ def editarMetodoPago(request, id_venta):
 
 
 
+def cambiarEstadoRegistroVenta(request, id_detalle_venta):
+    if request.method == 'POST':
+        # Obtener los datos enviados desde el formulario
+        id_nuevo_estado_venta = request.POST.get('estado_venta')
+        id_empleado = request.user.id_empleado if hasattr(request.user, 'id_empleado') else None  # Asume que el empleado está relacionado con el usuario actual
 
+        # Llama al método para registrar el cambio de estado
+        RegistroEstadoVenta.registrarCambioEstado(id_detalle_venta, id_nuevo_estado_venta, id_empleado)
+
+        # Redirige a la vista de la venta o cualquier otra página
+        return redirect('ventas:home')
+
+    # Si no es un POST, redirige o maneja de otra manera
+    return redirect('ventas:home')
 

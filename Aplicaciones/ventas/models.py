@@ -44,7 +44,7 @@ class Venta(models.Model):
                     """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            
+            print(resultados)
             ventas = {}
 
             for resultado in resultados:
@@ -60,20 +60,23 @@ class Venta(models.Model):
                         'nombre_edificio': resultado[3],
                         'cuit_edificio': resultado[4],
                         'direccion_edificio': resultado[5],
-                        'nombre_metodo_pago': resultado[6],
-                        'cod_metodo_pago': resultado[7],
-                        'nombre_empleado': resultado[8],
-                        'monto_total_venta': resultado[9],
+                        'id_metodo_pago': resultado[6],
+                        'nombre_metodo_pago': resultado[7],
+                        'cod_metodo_pago': resultado[8],
+                        'nombre_empleado': resultado[9],
+                        'monto_total_venta': resultado[10],
                         'detalles': []
                     }
 
                 detalle = {
-                    'id_detalle_venta': resultado[13],  # Agregado
-                    'nombre_servicio': resultado[10],
-                    'cantidad_detalle_venta': resultado[11],
-                    'precio_detalle_venta': resultado[12],
-                    'costo_extra_detalle_venta': resultado[15],  # Agregado
-                    'descripcion_estado_venta': resultado[17],  # Descripción del estado de venta
+                    'id_detalle_venta': resultado[14],  # Agregado
+                    'nombre_servicio': resultado[11],
+                    'cantidad_detalle_venta': resultado[12],
+                    'precio_detalle_venta': resultado[13],
+                    'costo_extra_detalle_venta': resultado[16],  # Agregado
+                    'descripcion_estado_venta': resultado[18],  # Descripción del estado de venta
+                    'id_estado_venta':  resultado[20]  # Id del estado de venta
+
                 }
                 ventas[numero_factura]['detalles'].append(detalle)
 
@@ -87,8 +90,6 @@ class Venta(models.Model):
                 SET id_metodo_pago = %s 
                 WHERE id_venta = %s
             ''', [id_nuevo_metodo_pago, id_venta])  # Aquí se utiliza id_venta
-
-
 
 
 # Llamada al método para probarlo
@@ -108,16 +109,43 @@ class DetalleVenta(models.Model):
 class RegistroEstadoVenta(models.Model):
     id_registro_estado_venta = models.AutoField(primary_key=True)
     fecha_hora_registro_estado_venta = models.DateTimeField(null=True, blank=True)
-    id_detalle_venta = models.ForeignKey(DetalleVenta, on_delete=models.CASCADE)  # Relación con DetalleVenta
-    id_estado_venta = models.ForeignKey('EstadoVenta', null=True, blank=True, on_delete=models.SET_NULL)
-    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE)  # Relación corregida con Empleado
+    id_detalle_venta = models.ForeignKey(DetalleVenta, on_delete=models.CASCADE, db_column='id_detalle_venta')
+    id_estado_venta = models.ForeignKey('EstadoVenta', null=True, blank=True, on_delete=models.SET_NULL, db_column='id_estado_venta')
+    fecha_baja_estado = models.DateField(null=True, blank=True)
+    id_empleado = models.ForeignKey(Empleado, on_delete=models.CASCADE, null=True, db_column='id_empleado')
 
-    def _str_(self):
-        return f'Registro Estado Venta {self.id_registro_estado_venta}'
+    class Meta:
+        db_table = 'registro_estado_venta'
+        managed = False
+
+    @classmethod
+    def registrarCambioEstado(cls, id_detalle_venta, id_estado_venta, id_empleado):
+        # Actualiza la fecha de baja del estado anterior
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                UPDATE registro_estado_venta
+                SET fecha_baja_estado = NOW()
+                WHERE id_detalle_venta = %s AND fecha_baja_estado IS NULL
+            ''', [id_detalle_venta])
+        
+        # Inserta el nuevo estado
+        with connection.cursor() as cursor:
+            cursor.execute('''
+                INSERT INTO registro_estado_venta (fecha_hora_registro_estado_venta, id_detalle_venta, id_estado_venta, id_empleado, fecha_baja_estado)
+                VALUES (NOW(), %s, %s, %s, NULL)
+            ''', [id_detalle_venta, id_estado_venta, id_empleado])
 
 class EstadoVenta(models.Model):
     id_estado_venta = models.AutoField(primary_key=True)
     descripcion_estado_venta = models.CharField(max_length=45)
 
-    def _str_(self):
-        return self.descripcion_estado_venta
+    class Meta:
+        db_table = 'estado_venta'  # Nombre de la tabla en la base de datos
+        managed = False  # Esto indica que Django no debe crear ni modificar esta tabla
+    
+    @classmethod
+    def obtenerEstadosVenta(cls):
+        # Obtener todos los estados de venta
+        estados = cls.objects.all()
+        # Retornar una lista de diccionarios con id y descripción
+        return [{'id': estado.id_estado_venta, 'nombre': estado.descripcion_estado_venta} for estado in estados]
