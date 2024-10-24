@@ -181,12 +181,13 @@
                         <div id="errorApellido" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div>
-                        <label for="tipo_empleado" name="tipo_empleado" class="block mb-2 text-sm font-medium text-white">Tipo de Empleado</label>
-                        <select id="tipo_empleado" name="tipo_empleado" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white">
-                            {% for tipo in tipo_empleados %}
-                            <option value="{{tipo.id_tipo_empleado}}">{{tipo.descripcion_tipo_empleado}}</option>
-                            {% endfor %}
-                    </select>
+                        <label class="block mb-2 text-sm font-medium text-white">Tipo de Empleado</label>
+                        {% for tipo in tipo_empleados %}
+                        <div class="flex items-center mb-2">
+                            <input type="checkbox" id="tipo_empleado_{{ tipo.id_tipo_empleado }}" name="tipo_empleado" value="{{ tipo.id_tipo_empleado }}" class="appearance-none checked:bg-blue-600 checked:border-transparent border-gray-600 border-2 rounded-sm w-4 h-4 bg-gray-700">
+                            <label for="tipo_empleado_{{ tipo.id_tipo_empleado }}" class="ml-2 text-sm text-white">{{ tipo.descripcion_tipo_empleado }}</label>
+                        </div>
+                        {% endfor %}
                 </div>
                 <div class="mb-0">
                     <label for="cuitl_persona" class="block mb-2 text-sm font-medium text-white">CUIT/CUIL</label>
