@@ -223,14 +223,14 @@ class Empleado(models.Model):
 
     def editarEmpleado(self, idEmpleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado, contactos_data):
         try:
-            print("Valores recibidos:")
+            """ print("Valores recibidos:")
             print(f"idEmpleado: {idEmpleado}")
             print(f"nombre_persona: {nombre_persona}")
             print(f"apellido_persona: {apellido_persona}")
             print(f"cuitl_persona: {cuitl_persona}")
             print(f"direccion_persona: {direccion_persona}")
             print(f"id_tipo_empleado: {id_tipo_empleado}")
-            print(f"contactos_data: {contactos_data}")
+            print(f"contactos_data: {contactos_data}") """
             
             with connection.cursor() as cursor:
                 # Obtener id_persona asociado al id_empleado
@@ -261,12 +261,20 @@ class Empleado(models.Model):
 
                 # Actualizar o crear contactos
                 for contacto_data in contactos_data:
+                    if contacto_data.get('tipo_contacto_id') == 1:
+                        cursor.execute("""
+                        SELECT id_usuario FROM empleado WHERE id_empleado = %s;
+                    """, [idEmpleado])
+                        id_usuario = cursor.fetchone()[0]
+                        User = get_user_model()
+
+                        # actualizar el correo del usuario
+                        User.objects.filter(id_usuario=id_usuario).update(correo_electronico=contacto_data.get('descripcion_contacto'))
+
                     contacto_id = contacto_data.get('id_contacto')
                     tipo_contacto_id = contacto_data.get('tipo_contacto_id')
                     descripcion_contacto = contacto_data.get('descripcion_contacto')
 
-                    print(f"Procesando contacto: {contacto_data}")
-                    
                     if contacto_id.isdigit():  # Verifica que el contacto_id sea un número válido
                         cursor.execute("""
                             UPDATE contacto SET 
@@ -280,7 +288,6 @@ class Empleado(models.Model):
                             INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) 
                             VALUES (%s, %s, %s);
                         """, [descripcion_contacto, tipo_contacto_id, id_persona])
-                        print("Nuevo contacto creado.")
 
                 connection.commit()
                 print("Empleado actualizado correctamente.")

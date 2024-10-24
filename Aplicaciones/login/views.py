@@ -24,9 +24,31 @@ def signin(request):
         else:
             login(request, user)
             print("Sesión iniciada para el usuario:", user.correo_electronico)
-            next_url = request.GET.get('next', reverse('inicio:listarActividades'))
-            print("Redirigiendo a:", next_url)
-            return redirect(next_url)
+            
+            # Verificar si el usuario es superuser
+            if user.is_superuser:
+                print("Usuario superuser, redirigiendo a la página de inicio.")
+                return redirect(reverse('inicio:listarActividades'))
+
+            grupos_usuario = list(user.groups.values_list('name', flat=True))
+            print("Grupos del usuario:", grupos_usuario)
+
+            # Redirigir según el rol del usuario
+            if 'Vendedor' in grupos_usuario:
+                print("Usuario con rol Vendedor, redirigiendo a presupuestos:home.")
+                return redirect(reverse('presupuestos:home'))
+            elif 'Facturador' in grupos_usuario:
+                print("Usuario con rol Facturador, redirigiendo a facturas:listarFacturas.")
+                return redirect(reverse('facturas:listarFacturas'))
+            elif 'Asesor de Ventas' in grupos_usuario:
+                print("Usuario con rol Asesor de Ventas, redirigiendo a ventas:home.")
+                return redirect(reverse('ventas:home'))
+            else:
+                # Si el rol no es válido, redirigir a la página de inicio
+                print("Rol desconocido, redirigiendo a la página de inicio.")
+                return render(request, 'loginviews.html', {
+                        'error': 'Correo electrónico o contraseña incorrectos.'
+                    })
         
 def logoutView(request):
     logout(request)

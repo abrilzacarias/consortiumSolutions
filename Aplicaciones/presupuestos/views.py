@@ -6,7 +6,9 @@ from ..clientes.models import Cliente, Edificio
 from ..empleados.models import Empleado
 from ..servicios.models import CategoriaServicio
 from ..inicio.views import paginacionTablas
+from django.contrib.auth.decorators import login_required, permission_required
 
+@login_required
 def home(request):
     presupuestos = Presupuesto.listarPresupuestos()
     context = paginacionTablas(request, presupuestos, 'presupuestos')
