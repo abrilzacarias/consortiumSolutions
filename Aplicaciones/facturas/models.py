@@ -34,7 +34,6 @@ class Factura(models.Model):
                     """
             cursor.execute(sqlListarFacturas)
             resultados = cursor.fetchall()
-            print("Resultados desde la base de datos:", resultados)  # Añadir esta línea para ver resultados
         return resultados
     
     def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura):

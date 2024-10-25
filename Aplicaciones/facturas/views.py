@@ -7,10 +7,8 @@ from django.urls import reverse
 
 
 def listarFacturas(request):
-    
     resultados = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
-    print(resultados)
     facturas = {
         str(entry[0]): {  # Usar id como clave
             'numero_comprobante': entry[1],

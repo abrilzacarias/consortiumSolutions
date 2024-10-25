@@ -7,6 +7,7 @@ from ..inicio.views import paginacionTablas
 import http.client, json
 from datetime import datetime
 
+
 def home(request):
     ventas = Venta.listarVentas()
     metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
@@ -55,7 +56,7 @@ def enviar_factura_prueba(request, id_venta):
                     "descripcion": "Costo extra por servicio",
                     "unidad_bulto": "1",
                     "lista_precios": "Lista de precios API 3",
-                    "codigo": "99999",  # Usar un código genérico o uno especial
+                    "codigo": "0",  # Usar un código genérico o uno especial
                     "precio_unitario_sin_iva": str(detalle_venta['costo_extra_detalle_venta']),
                     "alicuota": "0"
                 },
@@ -83,7 +84,7 @@ def enviar_factura_prueba(request, id_venta):
             "tipo": "FACTURA C",
             "operacion": "V",
             "punto_venta": "00679",  
-            "numero": "00000030",
+            "numero": "00000032",
             "moneda": "PES",
             "cotizacion": 1,
             "periodo_facturado_desde": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
@@ -105,13 +106,14 @@ def enviar_factura_prueba(request, id_venta):
     res = conn.getresponse()
     data = res.read()
     response_data = json.loads(data.decode("utf-8"))
+    print(response_data)
     link_descarga_factura = response_data.get('comprobante_ticket_url', '')
     numero_comprobante = response_data.get('comprobante_nro', '')
   
     numero_comprobante_final = numero_comprobante.split("-")[1] 
 
 
-    Facturas.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura)
+    Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura)
     
 
     return JsonResponse(data.decode("utf-8"), safe=False)
