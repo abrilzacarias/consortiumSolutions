@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
 from .models import MetodoPago, Venta, EstadoVenta, RegistroEstadoVenta  # Asegúrate de importar la clase MetodoPago
 from django.contrib import messages
-from ..facturas.models import Facturas
+from ..facturas.models import Factura
 from ..inicio.views import paginacionTablas
 import http.client, json
 from datetime import datetime

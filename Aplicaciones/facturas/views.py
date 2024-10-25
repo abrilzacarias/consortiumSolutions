@@ -1,15 +1,20 @@
-from django.shortcuts import render
-from .models import Facturas, EstadoFactura
+from django.shortcuts import render, get_object_or_404, redirect
+from .models import EstadoFactura, Factura
 import mercadopago
+from django.contrib import messages
+from django.urls import reverse
+
+
 
 def listarFacturas(request):
-    resultados = Facturas.listarFacturas()
+    
+    resultados = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
-    print(estados_factura)
+    print(resultados)
     facturas = {
         str(entry[0]): {  # Usar id como clave
             'numero_comprobante': entry[1],
-            'fecha_emision': entry[2],
+            'fecha_emision_factura': entry[2],
             'nombre_cliente': entry[3],
             'apellido_cliente': entry[4],
             'nombre_edificio': entry[5],
@@ -58,3 +63,28 @@ def generar_link_pago():
         print("No se pudo obtener el link de pago.")'''
     
     return payment_link
+
+def actualizar_estado_factura(request, id_factura):
+    if request.method == 'POST':
+        # Obtener el nuevo ID del estado desde el formulario
+        nuevo_estado_id = request.POST.get('id_estado_factura')
+
+        if nuevo_estado_id:
+            # Obtener la factura correspondiente usando su ID
+            factura = get_object_or_404(Factura, id_factura=id_factura)
+            
+            # Obtener la instancia del estado correspondiente
+            estado_factura = get_object_or_404(EstadoFactura, id_estado_factura=nuevo_estado_id)
+            
+            # Actualizar el estado de la factura
+            factura.id_estado_factura = estado_factura  # Asignar la instancia
+            factura.save()
+
+            # Mensaje de éxito
+            messages.success(request, 'Estado de la factura actualizado correctamente.')
+        else:
+            messages.error(request, 'Debe seleccionar un estado válido.')
+
+        return redirect(reverse('facturas:listarFacturas'))
+
+    return redirect(reverse('facturas:listarFacturas'))

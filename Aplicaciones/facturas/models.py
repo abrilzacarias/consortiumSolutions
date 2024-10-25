@@ -16,43 +16,27 @@ class EstadoFactura(models.Model):
 class Factura(models.Model):
     id_factura = models.AutoField(primary_key=True)  
     numero_comprobante = models.IntegerField()  
-    fecha_emision = models.DateField(auto_now_add=True)
+    fecha_emision_factura = models.DateField(auto_now_add=True)
     id_venta = models.IntegerField() 
     id_tipo_factura = models.IntegerField()  # Puedes crear un modelo para tipos de factura
-    link_descarga = models.CharField(max_length=500) 
-    id_estado_factura = models.ForeignKey(EstadoFactura, default=1, on_delete=models.CASCADE)
+    link_descarga_factura = models.CharField(max_length=500) 
+    id_estado_factura = models.ForeignKey(EstadoFactura, default=1, on_delete=models.CASCADE, db_column='id_estado_factura')
 
     class Meta:
         db_table = 'factura'  # Nombre de la tabla en la base de datos
         managed = False 
-
-
-class DetalleFactura(models.Model):
-    id_detalle_factura = models.AutoField(primary_key=True)   # Puede ser un ID único para cada detalle
-    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
-    total = models.DecimalField(max_digits=10, decimal_places=2)
-    id_factura = models.IntegerField() 
-
-    class Meta:
-        db_table = 'detalle_factura'  # Nombre de la tabla en la base de datos
-        managed = False 
-
-class Facturas:
     
-    @staticmethod
-
-    def listarFacturas():
+    @classmethod
+    def listarFacturas(cls):
         with connection.cursor() as cursor:
-            sqlListarPresupuestos = """
+            sqlListarFacturas = """
                     SELECT * FROM vista_facturas;
                     """
-            cursor.execute(sqlListarPresupuestos)
+            cursor.execute(sqlListarFacturas)
             resultados = cursor.fetchall()
-            
+            print("Resultados desde la base de datos:", resultados)  # Añadir esta línea para ver resultados
         return resultados
-
-
-
+    
     def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura):
         with connection.cursor() as cursor:
             cursor.execute("""
@@ -68,3 +52,18 @@ class Facturas:
                 VALUES (%s, %s, %s)
             """, [subtotal, total, id_factura])
             connection.commit()
+
+class DetalleFactura(models.Model):
+    id_detalle_factura = models.AutoField(primary_key=True)   # Puede ser un ID único para cada detalle
+    subtotal = models.DecimalField(max_digits=10, decimal_places=2)
+    total = models.DecimalField(max_digits=10, decimal_places=2)
+    id_factura = models.IntegerField() 
+
+    class Meta:
+        db_table = 'detalle_factura'  # Nombre de la tabla en la base de datos
+        managed = False 
+
+
+
+
+#resultado = Facturas.listarFacturas()
