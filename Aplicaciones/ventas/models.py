@@ -44,7 +44,7 @@ class Venta(models.Model):
                     """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            print(resultados)
+            #print(resultados)
             ventas = {}
 
             for resultado in resultados:
@@ -71,7 +71,7 @@ class Venta(models.Model):
                 detalle = {
                     'id_detalle_venta': resultado[14],  # Agregado
                     'nombre_servicio': resultado[11],
-                    'cantidad_detalle_venta': resultado[12],
+                    'cantidad_detalle_venta': resultado[15],
                     'precio_detalle_venta': resultado[13],
                     'costo_extra_detalle_venta': resultado[16],  # Agregado
                     'descripcion_estado_venta': resultado[18],  # Descripción del estado de venta
@@ -79,6 +79,7 @@ class Venta(models.Model):
 
                 }
                 ventas[numero_factura]['detalles'].append(detalle)
+                #print(ventas[numero_factura]['detalles'])
 
             return list(ventas.values())
         
