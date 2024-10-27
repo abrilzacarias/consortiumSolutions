@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 19-10-2024 a las 02:04:49
+-- Tiempo de generación: 27-10-2024 a las 04:54:08
 -- Versión del servidor: 10.4.28-MariaDB
 -- Versión de PHP: 8.2.4
 
@@ -20,19 +20,6 @@ SET time_zone = "+00:00";
 --
 -- Base de datos: `consorciosmt`
 --
-
-DELIMITER $$
---
--- Procedimientos
---
-CREATE DEFINER=`root`@`localhost` PROCEDURE `aumentar_precio_categoria` (IN `categoria_id` INT, IN `porcentaje` DECIMAL(5,2))   BEGIN
-    UPDATE servicio s
-    INNER JOIN categoria_servicio cs ON s.id_categoria_servicio = cs.id_categoria_servicio
-    SET s.precio_base_servicio = s.precio_base_servicio * (1 + (porcentaje / 100))
-    WHERE cs.id_categoria_servicio = categoria_id AND s.precio_base_servicio IS NOT NULL;
-END$$
-
-DELIMITER ;
 
 -- --------------------------------------------------------
 
@@ -95,9 +82,9 @@ CREATE TABLE `auth_group` (
 --
 
 INSERT INTO `auth_group` (`id`, `name`) VALUES
-(3, 'asesor ventas'),
-(2, 'facturador'),
-(1, 'vendedores');
+(2, 'Asesor de Ventas'),
+(3, 'Facturador'),
+(1, 'Vendedor');
 
 -- --------------------------------------------------------
 
@@ -482,7 +469,17 @@ INSERT INTO `contacto` (`id_contacto`, `descripcion_contacto`, `id_tipo_contacto
 (100, '3704123654', 2, 38),
 (101, 'fabri@gmail.com', 1, 39),
 (102, '26168662500', 2, 40),
-(103, 'paulita.villalba2904@gmail.com', 1, 40);
+(103, 'paulita.villalba2904@gmail.com', 1, 40),
+(104, '2616862500', 2, 41),
+(105, 'marianelaacosta77@gmail.com', 1, 41),
+(106, '2616862550', 2, 47),
+(107, 'paulita2@gmail.com', 1, 47),
+(108, '2616862550', 2, 48),
+(109, 'aldoortega123@gmail.com', 1, 48),
+(110, '2616862550', 2, 49),
+(111, 'aldoooortega@gmail.com', 1, 49),
+(112, '2616862550', 2, 50),
+(113, 'canobren080603@gmail.com', 1, 50);
 
 -- --------------------------------------------------------
 
@@ -556,7 +553,9 @@ CREATE TABLE `detalle_presupuesto` (
 
 INSERT INTO `detalle_presupuesto` (`id_detalle_presupuesto`, `cantidad_detalle_presupuesto`, `costo_extra_presupuesto`, `precio_total_detalle_presupuesto`, `id_presupuesto`, `id_servicio`) VALUES
 (9, 1, 80.00, 150, 7, 7),
-(10, 1, 2.00, 72, 8, 7);
+(10, 1, 2.00, 72, 8, 7),
+(11, 1, 20.00, 90, 9, 7),
+(12, 1, 30.00, 100, 9, 7);
 
 -- --------------------------------------------------------
 
@@ -579,7 +578,9 @@ CREATE TABLE `detalle_venta` (
 
 INSERT INTO `detalle_venta` (`id_detalle_venta`, `cantidad_detalle_venta`, `costo_extra_detalle_venta`, `precio_total_detalle_venta`, `id_venta`, `id_servicio`) VALUES
 (13, 1, 80, 150, 29, 7),
-(14, 1, 2, 72, 30, 7);
+(14, 1, 2, 72, 30, 7),
+(15, 1, 20, 90, 31, 7),
+(16, 1, 30, 100, 31, 7);
 
 -- --------------------------------------------------------
 
@@ -730,12 +731,16 @@ CREATE TABLE `django_session` (
 --
 
 INSERT INTO `django_session` (`session_key`, `session_data`, `expire_date`) VALUES
-('58vc394jvrlrx8ref3yu0mn5hhjby3a0', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t1wuq:l3luAG1EnE3z0snmyQtLSYbw2RrQvLx_2Fp3582C5Bs', '2024-11-02 00:01:56.365854'),
+('634pefqw0kgdplsdn93688nvpv1z19da', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t40ej:m74ArkglXssxPB8OhQuhUi8RwYFfsZG1_CIGm921BNc', '2024-11-07 16:25:49.334931'),
 ('94yplox2z3lfkabooo4zsfzuccccyw69', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1spcKh:OR0lO32pn7sa5lAuhCnILLtYQ5bKFM9w7KPmDqAkZ9Q', '2024-09-28 23:37:39.912116'),
 ('aqh7rpotuvwxbsauylv98hfdvelcpwrx', '.eJxVjEsOAiEQBe_C2hB-Irh07xlI03TLqIFkmFkZ766TzEK3r6reSyRYl5rWQXOaijgLJQ6_WwZ8UNtAuUO7dYm9LfOU5abInQ557YWel939O6gw6remUIIFnXXQxrEBhoDFuewjc3beK1RIZNl6E_3Rl0gYMJ40B45sicX7A_lgOLI:1snnsg:_0RtyCRv76l9vhgKJlDFTynI-ySIuZFR1W3V0b8jBD4', '2024-09-23 23:33:14.324434'),
+('f8lwh0e2qq1i2ro0ntxp1i91xcdgq6q3', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t4tSL:6MRNMqvRd3bu0BQBzqRbkSe9wT3XO2EAl46vcYHV_80', '2024-11-10 02:56:41.130192'),
+('i2myt52ijk1vi5hdqmnzxkiu8jidpkko', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t4UXa:5X2c50vfaGIPORTMkaQ1meKKvzDtgcXvIMio3xDkW-c', '2024-11-09 00:20:26.570116'),
 ('jcc36bf3a6e6oydvjlhdb3hz84oht5hk', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1sp9Kf:gEuwNrp_X8Zd0jjfkhTZW-D2iO9C2bSjmCx540DBOro', '2024-09-27 16:39:41.071466'),
+('ogwm37xc77xkpbuyw6o5489bdw9jx99u', '.eJxVjDkOwjAUBe_iGlmyE2-U9JzB8t9wADlSnFSIu0OkFNC-mXkvlcu21rx1XvJE6qyMOv1uUPDBbQd0L-02a5zbukygd0UftOvrTPy8HO7fQS29futxcBjZWrHOW4jFeIaEgsRBAtIoJRKTgUAi5FIiREiDRWQvwMGq9wcXATn6:1t4suE:-R8EjjmRIIyh3bbgUqoNm7esjfbv1BeOoFBxEtS_wJ4', '2024-11-10 02:21:26.335616'),
 ('r4qkd4lddec76te6m4lu4m0dyt1bz59k', '.eJxVjDsOwjAQBe_iGlnrD9hLSc8ZrF1_cADZUpxUiLtDpBTQvpl5LxFoXWpYR57DlMRZaHH43ZjiI7cNpDu1W5ext2WeWG6K3OmQ157y87K7fweVRv3WqFAxOUbGYotJtnijAbQnQGvQ68j2pKIDG4ExK0cqasMAiRmPoMT7A8y0Nyo:1suP4D:77LxbFwQkxHA7bvI84uRF592ZptmOhyI10h8rPOCp8Y', '2024-10-12 04:28:25.023349'),
-('yc0m5po0s5fqrumcqgl8lnk58nycf6ep', '.eJxVjDkOwjAUBe_iGlnEiTdK-pzB8t9wADlSnFSIu0OkFNC-mXkvlfK2lrQ1XtJE6qLO6vS7QcYH1x3QPdfbrHGu6zKB3hV90KbHmfh5Pdy_g5Jb-dZDbzGwMWKsMxBy5xgiChJ78UiD5EBMHXgSIRsjIULsDSI7AfZGvT8WaDn5:1t1ogS:r0_fKg7umxDdZVGFIEOPc0A2eKJHINGUvCgkDCB-TbM', '2024-11-01 15:14:32.958756');
+('yc0m5po0s5fqrumcqgl8lnk58nycf6ep', '.eJxVjDkOwjAUBe_iGlnEiTdK-pzB8t9wADlSnFSIu0OkFNC-mXkvlfK2lrQ1XtJE6qLO6vS7QcYH1x3QPdfbrHGu6zKB3hV90KbHmfh5Pdy_g5Jb-dZDbzGwMWKsMxBy5xgiChJ78UiD5EBMHXgSIRsjIULsDSI7AfZGvT8WaDn5:1t1ogS:r0_fKg7umxDdZVGFIEOPc0A2eKJHINGUvCgkDCB-TbM', '2024-11-01 15:14:32.958756'),
+('zs04dkbmcz8vk0z5hgvxyi4nzgavnltr', '.eJxVjL0OwjAQg98lM4p6zW8Z2fsMUXJ3JQXUSE07Id6dVOoAky1_tt8ixH3LYa-8hpnEVShx-c1SxCcvB6BHXO5FYlm2dU7yqMiTVjkW4tft7P4d5FhzW3Ma0KrUGWUBFEBP7NHpiSF2vXUemziyFpvT0-DAtZCVJiQDvjfi8wXSgzdG:1t1xPl:fBKrN7hmZseVakJslFMFUhZZl8EseW8pPufCkTMU1CI', '2024-11-02 00:33:53.577778');
 
 -- --------------------------------------------------------
 
@@ -772,7 +777,7 @@ CREATE TABLE `empleado` (
   `fecha_baja_empleado` date DEFAULT NULL,
   `id_persona` int(11) NOT NULL,
   `id_usuario` int(11) DEFAULT NULL,
-  `id_tipo_empleado` int(11) NOT NULL
+  `id_tipo_empleado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
@@ -783,10 +788,10 @@ INSERT INTO `empleado` (`id_empleado`, `fecha_alta_empleado`, `fecha_baja_emplea
 (1, '2024-09-07', '2024-09-13', 1, 1, 2),
 (2, '2024-09-05', '2024-09-30', 2, 1, 2),
 (3, '2024-09-05', '2024-09-30', 1, 1, 2),
-(5, '2024-09-13', NULL, 4, NULL, 3),
-(6, '2024-09-14', NULL, 5, NULL, 2),
-(7, '2024-09-14', NULL, 6, NULL, 1),
-(8, '2024-09-14', NULL, 7, NULL, 1),
+(5, '2024-09-13', '2024-10-26', 4, NULL, 3),
+(6, '2024-09-14', '2024-10-26', 5, NULL, 2),
+(7, '2024-09-14', '2024-10-26', 6, NULL, 1),
+(8, '2024-09-14', '2024-10-26', 7, NULL, 1),
 (9, '2024-09-14', '2024-09-30', 8, NULL, 1),
 (10, '2024-09-15', '2024-09-30', 9, NULL, 1),
 (11, '2024-09-15', '2024-09-30', 10, NULL, 1),
@@ -799,8 +804,33 @@ INSERT INTO `empleado` (`id_empleado`, `fecha_alta_empleado`, `fecha_baja_emplea
 (18, '2024-09-15', '2024-09-30', 17, NULL, 1),
 (19, '2024-09-15', '2024-09-30', 18, NULL, 1),
 (20, '2024-09-15', '2024-09-30', 19, NULL, 1),
-(21, '2024-09-30', NULL, 37, NULL, 1),
-(46, '2024-10-18', NULL, 40, 2, 2);
+(21, '2024-09-30', '2024-10-26', 37, NULL, 1),
+(46, '2024-10-18', '2024-10-26', 40, 2, 2),
+(47, '2024-10-18', '2024-10-26', 41, 3, 2),
+(48, '2024-10-24', '2024-10-26', 47, 9, NULL),
+(49, '2024-10-26', '2024-10-27', 48, 10, NULL),
+(50, '2024-10-27', NULL, 49, 11, NULL),
+(51, '2024-10-27', NULL, 50, 12, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `estado_factura`
+--
+
+CREATE TABLE `estado_factura` (
+  `id_estado_factura` int(11) NOT NULL,
+  `descripcion_estado_factura` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `estado_factura`
+--
+
+INSERT INTO `estado_factura` (`id_estado_factura`, `descripcion_estado_factura`) VALUES
+(1, 'Pendiente'),
+(2, 'Pagado'),
+(3, 'En proceso (a plazos)');
 
 -- --------------------------------------------------------
 
@@ -818,7 +848,10 @@ CREATE TABLE `estado_venta` (
 --
 
 INSERT INTO `estado_venta` (`id_estado_venta`, `descripcion_estado_venta`) VALUES
-(1, 'EN PROCESO');
+(1, 'EN PROCESO'),
+(2, 'CANCELADO'),
+(3, 'FALTA DOCUMENTACIÓN'),
+(4, 'FINALIZADO');
 
 -- --------------------------------------------------------
 
@@ -828,12 +861,20 @@ INSERT INTO `estado_venta` (`id_estado_venta`, `descripcion_estado_venta`) VALUE
 
 CREATE TABLE `factura` (
   `id_factura` int(11) NOT NULL,
-  `numero_factura` int(11) NOT NULL,
+  `numero_comprobante` int(11) NOT NULL,
   `fecha_emision_factura` date NOT NULL,
   `id_venta` int(11) NOT NULL,
   `id_tipo_factura` int(11) NOT NULL,
-  `link_descarga_factura` varchar(500) DEFAULT NULL
+  `link_descarga_factura` varchar(500) DEFAULT NULL,
+  `id_estado_factura` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
+
+--
+-- Volcado de datos para la tabla `factura`
+--
+
+INSERT INTO `factura` (`id_factura`, `numero_comprobante`, `fecha_emision_factura`, `id_venta`, `id_tipo_factura`, `link_descarga_factura`, `id_estado_factura`) VALUES
+(1, 80, '2024-10-10', 29, 1, 'x.com', 1);
 
 -- --------------------------------------------------------
 
@@ -858,8 +899,18 @@ CREATE TABLE `login_myuser` (
 --
 
 INSERT INTO `login_myuser` (`password`, `last_login`, `id_usuario`, `correo_electronico`, `nombre_usuario`, `is_active`, `is_staff`, `is_superuser`, `date_joined`) VALUES
-('pbkdf2_sha256$720000$6paySt5EXc5UPqhxb3tj1A$48RXNEnDVusnz9OBohWKwl35XMTFrSCSv2r34NLmiiw=', '2024-10-19 00:01:56.364762', 1, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-28 22:09:34.921987'),
-('pbkdf2_sha256$720000$zKdpSrbUDdCC3ZnRcrafCg$1ST8MUUm58RxDyCdaRB6AAgsdbTJ0e4gJ7YbJbhhQjc=', NULL, 2, 'paulita.villalba2904@gmail.com', 'paulapaa', 1, 0, 0, '2024-10-19 00:03:24.660143');
+('pbkdf2_sha256$720000$6paySt5EXc5UPqhxb3tj1A$48RXNEnDVusnz9OBohWKwl35XMTFrSCSv2r34NLmiiw=', '2024-10-27 02:56:41.126648', 1, 'acostagm6@gmail.com', 'mari', 1, 1, 1, '2024-09-28 22:09:34.921987'),
+('pbkdf2_sha256$720000$zKdpSrbUDdCC3ZnRcrafCg$1ST8MUUm58RxDyCdaRB6AAgsdbTJ0e4gJ7YbJbhhQjc=', NULL, 2, 'paulita.villalba2904@gmail.com', 'paulapaa', 0, 0, 0, '2024-10-19 00:03:24.660143'),
+('pbkdf2_sha256$720000$QC1x1mMQpWTVQrDpvYq3Iw$7uTH06sWzNP5lfWwUI5fQSa13dZ7yNlcQXmFSiM+9h4=', '2024-10-19 00:33:53.572109', 3, 'marianelaacosta77@gmail.com', 'marianelangn', 0, 0, 0, '2024-10-19 00:32:58.399250'),
+('pbkdf2_sha256$720000$RvNfYufB5FozBUCI8MxmWf$sxI59WCvRbr8mDcPtCii5YHNG+Zt7O1h75pzmtujo58=', NULL, 4, 'abril155@gmail.com', 'abrilro8', 1, 0, 0, '2024-10-24 22:28:35.193004'),
+('pbkdf2_sha256$720000$2NJhZ0meoWZTPyRpv9KYXM$1YGuYxlDhlNDJms1Fs4GYkF5c1hZtDjDkJFo5yHX2gs=', NULL, 5, 'brendita@gmail.com', 'brendarbu', 1, 0, 0, '2024-10-24 22:31:17.532850'),
+('pbkdf2_sha256$720000$jARt0HdEl7GY6Cmwd4kCsE$IxOq7TDmTDgx//ESpjYDlkl9vz93oPUsX7h5zhxzNM4=', NULL, 6, 'abrilll@gmail.com', 'karina28e', 1, 0, 0, '2024-10-24 22:34:36.235878'),
+('pbkdf2_sha256$720000$tlhXHzadtETnGCot1ZFeH9$lbYSYr/twK2J3vsKDqMA7ZRR8x83wc7plEIc0QvpD0E=', NULL, 7, 'mari@gmail.com', 'marianelawhd', 1, 0, 0, '2024-10-24 22:36:07.313555'),
+('pbkdf2_sha256$720000$x4tlyCw8jkOUHykjzLhVgX$OCzq/GxYgAGSvU9tEQ5/yb4XTHdmkMODkc+Sy/8SoXs=', NULL, 8, 'profee@gmail.com', 'profe3tm', 1, 0, 0, '2024-10-24 22:37:01.312339'),
+('pbkdf2_sha256$720000$Naw0RaPgNLNAZN0wcQWFbC$840UN1ELQAt9midzb/+4GFuYlh0r7WFjl5Vqt+BQQiQ=', NULL, 9, 'paulita2@gmail.com', 'paulamdd', 0, 0, 0, '2024-10-24 22:38:52.904967'),
+('pbkdf2_sha256$720000$XA2O3kDTxnf0gIZnsSvGJd$aU1opbDRlyO7Fu2sooXiLyVp9ApOk3W9s5pZRdK8pOY=', NULL, 10, 'aldoortega123@gmail.com', 'aldoqbw', 0, 0, 0, '2024-10-27 02:30:40.150732'),
+('pbkdf2_sha256$720000$48L6lfiKpXGMuZpXnKH91w$l9DZcy1ucaSS2tDxgHfJxtbIzqvnzrEsCsD9C1dzKNQ=', NULL, 11, 'aldoooortega@gmail.com', 'aldoa1p', 1, 0, 0, '2024-10-27 03:52:37.281611'),
+('pbkdf2_sha256$720000$Jw5kmDjyxKJPv9gW8jVV1L$ZHrxFcAR61mfgGrvA3auzl5B12Qb/QjqDi/3aKQa8Oc=', NULL, 12, 'canobren080603@gmail.com', 'brendavd9', 1, 0, 0, '2024-10-27 03:53:51.074656');
 
 -- --------------------------------------------------------
 
@@ -868,7 +919,7 @@ INSERT INTO `login_myuser` (`password`, `last_login`, `id_usuario`, `correo_elec
 --
 
 CREATE TABLE `login_myuser_groups` (
-  `id` bigint(20) NOT NULL,
+  `id` int(20) NOT NULL,
   `myuser_id` int(11) NOT NULL,
   `group_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
@@ -878,9 +929,20 @@ CREATE TABLE `login_myuser_groups` (
 --
 
 INSERT INTO `login_myuser_groups` (`id`, `myuser_id`, `group_id`) VALUES
-(1, 1, 1),
-(1, 1, 1),
-(0, 2, 2);
+(1, 5, 2),
+(2, 5, 3),
+(3, 6, 1),
+(4, 6, 2),
+(5, 7, 1),
+(6, 8, 2),
+(7, 8, 3),
+(8, 9, 2),
+(9, 9, 3),
+(13, 10, 1),
+(14, 10, 3),
+(15, 11, 2),
+(16, 11, 3),
+(17, 12, 1);
 
 -- --------------------------------------------------------
 
@@ -951,9 +1013,14 @@ CREATE TABLE `metodo_pago` (
 INSERT INTO `metodo_pago` (`id_metodo_pago`, `nombre_metodo_pago`, `cod_metodo_pago`) VALUES
 (2, 'Contado', 201),
 (3, 'A plazos (30 días)', 202),
-(4, 'Tarjeta de Crédito', 203),
-(5, 'Transferencia Bancaria', 204),
-(6, 'Cheque', 205);
+(4, 'A plazos (60 días)', 203),
+(5, 'A plazos (90 días)', 204),
+(6, 'Cuenta Corriente', 205),
+(7, 'Transferencia Bancaria', 210),
+(8, 'Tarjeta de Crédito', 211),
+(9, 'Tarjeta de Débito', 212),
+(10, 'Otro', 214),
+(11, 'Mercado Pago', 215);
 
 -- --------------------------------------------------------
 
@@ -1038,7 +1105,17 @@ INSERT INTO `persona` (`id_persona`, `cuitl_persona`, `nombre_persona`, `apellid
 (37, '11111111110', 'Michel', 'Vera', 'Buenos Aires'),
 (38, '27456429180', 'Victoria', 'Maidana', 'centro'),
 (39, '12345678978', 'Fabricio', 'Gomez', 'Barrio Simón Bolívar '),
-(40, '56768489499', 'Paula', 'Villalba', 'av');
+(40, '56768489499', 'Paula', 'Villalba', 'av'),
+(41, '27888888888', 'Marianela', 'Acosta', 'avenida'),
+(42, '12412414144', 'Abril', 'Abril', 'joaquin 123'),
+(43, '12487952666', 'Brenda', 'Cano', 'barrio 20'),
+(44, '47894565466', 'Karina', 'La princesa', '5464'),
+(45, '87984984899', 'Marianela', 'Aaaaa', 'aaaaa'),
+(46, '87987989999', 'Profe', 'Profe', 'joaquin123'),
+(47, '89798999884', 'Paula', 'Paula', 'joaqii12'),
+(48, '27457878878', 'Aldo', 'Ortega', '8 de Noviembre'),
+(49, '18999987888', 'Aldo', 'Ortega', 'Casa 8'),
+(50, '27848999526', 'Brenda', 'Cano', '20 de Octubre');
 
 -- --------------------------------------------------------
 
@@ -1061,7 +1138,8 @@ CREATE TABLE `presupuesto` (
 
 INSERT INTO `presupuesto` (`id_presupuesto`, `fecha_hora_presupuesto`, `monto_total_presupuesto`, `id_edificio`, `id_empleado`, `estado_presupuesto`) VALUES
 (7, '2024-10-17 20:17:38', 150, 10, 7, 1),
-(8, '2024-10-19 00:01:37', 72, 10, 8, 1);
+(8, '2024-10-19 00:01:37', 72, 10, 8, 1),
+(9, '2024-10-24 16:26:23', 190, 10, 9, 1);
 
 -- --------------------------------------------------------
 
@@ -1074,16 +1152,25 @@ CREATE TABLE `registro_estado_venta` (
   `fecha_hora_registro_estado_venta` datetime DEFAULT NULL,
   `id_detalle_venta` int(11) NOT NULL,
   `id_estado_venta` int(11) DEFAULT NULL,
-  `id_empleado` int(11) NOT NULL COMMENT 'solo modifica el asesor de ventas'
+  `fecha_baja_estado` date DEFAULT NULL,
+  `id_empleado` int(11) DEFAULT NULL COMMENT 'solo modifica el asesor de ventas'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
 --
 -- Volcado de datos para la tabla `registro_estado_venta`
 --
 
-INSERT INTO `registro_estado_venta` (`id_registro_estado_venta`, `fecha_hora_registro_estado_venta`, `id_detalle_venta`, `id_estado_venta`, `id_empleado`) VALUES
-(9, NULL, 13, NULL, 7),
-(10, NULL, 14, NULL, 8);
+INSERT INTO `registro_estado_venta` (`id_registro_estado_venta`, `fecha_hora_registro_estado_venta`, `id_detalle_venta`, `id_estado_venta`, `fecha_baja_estado`, `id_empleado`) VALUES
+(21, '2024-10-24 12:13:25', 14, 4, NULL, NULL),
+(23, '2024-10-24 12:19:05', 13, 1, '2024-10-24', NULL),
+(24, '2024-10-24 13:20:45', 13, 2, '2024-10-24', NULL),
+(25, '2024-10-24 13:20:50', 13, 1, '2024-10-24', NULL),
+(26, '2024-10-24 13:24:15', 13, 2, NULL, NULL),
+(27, NULL, 15, NULL, '2024-10-24', 9),
+(28, NULL, 16, NULL, '2024-10-24', 9),
+(29, '2024-10-24 13:26:43', 15, 1, NULL, NULL),
+(30, '2024-10-24 13:26:54', 16, 1, '2024-10-24', NULL),
+(31, '2024-10-24 13:26:57', 16, 2, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -1190,6 +1277,13 @@ CREATE TABLE `tipo_factura` (
   `descripcion_tipo_factura` varchar(45) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_ci;
 
+--
+-- Volcado de datos para la tabla `tipo_factura`
+--
+
+INSERT INTO `tipo_factura` (`id_tipo_factura`, `descripcion_tipo_factura`) VALUES
+(1, 'C');
+
 -- --------------------------------------------------------
 
 --
@@ -1231,8 +1325,9 @@ CREATE TABLE `venta` (
 --
 
 INSERT INTO `venta` (`id_venta`, `numero_factura`, `fecha_hora_venta`, `monto_total_venta`, `id_edificio`, `id_metodo_pago`, `id_empleado`, `id_presupuesto`) VALUES
-(29, 'FACT-001', '2024-10-17 20:17:38', 150, 10, 2, 7, 7),
-(30, 'FACT-002', '2024-10-19 00:01:37', 72, 10, NULL, 8, 8);
+(29, 'FACT-001', '2024-10-17 20:17:38', 150, 10, 4, 7, 7),
+(30, 'FACT-002', '2024-10-19 00:01:37', 72, 10, NULL, 8, 8),
+(31, 'FACT-003', '2024-10-24 16:26:23', 190, 10, NULL, 9, 9);
 
 --
 -- Disparadores `venta`
@@ -1324,6 +1419,24 @@ CREATE TABLE `vista_edificios` (
 -- --------------------------------------------------------
 
 --
+-- Estructura Stand-in para la vista `vista_facturas`
+-- (Véase abajo para la vista actual)
+--
+CREATE TABLE `vista_facturas` (
+`id_factura` int(11)
+,`numero_factura` int(11)
+,`fecha_emision_factura` date
+,`nombre_persona` varchar(45)
+,`apellido_persona` varchar(45)
+,`nombre_edificio` varchar(45)
+,`link_descarga_factura` varchar(500)
+,`id_estado_factura` int(11)
+,`descripcion_estado_factura` varchar(50)
+);
+
+-- --------------------------------------------------------
+
+--
 -- Estructura Stand-in para la vista `vista_ventas`
 -- (Véase abajo para la vista actual)
 --
@@ -1334,6 +1447,7 @@ CREATE TABLE `vista_ventas` (
 ,`nombre_edificio` varchar(45)
 ,`cuit_edificio` varchar(45)
 ,`direccion_edificio` varchar(45)
+,`id_metodo_pago` int(11)
 ,`nombre_metodo_pago` varchar(70)
 ,`cod_metodo_pago` int(11)
 ,`nombre_empleado` varchar(91)
@@ -1346,6 +1460,9 @@ CREATE TABLE `vista_ventas` (
 ,`costo_extra_detalle_venta` decimal(10,0)
 ,`fecha_hora_registro_estado_venta` datetime
 ,`descripcion_estado_venta` varchar(45)
+,`id_registro_estado_venta` int(11)
+,`id_estado_venta` int(11)
+,`fecha_baja_estado` date
 );
 
 -- --------------------------------------------------------
@@ -1387,11 +1504,20 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 -- --------------------------------------------------------
 
 --
+-- Estructura para la vista `vista_facturas`
+--
+DROP TABLE IF EXISTS `vista_facturas`;
+
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_facturas`  AS SELECT `f`.`id_factura` AS `id_factura`, `f`.`numero_comprobante` AS `numero_factura`, `f`.`fecha_emision_factura` AS `fecha_emision_factura`, `p`.`nombre_persona` AS `nombre_persona`, `p`.`apellido_persona` AS `apellido_persona`, `e`.`nombre_edificio` AS `nombre_edificio`, `f`.`link_descarga_factura` AS `link_descarga_factura`, `f`.`id_estado_factura` AS `id_estado_factura`, `ef`.`descripcion_estado_factura` AS `descripcion_estado_factura` FROM (((((`factura` `f` join `venta` `v` on(`f`.`id_venta` = `v`.`id_venta`)) join `edificio` `e` on(`v`.`id_edificio` = `e`.`id_edificio`)) join `cliente` `c` on(`e`.`id_cliente` = `c`.`id_cliente`)) join `persona` `p` on(`c`.`id_persona` = `p`.`id_persona`)) join `estado_factura` `ef` on(`f`.`id_estado_factura` = `ef`.`id_estado_factura`)) ;
+
+-- --------------------------------------------------------
+
+--
 -- Estructura para la vista `vista_ventas`
 --
 DROP TABLE IF EXISTS `vista_ventas`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_ventas`  AS SELECT `v`.`id_venta` AS `id_venta`, `v`.`numero_factura` AS `numero_factura`, `v`.`fecha_hora_venta` AS `fecha_hora_venta`, `e`.`nombre_edificio` AS `nombre_edificio`, `e`.`cuit_edificio` AS `cuit_edificio`, `e`.`direccion_edificio` AS `direccion_edificio`, `mp`.`nombre_metodo_pago` AS `nombre_metodo_pago`, `mp`.`cod_metodo_pago` AS `cod_metodo_pago`, concat(`p`.`nombre_persona`,' ',`p`.`apellido_persona`) AS `nombre_empleado`, `v`.`monto_total_venta` AS `monto_total_venta`, `s`.`nombre_servicio` AS `nombre_servicio`, `s`.`cod_servicio` AS `cod_servicio`, `s`.`precio_base_servicio` AS `precio`, `dv`.`id_detalle_venta` AS `id_detalle_venta`, `dv`.`cantidad_detalle_venta` AS `cantidad_detalle_venta`, `dv`.`costo_extra_detalle_venta` AS `costo_extra_detalle_venta`, `rev`.`fecha_hora_registro_estado_venta` AS `fecha_hora_registro_estado_venta`, `es`.`descripcion_estado_venta` AS `descripcion_estado_venta` FROM ((((((((`venta` `v` left join `empleado` `emp` on(`v`.`id_empleado` = `emp`.`id_empleado`)) left join `persona` `p` on(`emp`.`id_persona` = `p`.`id_persona`)) left join `edificio` `e` on(`v`.`id_edificio` = `e`.`id_edificio`)) left join `metodo_pago` `mp` on(`v`.`id_metodo_pago` = `mp`.`id_metodo_pago`)) left join `detalle_venta` `dv` on(`v`.`id_venta` = `dv`.`id_venta`)) left join `servicio` `s` on(`dv`.`id_servicio` = `s`.`id_servicio`)) left join `registro_estado_venta` `rev` on(`dv`.`id_detalle_venta` = `rev`.`id_detalle_venta`)) left join `estado_venta` `es` on(`rev`.`id_estado_venta` = `es`.`id_estado_venta`)) ;
+CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vista_ventas`  AS SELECT `v`.`id_venta` AS `id_venta`, `v`.`numero_factura` AS `numero_factura`, `v`.`fecha_hora_venta` AS `fecha_hora_venta`, `e`.`nombre_edificio` AS `nombre_edificio`, `e`.`cuit_edificio` AS `cuit_edificio`, `e`.`direccion_edificio` AS `direccion_edificio`, `mp`.`id_metodo_pago` AS `id_metodo_pago`, `mp`.`nombre_metodo_pago` AS `nombre_metodo_pago`, `mp`.`cod_metodo_pago` AS `cod_metodo_pago`, concat(`p`.`nombre_persona`,' ',`p`.`apellido_persona`) AS `nombre_empleado`, `v`.`monto_total_venta` AS `monto_total_venta`, `s`.`nombre_servicio` AS `nombre_servicio`, `s`.`cod_servicio` AS `cod_servicio`, `s`.`precio_base_servicio` AS `precio`, `dv`.`id_detalle_venta` AS `id_detalle_venta`, `dv`.`cantidad_detalle_venta` AS `cantidad_detalle_venta`, `dv`.`costo_extra_detalle_venta` AS `costo_extra_detalle_venta`, `rev`.`fecha_hora_registro_estado_venta` AS `fecha_hora_registro_estado_venta`, `es`.`descripcion_estado_venta` AS `descripcion_estado_venta`, `rev`.`id_registro_estado_venta` AS `id_registro_estado_venta`, `es`.`id_estado_venta` AS `id_estado_venta`, `rev`.`fecha_baja_estado` AS `fecha_baja_estado` FROM ((((((((`venta` `v` left join `empleado` `emp` on(`v`.`id_empleado` = `emp`.`id_empleado`)) left join `persona` `p` on(`emp`.`id_persona` = `p`.`id_persona`)) left join `edificio` `e` on(`v`.`id_edificio` = `e`.`id_edificio`)) left join `metodo_pago` `mp` on(`v`.`id_metodo_pago` = `mp`.`id_metodo_pago`)) left join `detalle_venta` `dv` on(`v`.`id_venta` = `dv`.`id_venta`)) left join `servicio` `s` on(`dv`.`id_servicio` = `s`.`id_servicio`)) left join `registro_estado_venta` `rev` on(`dv`.`id_detalle_venta` = `rev`.`id_detalle_venta`)) left join `estado_venta` `es` on(`rev`.`id_estado_venta` = `es`.`id_estado_venta`)) WHERE `rev`.`fecha_baja_estado` is null ;
 
 --
 -- Índices para tablas volcadas
@@ -1539,7 +1665,13 @@ ALTER TABLE `empleado`
   ADD PRIMARY KEY (`id_empleado`),
   ADD KEY `fk_empleado_persona1` (`id_persona`),
   ADD KEY `fk_empleado_tipo_empleado1` (`id_tipo_empleado`),
-  ADD KEY `fk_empleado_usuario1_idx` (`id_usuario`);
+  ADD KEY `fk_empleado_user_idx` (`id_usuario`);
+
+--
+-- Indices de la tabla `estado_factura`
+--
+ALTER TABLE `estado_factura`
+  ADD PRIMARY KEY (`id_estado_factura`);
 
 --
 -- Indices de la tabla `estado_venta`
@@ -1553,13 +1685,20 @@ ALTER TABLE `estado_venta`
 ALTER TABLE `factura`
   ADD PRIMARY KEY (`id_factura`),
   ADD KEY `fk_factura_venta1` (`id_venta`),
-  ADD KEY `fk_factura_tipo_factura1` (`id_tipo_factura`);
+  ADD KEY `fk_factura_tipo_factura1` (`id_tipo_factura`),
+  ADD KEY `fk_estado_factura` (`id_estado_factura`);
 
 --
 -- Indices de la tabla `login_myuser`
 --
 ALTER TABLE `login_myuser`
   ADD PRIMARY KEY (`id_usuario`);
+
+--
+-- Indices de la tabla `login_myuser_groups`
+--
+ALTER TABLE `login_myuser_groups`
+  ADD PRIMARY KEY (`id`);
 
 --
 -- Indices de la tabla `matricula`
@@ -1691,7 +1830,7 @@ ALTER TABLE `cliente`
 -- AUTO_INCREMENT de la tabla `contacto`
 --
 ALTER TABLE `contacto`
-  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=104;
+  MODIFY `id_contacto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=114;
 
 --
 -- AUTO_INCREMENT de la tabla `designacion`
@@ -1703,19 +1842,19 @@ ALTER TABLE `designacion`
 -- AUTO_INCREMENT de la tabla `detalle_factura`
 --
 ALTER TABLE `detalle_factura`
-  MODIFY `id_detalle_factura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_detalle_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_presupuesto`
 --
 ALTER TABLE `detalle_presupuesto`
-  MODIFY `id_detalle_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_detalle_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- AUTO_INCREMENT de la tabla `detalle_venta`
 --
 ALTER TABLE `detalle_venta`
-  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id_detalle_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT de la tabla `edificio`
@@ -1727,19 +1866,37 @@ ALTER TABLE `edificio`
 -- AUTO_INCREMENT de la tabla `empleado`
 --
 ALTER TABLE `empleado`
-  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `id_empleado` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=52;
+
+--
+-- AUTO_INCREMENT de la tabla `estado_factura`
+--
+ALTER TABLE `estado_factura`
+  MODIFY `id_estado_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `estado_venta`
+--
+ALTER TABLE `estado_venta`
+  MODIFY `id_estado_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de la tabla `factura`
 --
 ALTER TABLE `factura`
-  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `login_myuser`
 --
 ALTER TABLE `login_myuser`
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+
+--
+-- AUTO_INCREMENT de la tabla `login_myuser_groups`
+--
+ALTER TABLE `login_myuser_groups`
+  MODIFY `id` int(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT de la tabla `matricula`
@@ -1751,7 +1908,7 @@ ALTER TABLE `matricula`
 -- AUTO_INCREMENT de la tabla `metodo_pago`
 --
 ALTER TABLE `metodo_pago`
-  MODIFY `id_metodo_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_metodo_pago` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de la tabla `observacion`
@@ -1763,19 +1920,19 @@ ALTER TABLE `observacion`
 -- AUTO_INCREMENT de la tabla `persona`
 --
 ALTER TABLE `persona`
-  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=41;
+  MODIFY `id_persona` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=51;
 
 --
 -- AUTO_INCREMENT de la tabla `presupuesto`
 --
 ALTER TABLE `presupuesto`
-  MODIFY `id_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id_presupuesto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT de la tabla `registro_estado_venta`
 --
 ALTER TABLE `registro_estado_venta`
-  MODIFY `id_registro_estado_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `id_registro_estado_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- AUTO_INCREMENT de la tabla `servicio`
@@ -1805,7 +1962,7 @@ ALTER TABLE `tipo_edificio`
 -- AUTO_INCREMENT de la tabla `tipo_factura`
 --
 ALTER TABLE `tipo_factura`
-  MODIFY `id_tipo_factura` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_tipo_factura` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `usuario`
@@ -1817,7 +1974,7 @@ ALTER TABLE `usuario`
 -- AUTO_INCREMENT de la tabla `venta`
 --
 ALTER TABLE `venta`
-  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
+  MODIFY `id_venta` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
 
 --
 -- Restricciones para tablas volcadas
@@ -1897,12 +2054,14 @@ ALTER TABLE `edificio`
 --
 ALTER TABLE `empleado`
   ADD CONSTRAINT `fk_empleado_persona1` FOREIGN KEY (`id_persona`) REFERENCES `persona` (`id_persona`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_empleado_tipo_empleado1` FOREIGN KEY (`id_tipo_empleado`) REFERENCES `tipo_empleado` (`id_tipo_empleado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_empleado_tipo_empleado1` FOREIGN KEY (`id_tipo_empleado`) REFERENCES `tipo_empleado` (`id_tipo_empleado`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_empleado_user` FOREIGN KEY (`id_usuario`) REFERENCES `login_myuser` (`id_usuario`);
 
 --
 -- Filtros para la tabla `factura`
 --
 ALTER TABLE `factura`
+  ADD CONSTRAINT `fk_estado_factura` FOREIGN KEY (`id_estado_factura`) REFERENCES `estado_factura` (`id_estado_factura`),
   ADD CONSTRAINT `fk_factura_tipo_factura1` FOREIGN KEY (`id_tipo_factura`) REFERENCES `tipo_factura` (`id_tipo_factura`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_factura_venta1` FOREIGN KEY (`id_venta`) REFERENCES `venta` (`id_venta`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 

@@ -38,7 +38,7 @@ def agregarEmpleado(request):
         fechaYHoraActual = datetime.datetime.now()
         fecha_alta_empleado = fechaYHoraActual.strftime("%Y-%m-%d")
         fecha_baja_empleado = request.POST.get('fecha_baja_empleado', None)
-        id_tipo_empleado = request.POST.get('tipo_empleado')  # Recibe el tipo de empleado: "Facturador", "Asesor de Ventas", etc.
+        id_tipo_empleado_lista = request.POST.getlist('tipo_empleado')  # Recibe una lista de tipos de empleado
         correo_electronico = request.POST.get('correo_electronico') #se usa para crear el USER
         
         # Datos de contacto
@@ -55,7 +55,7 @@ def agregarEmpleado(request):
             id_empleado = empleado.agregarEmpleado(
                 nombre_persona, apellido_persona, cuitl_persona,
                 direccion_persona, fecha_alta_empleado, fecha_baja_empleado,
-                id_tipo_empleado, listaContactos, correo_electronico
+                id_tipo_empleado_lista, listaContactos, correo_electronico
             )
             if id_empleado:
                 messages.success(request, 'El empleado se agregó correctamente y se enviaron las credenciales de acceso al correo electrónico indicado.')
@@ -71,9 +71,8 @@ def editarEmpleado(request, id_empleado):
         apellido_persona = request.POST.get('apellido_persona_editar')
         cuitl_persona = request.POST.get('cuitl_persona_editar')
         direccion_persona = request.POST.get('direccion_persona_editar')
-        id_tipo_empleado = request.POST.get('tipo_empleado_editar')
+        id_tipo_empleado_lista = request.POST.getlist('tipo_empleado_editar')
 
-        # Recopilación de los contactos existentes y nuevos
         contactos_data = []
         correo_id = request.POST.get('id_contacto_correo')
         correo_descripcion = request.POST.get('descripcion_contacto_correo')
@@ -107,8 +106,6 @@ def editarEmpleado(request, id_empleado):
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-        # Agregar print para ver los contactos que están llegando
-        print("Datos de contacto editados o nuevos:", contactos_data)
 
         # Llamada al método para actualizar el empleado
         Empleado().editarEmpleado(
@@ -117,7 +114,7 @@ def editarEmpleado(request, id_empleado):
             apellido_persona,
             cuitl_persona,
             direccion_persona,
-            id_tipo_empleado,
+            id_tipo_empleado_lista,
             contactos_data  # Pasa todos los contactos para su procesamiento
         )
 
