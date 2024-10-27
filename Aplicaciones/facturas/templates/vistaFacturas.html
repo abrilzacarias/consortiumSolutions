@@ -39,7 +39,7 @@
                         </form>
                     </div>
                 </div>
-
+            
                 <!-- Tabla principal listado de ventas !! -->
                 <div class="overflow-x-auto">
                     <table class="w-full text-sm text-left text-gray-400">
@@ -60,7 +60,7 @@
                             {% for key, factura in facturas.items %}
                             <tr class="border-b">
                                 <td class="px-4 py-3">{{ factura.numero_comprobante }}</td>
-                                <td class="px-4 py-3">{{ factura.fecha_emision }}</td>
+                                <td class="px-4 py-3">{{ factura.fecha_emision_factura }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_cliente }} {{ factura.apellido_cliente }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_edificio }}</td>
                                 <td class="px-4 py-3">
@@ -122,19 +122,17 @@
             </div>
             <!-- Modal body -->
              <!-- agregar la accion y hacer la funcion de editar estado de pago -->
-            <form id="editarFacturaModal_{{ key }}"  method="POST">
+            <form id="editarFacturaModal_{{ key }}"  method="POST" action="{% url 'facturas:actualizar_estado_factura' key %}">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     {% csrf_token %}
                     <div>
                         <label for="estado_factura_editar" class="block mb-2 text-sm font-medium text-white">Estado</label>
-                        <select id="estado_factura_editar" name="estado_factura_editar" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white">
-                            {% for estado in estados_factura %}
-                            <option value="{{ estado.id_estado_factura }}">
-                                {{ estado.descripcion_estado_factura }}
-                            </option>
-                            {% endfor %}
-                        </select>
-                        
+                        <select name="id_estado_factura" class="px-4 py-2 border rounded"
+                                {% if factura.id_estado_factura == 2 %}disabled{% endif %}>
+                            <option value="1" {% if factura.id_estado_factura == 1 %}selected{% endif %}>Pendiente</option>
+                            <option value="2" {% if factura.id_estado_factura == 2 %}selected{% endif %}>Pagado</option>
+                            <option value="3" {% if factura.id_estado_factura == 3 %}selected{% endif %}>En Proceso (A plazos)</option>
+                        </select> 
                     </div>
                 
                 <div class="flex justify-end mb-4">

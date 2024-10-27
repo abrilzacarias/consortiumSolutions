@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.core.paginator import Paginator
+from Aplicaciones.empleados.models import Empleado, TipoEmpleado
+
 
 
 def paginacionTablas(request, datos, nombre_variable, items_por_pagina=10):
@@ -44,6 +46,8 @@ def listarActividades(request):
         act_modificadas.append(act_modificada)
     
     context = paginacionTablas(request, act_modificadas, nombre_variable='act_modificadas')
+
+   
     return render(request, 'index.html', context)
 
     
