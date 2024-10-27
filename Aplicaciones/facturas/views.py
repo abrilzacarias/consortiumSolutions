@@ -4,13 +4,9 @@ import mercadopago
 from django.contrib import messages
 from django.urls import reverse
 from django.http import JsonResponse, Http404
-
-
-
-
+from ..inicio.views import paginacionTablas
 
 def listarFacturas(request):
-
     resultados = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
     facturas = {
@@ -32,6 +28,7 @@ def listarFacturas(request):
         for entry in resultados
     }
     
+    #context = paginacionTablas(request, facturas, 'empleados')
     # Llama a la función para generar el link de pago
     #payment_link = generar_link_pago()
   
