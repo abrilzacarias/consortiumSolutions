@@ -761,6 +761,83 @@
 
 
 <script src="{% static 'js/scriptClientes.js' %}"></script>
-
+<script>
+    function validarNombre() {
+        const nombreInput = document.getElementById('nombre_cliente');
+        const errorDiv = document.getElementById('errorNombre');
+        
+        if (nombreInput.value.trim() === '') {
+            errorDiv.textContent = 'El nombre no puede estar vacío.';
+            errorDiv.classList.remove('hidden');
+        } else {
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
+        }
+    }
+    
+    function validarApellido() {
+        const apellidoInput = document.getElementById('apellido_cliente');
+        const errorDiv = document.getElementById('errorApellido');
+        
+        if (apellidoInput.value.trim() === '') {
+            errorDiv.textContent = 'El apellido no puede estar vacío.';
+            errorDiv.classList.remove('hidden');
+        } else {
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
+        }
+    }
+    
+    function validarCuit() {
+        const cuitInput = document.getElementById('cuitl_cliente');
+        const errorDiv = document.getElementById('errorCuitl');
+        
+        // Ejemplo simple de validación de formato
+        const cuitRegex = /^\d{11}$/; // Formato básico: 11 dígitos
+        if (!cuitRegex.test(cuitInput.value)) {
+            errorDiv.textContent = 'El CUIT/CUIL debe tener 11 dígitos.';
+            errorDiv.classList.remove('hidden');
+        } else {
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
+        }
+    }
+    
+    function validarDireccion() {
+        const direccionInput = document.getElementById('direccion_cliente');
+        const errorDiv = document.getElementById('errorDireccion');
+        
+        if (direccionInput.value.trim() === '') {
+            errorDiv.textContent = 'La dirección no puede estar vacía.';
+            errorDiv.classList.remove('hidden');
+        } else {
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
+        }
+    }
+    
+    function validarCorreo() {
+        const correoInput = document.getElementById('correo_electronico');
+        const errorDiv = document.getElementById('errorCorreo');
+        
+        // Validación básica de formato de correo electrónico
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(correoInput.value)) {
+            errorDiv.textContent = 'El correo electrónico no es válido.';
+            errorDiv.classList.remove('hidden');
+        } else {
+            errorDiv.textContent = '';
+            errorDiv.classList.add('hidden');
+        }
+    }
+    
+    // Asignar eventos a los campos de entrada
+    document.getElementById('nombre_cliente').addEventListener('input', validarNombre);
+    document.getElementById('apellido_cliente').addEventListener('input', validarApellido);
+    document.getElementById('cuitl_cliente').addEventListener('input', validarCuit);
+    document.getElementById('direccion_cliente').addEventListener('input', validarDireccion);
+    document.getElementById('correo_electronico').addEventListener('input', validarCorreo);
+    </script>
+    
 </body>
 {% endblock %}
