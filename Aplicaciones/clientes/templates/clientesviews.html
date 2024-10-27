@@ -8,11 +8,11 @@
     <title>Clientes</title>
     {% load static %}
     <link rel="stylesheet" href="{% static 'css/clientes.css' %}" />
+    <script src="{% static 'js/validaciones_cliente.js' %}"></script>
     <script src="{% static 'js/clientes.js' %}"></script>
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
-    <script src="{% static 'js/validaciones_clientes.js' %}"></script>
     
 </head>
 <body>    <!-- Start block -->
@@ -55,7 +55,6 @@
                                     <!-- Cabecera de la tabla -->
                                     <tr>
                                         <th scope="col" class="px-4 py-4">Nombre y Apellido</th>
-                                        
                                         <th scope="col" class="px-4 py-3">CUIT/CUIL</th>
                                         <th scope="col" class="px-4 py-3">Dirección</th>
                                         <th scope="col" class="px-4 py-3">Clave AFIP/AGIP</th>
@@ -71,7 +70,6 @@
                                 </thead>
                                 <tbody id="tabla-resultados-clientes">
                                     {% for cliente in resultados %}
-                                    
                                     <tr class="border-b-cliente" data-tipo="{{ cliente.tipo_cliente }}">
                                         <td class="px-4 py-3">{{cliente.nombre_cliente}} {{cliente.apellido_cliente}}</td>
                                         
@@ -196,17 +194,16 @@
                     <div class="mb-0">
                         <label for="matricula_cliente" class="block mb-2 text-sm font-medium text-white">Matricula</label>
                         <input type="text" name="matricula_cliente" id="matricula_cliente" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Matricula" required>
-                        <div id="errorDireccion" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                        <div id="errorMatricula" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="vencimiento_matricula" class="block mb-2 text-sm font-medium text-white">Vencimiento Matricula</label>
                         <input type="date" name="vencimiento_matricula" id="vencimiento_matricula" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Fecha de Vencimiento" required>
-                        <div id="errorDireccion" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="clave_afgip_cliente" class="block mb-2 text-sm font-medium text-white">Clave de AFIP/AGIP</label>
                         <input type="text" name="clave_afgip_cliente" id="clave_afgip_cliente" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="clave" required>
-                        <div id="errorDireccion" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                        <div id="errorClave" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="tipo_cliente" name="tipo_cliente" class="block mb-2 text-sm font-medium text-white">Tipo</label>
@@ -284,9 +281,9 @@
                 </button>
             </div>
             <!-- Modal body -->
-            <form id="editarClienteModal_{{ cliente.id_cliente }}" action="{% url 'clientes:editarCliente' cliente.id_cliente %}" method="POST">
+            <form id="editarClienteForm{{ cliente.id_cliente }}" action="{% url 'clientes:editarCliente' cliente.id_cliente %}" method="POST">
+                {% csrf_token %}
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
-                    {% csrf_token %}
                     <div class="mb-0">
                         <label for="nombre_persona" class="block mb-2 text-sm font-medium text-white">Nombre</label>
                         <input type="text" name="nombre_persona" id="nombre_persona_{{ cliente.id_cliente }}" value="{{ cliente.nombre_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Nombre del cliente" required>
@@ -338,21 +335,32 @@
                             {% endfor %}
                         </select>
                     </div>
+                    <div class="mb-0">
+                        <label for="correo_electronico" class="block mb-2 text-sm font-medium text-white">Correo electrónico</label>
+                        {% for contacto in cliente.contactos %}
+                            {% if contacto.tipo_contacto_id == 1 %}
+                                <input type="hidden" name="id_contacto_correo" value="{{ contacto.id_contacto }}">
+                                <input type="email" name="descripcion_contacto_correo" id="correo_persona_editar_{{ empleado.id_empleado }}" value="{{ contacto.descripcion_contacto }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Correo electrónico" required>
+                            {% endif %}
+                        {% endfor %}
+                        <div id="errorCorreoEditar{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>   
+                    </div>                  
                 </div>
                 <!-- Contactos -->
                 <div id="contactSection" class="mb-6 flex flex-col space-y-4">
                     <label class="block text-sm font-medium text-gray-200">Contactos:</label>
                     <div id="contactsContainerAdd{{ cliente.id_cliente}}" class="space-y-3">
                         {% for contacto in cliente.contactos %}
-                        <div class="flex items-center space-x-2 contact-group" data-contacto-id="{{ contacto.id_contacto }}">
-                            <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto_{{ contacto.id_contacto }}">
-                                <option value="1" {% if contacto.tipo_contacto_id == 1 %}selected{% endif %}>Correo Electrónico</option>
-                                <option value="2" {% if contacto.tipo_contacto_id == 2 %}selected{% endif %}>Teléfono</option>
-                                <option value="3" {% if contacto.tipo_contacto_id == 3 %}selected{% endif %}>Página Web</option>
-                            </select>
-                            <input type="text" class="flex-1 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="contacto_{{ contacto.id_contacto }}" value="{{ contacto.descripcion_contacto }}" required>
-                            <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-contact-btn" data-contacto-id="{{ contacto.id_contacto }}">-</button>
-                        </div>
+                            {% if contacto.tipo_contacto_id != 1 %}  <!-- Excluir contactos con tipo_contacto_id == 1 -->
+                            <div class="flex items-center space-x-2 contact-group" data-contacto-id="{{ contacto.id_contacto }}">
+                                <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto_{{ contacto.id_contacto }}">
+                                    <option value="2" {% if contacto.tipo_contacto_id == 2 %}selected{% endif %}>Teléfono</option>
+                                    <option value="3" {% if contacto.tipo_contacto_id == 3 %}selected{% endif %}>Página Web</option>
+                                </select>
+                                <input type="text" class="flex-1 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="contacto_{{ contacto.id_contacto }}" value="{{ contacto.descripcion_contacto }}" required>
+                                <button type="button" class="flex-shrink-0 px-3 py-2 text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-contact-btn" data-contacto-id="{{ contacto.id_contacto }}">-</button>
+                            </div>
+                            {% endif %}
                         {% endfor %}
                     </div>                 
                     <div class="flex">
@@ -761,83 +769,6 @@
 
 
 <script src="{% static 'js/scriptClientes.js' %}"></script>
-<script>
-    function validarNombre() {
-        const nombreInput = document.getElementById('nombre_cliente');
-        const errorDiv = document.getElementById('errorNombre');
-        
-        if (nombreInput.value.trim() === '') {
-            errorDiv.textContent = 'El nombre no puede estar vacío.';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    function validarApellido() {
-        const apellidoInput = document.getElementById('apellido_cliente');
-        const errorDiv = document.getElementById('errorApellido');
-        
-        if (apellidoInput.value.trim() === '') {
-            errorDiv.textContent = 'El apellido no puede estar vacío.';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    function validarCuit() {
-        const cuitInput = document.getElementById('cuitl_cliente');
-        const errorDiv = document.getElementById('errorCuitl');
-        
-        // Ejemplo simple de validación de formato
-        const cuitRegex = /^\d{11}$/; // Formato básico: 11 dígitos
-        if (!cuitRegex.test(cuitInput.value)) {
-            errorDiv.textContent = 'El CUIT/CUIL debe tener 11 dígitos.';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    function validarDireccion() {
-        const direccionInput = document.getElementById('direccion_cliente');
-        const errorDiv = document.getElementById('errorDireccion');
-        
-        if (direccionInput.value.trim() === '') {
-            errorDiv.textContent = 'La dirección no puede estar vacía.';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    function validarCorreo() {
-        const correoInput = document.getElementById('correo_electronico');
-        const errorDiv = document.getElementById('errorCorreo');
-        
-        // Validación básica de formato de correo electrónico
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(correoInput.value)) {
-            errorDiv.textContent = 'El correo electrónico no es válido.';
-            errorDiv.classList.remove('hidden');
-        } else {
-            errorDiv.textContent = '';
-            errorDiv.classList.add('hidden');
-        }
-    }
-    
-    // Asignar eventos a los campos de entrada
-    document.getElementById('nombre_cliente').addEventListener('input', validarNombre);
-    document.getElementById('apellido_cliente').addEventListener('input', validarApellido);
-    document.getElementById('cuitl_cliente').addEventListener('input', validarCuit);
-    document.getElementById('direccion_cliente').addEventListener('input', validarDireccion);
-    document.getElementById('correo_electronico').addEventListener('input', validarCorreo);
-    </script>
-    
+
 </body>
 {% endblock %}
