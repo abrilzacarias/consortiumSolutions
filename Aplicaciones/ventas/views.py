@@ -21,20 +21,23 @@ def home(request):
 
 
 def enviar_factura_prueba(request, id_venta): 
-    # Obtiene todas las ventas
+    ultimo = Factura.obtenerUltimoComprobanteFactura()
+    ultimo_comprobante = int(ultimo[0][0]) + 1  # Sumar 1 al último comprobante
+    siguiente_comprobante = str(ultimo_comprobante).zfill(8)  # Formatear con ceros a la izquierda
+    print(siguiente_comprobante)  
+
     ventas = Venta.listarVentas()  
-    # Busca la venta específica por id_venta
     venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
-    # Asegúrate de que se encontró la venta
     if not venta:
         return JsonResponse({'error': 'Venta no encontrada'}, status=404)
-    # Asegúrate de que haya al menos un detalle en la venta
     if not venta.get('detalles'):
         return JsonResponse({'error': 'No hay detalles disponibles para esta venta'}, status=404)
 
-    # Preparar el detalle en el formato necesario
+    ultimo = Factura.obtenerUltimoComprobanteFactura()
+    ultimo_comprobante = ultimo[0][0]  # Accede al primer elemento de la primera tupla
+    print(ultimo_comprobante)  
+
     detalles_payload = []
-    print(venta['detalles'])
     for detalle_venta in venta['detalles']:
         detalles_payload.append({
             "cantidad": str(detalle_venta['cantidad_detalle_venta']),
@@ -85,7 +88,7 @@ def enviar_factura_prueba(request, id_venta):
             "tipo": "FACTURA C",
             "operacion": "V",
             "punto_venta": "00679",  
-            "numero": "00000038",
+            "numero": siguiente_comprobante,
             "moneda": "PES",
             "cotizacion": 1,
             "periodo_facturado_desde": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
@@ -113,8 +116,8 @@ def enviar_factura_prueba(request, id_venta):
   
     numero_comprobante_final = numero_comprobante.split("-")[1] 
 
-
-    Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura)
+    estado_pago=1
+    Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura, estado_pago)
     
 
     return JsonResponse(data.decode("utf-8"), safe=False)

@@ -10,6 +10,7 @@ from django.http import JsonResponse, Http404
 
 
 def listarFacturas(request):
+
     resultados = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
     facturas = {
@@ -24,7 +25,9 @@ def listarFacturas(request):
             'descripcion_estado_factura' : entry[8], 
             'nombres_servicios' : entry[9], 
             'cantidades_servicios' : entry[10], 
-            'precios_totales_servicios' : entry[11]
+            'precios_totales_servicios' : entry[11],
+            'correo_cliente' : entry[12],
+            'metodo_pago' : entry[13]
         }
         for entry in resultados
     }
@@ -32,7 +35,6 @@ def listarFacturas(request):
     # Llama a la función para generar el link de pago
     #payment_link = generar_link_pago()
   
-    #print(payment_link)
     return render(request, 'vistaFacturas.html', {'facturas': facturas, 'estados_factura': estados_factura}) 
 
 def generar_link_pago(request, id_factura):
@@ -49,11 +51,13 @@ def generar_link_pago(request, id_factura):
         
         if not vista_factura:
             raise Http404("Factura no encontrada")
-
-        # Extraer los datos de la tupla
+        nombre_cliente = vista_factura[3]
+        apellido_cliente= vista_factura[4]
+        descarga_ticket = vista_factura[6]
         nombres_servicios = vista_factura[9].split(", ")  # 'Reparación de pisos, Limpieza de Vidrios'
         cantidades_servicios = vista_factura[10].split(", ")  # '1, 1'
         precios_totales_servicios = vista_factura[11].split(", ")  # '105, 85'
+        correo_cliente = vista_factura[12]
 
         sdk = mercadopago.SDK("TEST-1083456035276298-101922-810a2e0aeb770bbf8ed3191b3cd59702-566328219")
 
@@ -73,20 +77,16 @@ def generar_link_pago(request, id_factura):
             }
         }
 
-        # Debug prints
-        print("Items:", items)
-        print("Preference data:", preference_data)
-
         preference = sdk.preference().create(preference_data)
-        print("Full Mercado Pago response:", preference)
         payment_link = preference["response"].get("init_point")
-        print(payment_link)
-        
-        return JsonResponse({"payment_link": payment_link})
+        Factura.enviar_correo_link_pago(correo_cliente, payment_link, nombre_cliente, apellido_cliente, descarga_ticket)
+        messages.success(request, f"El link de pago se envió correctamente. Link: {payment_link}")
+        return redirect(reverse('facturas:listarFacturas'))
         
     except Exception as e:
         print(f"Error detallado: {str(e)}")
-        return JsonResponse({"error": str(e)}, status=400)
+        messages.error(request, f"Ocurrió un error: {str(e)}")
+        return redirect(reverse('facturas:listarFacturas'))
 
 
 def actualizar_estado_factura(request, id_factura):

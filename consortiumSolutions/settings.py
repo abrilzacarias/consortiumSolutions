@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.0/ref/settings/
 
 from pathlib import Path
 import os
+from django.contrib import messages
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -28,7 +29,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
+MESSAGES_TAGS = {
+    messages.ERROR: 'text-red-400',
+    messages.SUCCESS: 'text-green-400',
+}
 # Application definition
 
 INSTALLED_APPS = [
