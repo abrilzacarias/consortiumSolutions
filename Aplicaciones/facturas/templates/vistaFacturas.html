@@ -132,12 +132,12 @@
                     {% csrf_token %}
                     <div>
                         <label for="estado_factura_editar" class="block mb-2 text-sm font-medium text-white">Estado</label>
-                        <select name="id_estado_factura" class="px-4 py-2 border rounded">
+                        <select name="id_estado_factura" class="px-4 py-2 border rounded"
+                                {% if factura.id_estado_factura == 2 %}disabled{% endif %}>
                             <option value="1" {% if factura.id_estado_factura == 1 %}selected{% endif %}>Pendiente</option>
                             <option value="2" {% if factura.id_estado_factura == 2 %}selected{% endif %}>Pagado</option>
-                            <option value="3" {% if factura.id_estado_factura == 3 %}selected{% endif %}>En Proceso (A plazos) </option>
-                        </select>
-                        
+                            <option value="3" {% if factura.id_estado_factura == 3 %}selected{% endif %}>En Proceso (A plazos)</option>
+                        </select> 
                     </div>
                 
                 <div class="flex justify-end mb-4">

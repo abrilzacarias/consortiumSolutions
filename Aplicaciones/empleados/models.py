@@ -100,7 +100,7 @@ class Empleado(models.Model):
             result = cursor.fetchone()
         return result is not None
 
-    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, id_tipo_empleado, listaContactos, correo_electronico):
+    def agregarEmpleado(self, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, fecha_alta_empleado, fecha_baja_empleado, id_tipo_empleado_lista, listaContactos, correo_electronico):
         nombre = nombre_persona.capitalize()
         apellido = apellido_persona.capitalize()
         User = get_user_model()
@@ -129,24 +129,30 @@ class Empleado(models.Model):
                                 password=password,
                                 nombre_usuario=f'{nombre}{password[:3]}'.lower() 
                             )
-                            print(user)
                             id_usuario = user.id_usuario 
                             print("ID del usuario creado:", id_usuario)
-
                             print(password)
+
                             # Asignar el rol al usuario
-                            if id_tipo_empleado:
-                                rol = Group.objects.get(id=id_tipo_empleado)  # Obtiene el grupo (rol) por id
-                                user.groups.add(rol)
-                                print("Rol asignado al usuario:", rol.name)
+                            print(f'id_tipo_empleado_lista: {id_tipo_empleado_lista}')
+                            if id_tipo_empleado_lista:
+                                for rol_id in id_tipo_empleado_lista:
+                                    try:
+                                        rol = Group.objects.get(id=rol_id)  # Obtiene cada grupo (rol) por su ID
+                                        user.groups.add(rol)  # Agrega el rol al grupo del usuario
+                                        print(f"Rol '{rol.name}' asignado al usuario.")
+                                    except Group.DoesNotExist:
+                                        raise Exception(f"El rol con ID {rol_id} no existe.")
+                            else:
+                                print("No se proporcionaron roles para asignar.")
 
                             # Insertar nuevo Empleado con id_usuario
                             cursor.execute("""
                                 INSERT INTO empleado (
                                     fecha_alta_empleado, fecha_baja_empleado, id_persona, 
-                                    id_tipo_empleado, id_usuario
-                                ) VALUES (%s, %s, %s, %s, %s)
-                            """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, id_tipo_empleado, id_usuario])
+                                    id_usuario
+                                ) VALUES (%s, %s, %s, %s)
+                            """, [fecha_alta_empleado, fecha_baja_empleado, idPersona, id_usuario])
 
                             # Insertar contactos
                             for tipoContacto, contacto in listaContactos:
@@ -171,7 +177,6 @@ class Empleado(models.Model):
                         connection.commit()
                         print("Transacción de inserción completada.")
                         return True
-
                     except Exception as e:
                         connection.rollback()
                         print("Error en la inserción de datos:", str(e))
@@ -188,28 +193,54 @@ class Empleado(models.Model):
         try:
             with connection.cursor() as cursor:
                 cursor.execute("""
-                    SELECT
-                        e.id_empleado,
-                        e.fecha_alta_empleado,
-                        e.fecha_baja_empleado,
-                        p.id_persona,
-                        p.cuitl_persona,
-                        p.nombre_persona,
-                        p.apellido_persona,
-                        p.direccion_persona,
-                        e.id_tipo_empleado,  -- Incluye el id_tipo_empleado
-                        te.descripcion_tipo_empleado
-                    FROM
+                    SELECT 
+                        e.id_empleado, 
+                        e.fecha_alta_empleado, 
+                        e.fecha_baja_empleado, 
+                        e.id_usuario, 
+                        p.id_persona, 
+                        p.cuitl_persona, 
+                        p.nombre_persona, 
+                        p.apellido_persona, 
+                        p.direccion_persona, 
+                        GROUP_CONCAT(DISTINCT g.group_id) AS group_ids,  -- IDs de los grupos concatenados 
+                        GROUP_CONCAT(DISTINCT ag.name) AS group_names  -- Nombres de los grupos concatenados
+                    FROM 
                         empleado e
-                    JOIN
-                        persona p ON e.id_persona = p.id_persona
-                    JOIN
-                        tipo_empleado te ON e.id_tipo_empleado = te.id_tipo_empleado
-                    WHERE
-                        e.fecha_baja_empleado IS NULL;
+                    JOIN 
+                        persona p ON e.id_persona = p.id_persona  -- Relación empleado-persona
+                    LEFT JOIN 
+                        login_myuser_groups g ON e.id_usuario = g.myuser_id  -- Relación empleado-grupos
+                    LEFT JOIN 
+                        auth_group ag ON g.group_id = ag.id  -- Relación con auth_group para los nombres
+                    WHERE 
+                        e.fecha_baja_empleado IS NULL
+                    GROUP BY 
+                        e.id_empleado, e.fecha_alta_empleado, e.fecha_baja_empleado, e.id_usuario, 
+                        p.id_persona, p.cuitl_persona, p.nombre_persona, p.apellido_persona, 
+                        p.direccion_persona;
                 """)
+                
                 empleados = dictfetchall(cursor)
 
+                for empleado in empleados:
+                    if empleado['group_ids'] and empleado['group_names']:
+                        # Convertimos los IDs y nombres en listas
+                        ids = [int(gid) for gid in empleado['group_ids'].split(',')]
+                        names = [name.strip() for name in empleado['group_names'].split(',')]
+                        
+                        # Creamos una lista de diccionarios con id y name
+                        empleado['tipo_empleado'] = [{'id': ids[i], 'name': names[i]} for i in range(len(ids))]
+
+                        # Borramos los campos group_ids y group_names
+                        empleado.pop('group_ids', None)
+                        empleado.pop('group_names', None)
+
+                    else:
+                        empleado['tipo_empleado'] = []
+
+                print("Empleados encontrados:", empleados)
+                
                 if not empleados:
                     print("No hay empleados activos.")
                     return []
@@ -221,7 +252,8 @@ class Empleado(models.Model):
             return []
 
 
-    def editarEmpleado(self, idEmpleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado, contactos_data):
+
+    def editarEmpleado(self, idEmpleado, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, id_tipo_empleado_lista, contactos_data):
         try:
             """ print("Valores recibidos:")
             print(f"idEmpleado: {idEmpleado}")
@@ -238,7 +270,6 @@ class Empleado(models.Model):
                     SELECT id_persona FROM empleado WHERE id_empleado = %s;
                 """, [idEmpleado])
                 id_persona = cursor.fetchone()[0]
-                print(f"id_persona obtenido: {id_persona}")
 
                 # Actualizar la tabla persona
                 cursor.execute("""
@@ -253,11 +284,29 @@ class Empleado(models.Model):
 
                 # Actualizar la tabla empleado
                 cursor.execute("""
-                    UPDATE empleado SET 
-                        id_tipo_empleado = %s
-                    WHERE id_empleado = %s;
-                """, [id_tipo_empleado, idEmpleado])
-                print(f"Empleado actualizado con id_tipo_empleado: {id_tipo_empleado}")
+                        SELECT id_usuario FROM empleado WHERE id_empleado = %s;
+                    """, [idEmpleado])
+                user_result = cursor.fetchone()
+                print("ID de usuario:", user_result)
+
+                if user_result:
+                    id_usuario = user_result[0]
+                    User = get_user_model()
+
+                    # Actualizar grupos del usuario
+                    usuario = User.objects.get(id_usuario=id_usuario)
+                    print("Usuario:", usuario)
+                    # Eliminar grupos existentes
+                    usuario.groups.clear()  # Elimina todos los grupos existentes
+                    print("Grupos eliminados.")
+                    # Agregar nuevos grupos según la lista proporcionada
+                    for rol_id in id_tipo_empleado_lista:
+                        try:
+                            rol = Group.objects.get(id=rol_id)  # Obtener el grupo por su ID
+                            usuario.groups.add(rol)  # Agregar el grupo al usuario
+                            print(f"Rol '{rol.name}' asignado al usuario.")
+                        except Group.DoesNotExist:
+                            print(f"El rol con ID {rol_id} no existe.") 
 
                 # Actualizar o crear contactos
                 for contacto_data in contactos_data:
@@ -266,7 +315,6 @@ class Empleado(models.Model):
                         SELECT id_usuario FROM empleado WHERE id_empleado = %s;
                     """, [idEmpleado])
                         id_usuario = cursor.fetchone()[0]
-                        User = get_user_model()
 
                         # actualizar el correo del usuario
                         User.objects.filter(id_usuario=id_usuario).update(correo_electronico=contacto_data.get('descripcion_contacto'))
