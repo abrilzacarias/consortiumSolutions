@@ -128,6 +128,7 @@ def agregarCliente(request):
         matricula_cliente = request.POST.get('matricula_cliente')
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
         vendedor_asignado = request.POST.get('vendedor_asignado')
+        correo_electronico = request.POST.get('correo_electronico') #se usa para crear el USER
 
         tipos_contacto = request.POST.getlist('tipo_contacto[]')
         contactos = request.POST.getlist('contacto[]')
@@ -137,7 +138,7 @@ def agregarCliente(request):
         lista_contactos = list(zip(tipos_contacto, contactos))
         
         # Agregar el cliente y obtener el id_cliente
-        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos, vendedor_asignado)
+        id_cliente = clientes.agregarCliente(nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, lista_contactos, correo_electronico, vendedor_asignado)
        
         if id_cliente:
             

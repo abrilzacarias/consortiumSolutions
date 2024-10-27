@@ -60,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
             <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" 
                     name="tipo_contacto_${idContacto}"
                     onchange="validarContacto(this.nextElementSibling)">
-                <option value="1" ${tipoContactoId == 1 ? 'selected' : ''}>Correo Electrónico</option>
                 <option value="2" ${tipoContactoId == 2 ? 'selected' : ''}>Teléfono</option>
                 <option value="3" ${tipoContactoId == 3 ? 'selected' : ''}>Página Web</option>
             </select>

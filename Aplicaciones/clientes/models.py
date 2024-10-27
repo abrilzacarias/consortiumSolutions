@@ -81,8 +81,7 @@ class Clientes():
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, empleado_asignado=None):
-        nombre = nombre_cliente.capitalize()
+    def agregarCliente(self, nombre_cliente, apellido_cliente, cuitl_cliente, direccion_cliente, clave_afgip_cliente, tipo_cliente, numero_matricula, vencimiento_matricula, lista_contactos, correo_electronico, empleado_asignado=None):
         apellido = apellido_cliente.capitalize()
         if empleado_asignado == '':
             empleado_asignado = None
@@ -92,30 +91,38 @@ class Clientes():
             if self.clienteExiste(cuitl_cliente):
                 print("El cliente ya existe en la base de datos.")
                 return None
+            
             with connection.cursor() as cursor:
+                # Insertar en la tabla persona
                 sqlInsertarPersona = "INSERT INTO persona (nombre_persona, apellido_persona, cuitl_persona, direccion_persona) VALUES (%s, %s, %s, %s);"
-                cursor.execute(sqlInsertarPersona, [nombre, apellido, cuitl_cliente, direccion_cliente])
-                idPersona = cursor.lastrowid  
+                cursor.execute(sqlInsertarPersona, [nombre_cliente, apellido, cuitl_cliente, direccion_cliente])
+                idPersona = cursor.lastrowid
                 connection.commit()
 
+                # Insertar en la tabla matricula
                 sqlInsertarMatricula = "INSERT INTO matricula (numero_matricula, vencimiento_matricula) VALUES (%s, %s);"
                 cursor.execute(sqlInsertarMatricula, [numero_matricula, vencimiento_matricula])
-                idMatricula = cursor.lastrowid  
+                idMatricula = cursor.lastrowid
                 connection.commit()
 
+                # Insertar en la tabla cliente
                 sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
                 cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
-                idCliente = cursor.lastrowid  
+                idCliente = cursor.lastrowid
                 connection.commit()
 
+                # Insertar lista de contactos
                 for tipo_contacto, contacto in lista_contactos:
                     sqlInsertarContacto = "INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) VALUES (%s, %s, %s);"
                     cursor.execute(sqlInsertarContacto, [contacto, tipo_contacto, idPersona])
                     connection.commit()
-                # Verificar si el vendedor actual es nulo para permitir la edición del vendedor asignado
-                if empleado_asignado == '':
-                    empleado_asignado = None
-                    
+
+                # Insertar el correo electrónico en la tabla contacto, asumiendo que el id_tipo_contacto para correos electrónicos es 1
+                sqlInsertarCorreo = "INSERT INTO contacto (descripcion_contacto, id_tipo_contacto, id_persona) VALUES (%s, %s, %s);"
+                cursor.execute(sqlInsertarCorreo, [correo_electronico, 1, idPersona])
+                connection.commit()
+
+                # Asignar vendedor si se proporciona uno
                 if empleado_asignado is not None:
                     if self.agregarDesignacionVendedor(empleado_asignado, idCliente):
                         print("Designación de vendedor agregada exitosamente.")
@@ -123,6 +130,7 @@ class Clientes():
                         print("Hubo un error al agregar la designación de vendedor.")
 
                 return idCliente
+
         except Exception as e:
             print("Error al insertar:", str(e))
             return None

@@ -54,23 +54,28 @@ document.addEventListener("DOMContentLoaded", function() {
             {inputName: 'cuitl_persona', errorId: 'errorCuitl', validate: value => containsOnlyNumbers(value) && isValidCuilCuit(value), message: "El CUIL/CUIT debe contener solo números y tener exactamente 11 dígitos."},
             {inputName: 'direccion_persona', errorId: 'errorDireccion', validate: isValidDireccion, message: "La dirección solo puede contener letras, números, espacios y el carácter especial '°'."},
             {inputName: 'correo_electronico', errorId: 'errorCorreo', validate: isValidEmail, message: "El correo electrónico no es válido."}, // Validación para el correo electrónico
-            {inputName: 'descripcion_contacto_correo', errorId: 'errorCorreoEditar', validate: isValidEmail, message: "El correo electrónico no es válido."} // Cambiado a 'descripcion_contacto_correo'
+            {inputName: 'descripcion_contacto_correo', errorId: 'errorCorreoEditar', validate: isValidEmail, message: "El correo electrónico no es válido."}
         ];
         
 
         fields.forEach(field => {
             const input = form.querySelector(`[name="${field.inputName}${isEditForm ? '_editar' : ''}"]`);
             const errorId = isEditForm ? `${field.errorId}${formId.match(/\d+$/)[0]}` : field.errorId;
-
+        
             if (input) {
+                console.log(`Campo encontrado: ${field.inputName}, valor actual: ${input.value}`); // Confirma que el input existe y muestra el valor
+        
                 input.addEventListener("input", function() {
-                    console.log(`Validando ${field.inputName}: ${input.value}`); // Agrega esto
+                    console.log(`Validando ${field.inputName}: ${input.value}`); // Este log se activa cuando el usuario escribe
+        
                     if (!field.validate(input.value)) {
                         showValidationMessage(input, errorId, field.message);
                     } else {
                         hideValidationMessage(input, errorId);
                     }
                 });
+            } else {
+                console.warn(`Campo ${field.inputName} no encontrado en el formulario ${formId}`);
             }
         });
 

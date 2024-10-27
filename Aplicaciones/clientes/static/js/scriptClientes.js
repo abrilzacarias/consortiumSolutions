@@ -245,7 +245,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return formularioValido;
     };
 
-    document.querySelectorAll('#clienteForm').forEach(form => {
+    document.querySelectorAll('#agregarClienteForm').forEach(form => {
         form.addEventListener('submit', function(e) {
             e.preventDefault();
             if (validarFormulario(this)) {

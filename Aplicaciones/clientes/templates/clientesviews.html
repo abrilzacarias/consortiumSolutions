@@ -12,6 +12,7 @@
     <link href="{% static 'css/output.css' %}" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css"  rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.js"></script>
+    <script src="{% static 'js/validaciones_clientes.js' %}"></script>
     
 </head>
 <body>    <!-- Start block -->
@@ -169,7 +170,7 @@
                 </button>
             </div>
             <!-- Modal body -->
-            <form id="clienteForm" action="{% url 'clientes:agregarCliente' %}" method="POST">
+            <form id="agregarClienteForm" action="{% url 'clientes:agregarCliente' %}" method="POST">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     {% csrf_token %}
                     <div class="mb-0">
@@ -226,6 +227,11 @@
                             </div>
                         </div>
                     </div>
+                    <div class="mb-0">
+                        <label for="correo_electronico" class="block mb-2 text-sm font-medium text-white">Correo electrónico</label>
+                        <input type="text" name="correo_electronico" id="correo_electronico" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Correo electrónico" required>
+                        <div id="errorCorreo" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                    </div> 
                 </div>
                     <!-- Contactos -->
                     <div id="contactSection" class="mb-6 flex flex-col space-y-4">
@@ -233,7 +239,6 @@
                         <div id="contactsContainerAdd" class="space-y-3">
                             <div class="flex items-center space-x-2 contact-group">
                                 <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto[]">
-                                    <option value="1">Correo Electrónico</option>
                                     <option value="2">Teléfono</option>
                                     <option value="3">Página Web</option>
                                 </select>
