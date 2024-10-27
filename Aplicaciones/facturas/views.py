@@ -3,6 +3,9 @@ from .models import EstadoFactura, Factura
 import mercadopago
 from django.contrib import messages
 from django.urls import reverse
+from django.http import JsonResponse, Http404
+
+
 
 
 
@@ -18,49 +21,73 @@ def listarFacturas(request):
             'nombre_edificio': entry[5],
             'descarga_ticket': entry[6],
             'id_estado_factura' : entry[7],
-            'descripcion_estado_factura' : entry[8]
+            'descripcion_estado_factura' : entry[8], 
+            'nombres_servicios' : entry[9], 
+            'cantidades_servicios' : entry[10], 
+            'precios_totales_servicios' : entry[11]
         }
         for entry in resultados
     }
     
     # Llama a la función para generar el link de pago
-    payment_link = generar_link_pago()
+    #payment_link = generar_link_pago()
+  
+    #print(payment_link)
+    return render(request, 'vistaFacturas.html', {'facturas': facturas, 'estados_factura': estados_factura}) 
 
-    return render(request, 'vistaFacturas.html', {'facturas': facturas, 'estados_factura': estados_factura, 'payment_link': payment_link}) 
+def generar_link_pago(request, id_factura):
+    try:
+        # Obtener todas las facturas
+        facturas = Factura.listarFacturas()
+        
+        # Buscar la factura específica
+        vista_factura = None
+        for factura in facturas:
+            if factura[0] == id_factura:  # Asumiendo que el ID es el primer elemento
+                vista_factura = factura
+                break
+        
+        if not vista_factura:
+            raise Http404("Factura no encontrada")
 
-def generar_link_pago():
-    sdk = mercadopago.SDK("TEST-1083456035276298-101922-810a2e0aeb770bbf8ed3191b3cd59702-566328219")
-    
-    # Crea un objeto de preferencia de pago
-    preference_data = {
-        "items": [
-            {
-                "title": "Producto de ejemplo",
+        # Extraer los datos de la tupla
+        nombres_servicios = vista_factura[9].split(", ")  # 'Reparación de pisos, Limpieza de Vidrios'
+        cantidades_servicios = vista_factura[10].split(", ")  # '1, 1'
+        precios_totales_servicios = vista_factura[11].split(", ")  # '105, 85'
+
+        sdk = mercadopago.SDK("TEST-1083456035276298-101922-810a2e0aeb770bbf8ed3191b3cd59702-566328219")
+
+        items = []
+        for nombre, cantidad, precio in zip(nombres_servicios, cantidades_servicios, precios_totales_servicios):
+            items.append({
+                "title": nombre,
                 "quantity": 1,
-                "unit_price": 100,
+                "unit_price": float(precio),
                 "currency_id": "ARS"
+            })
+
+        preference_data = {
+            "items": items,
+            "payer": {
+                "email": "test_user_123456@testuser.com"
             }
-        ],
-        "payer": {
-            "email": "test_user_123456@testuser.com"
         }
-    }
 
-    # Realiza la solicitud para crear la preferencia de pago
-    preference = sdk.preference().create(preference_data)
+        # Debug prints
+        print("Items:", items)
+        print("Preference data:", preference_data)
 
-    # Imprime la respuesta completa para depuración
-    '''print("Respuesta de Mercado Pago:", preference)'''
+        preference = sdk.preference().create(preference_data)
+        print("Full Mercado Pago response:", preference)
+        payment_link = preference["response"].get("init_point")
+        print(payment_link)
+        
+        return JsonResponse({"payment_link": payment_link})
+        
+    except Exception as e:
+        print(f"Error detallado: {str(e)}")
+        return JsonResponse({"error": str(e)}, status=400)
 
-    # Obtén el link de pago si existe
-    payment_link = preference["response"].get("init_point")
-
-    '''if payment_link:
-        print("Link de Pago:", payment_link)
-    else:
-        print("No se pudo obtener el link de pago.")'''
-    
-    return payment_link
 
 def actualizar_estado_factura(request, id_factura):
     if request.method == 'POST':

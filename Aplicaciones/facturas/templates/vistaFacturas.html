@@ -85,6 +85,11 @@
                                                     Cambiar Estado
                                                 </button>
                                             </li>
+                                            <li>
+                                                <button type="button" onclick="generarLinkPago('{{ key }}')" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
+                                                    Generar Link de Pago
+                                                </button>
+                                            </li>
 
                                         </ul>
                                     </div>
@@ -150,5 +155,64 @@
 </div>
 {% endfor %}
 </body>
+    <!-- Modal para mostrar el enlace de pago -->
+<!-- Modal para mostrar el enlace de pago -->
+<div id="payment-link-modal" class="hidden fixed inset-0 z-50 bg-gray-500 bg-opacity-75 flex items-center justify-center">
+    <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
+        <div class="flex justify-between items-center mb-4">
+            <h3 class="text-lg font-semibold">Enlace de Pago</h3>
+            <button onclick="closePaymentModal()" class="text-gray-500 hover:text-gray-700">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            </button>
+        </div>
+        <p class="mt-2 text-gray-600">Haga clic en el enlace a continuación para proceder con el pago:</p>
+        <a id="payment-link" href="#" target="_blank" 
+           class="block mt-4 text-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
+            Ir al enlace de pago
+        </a>
+        <button onclick="closePaymentModal()" 
+                class="w-full mt-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors">
+            Cerrar
+        </button>
+    </div>
+</div>
 </html>
+<script>
+    function generarLinkPago(facturaId) {
+    // Mostrar algún indicador de carga si lo deseas
+    fetch(`/facturas/generar_link_pago/${facturaId}/`)  // Asegúrate de usar la URL correcta
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.payment_link) {
+                const modal = document.getElementById("payment-link-modal");
+                const link = document.getElementById("payment-link");
+                
+                link.href = data.payment_link;
+                link.textContent = "Ir al enlace de pago";
+                modal.classList.remove("hidden");
+            } else {
+                alert('No se pudo generar el enlace de pago');
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert('Ocurrió un error al generar el enlace de pago');
+        });
+}
+
+// Función para cerrar el modal
+function closePaymentModal() {
+    document.getElementById('payment-link-modal').classList.add('hidden');
+}
+    </script>
+    
+
+    
 {% endblock %}

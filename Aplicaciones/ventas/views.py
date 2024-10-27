@@ -34,6 +34,7 @@ def enviar_factura_prueba(request, id_venta):
 
     # Preparar el detalle en el formato necesario
     detalles_payload = []
+    print(venta['detalles'])
     for detalle_venta in venta['detalles']:
         detalles_payload.append({
             "cantidad": str(detalle_venta['cantidad_detalle_venta']),
@@ -84,7 +85,7 @@ def enviar_factura_prueba(request, id_venta):
             "tipo": "FACTURA C",
             "operacion": "V",
             "punto_venta": "00679",  
-            "numero": "00000032",
+            "numero": "00000038",
             "moneda": "PES",
             "cotizacion": 1,
             "periodo_facturado_desde": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
