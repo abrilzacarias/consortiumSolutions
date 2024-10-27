@@ -41,60 +41,99 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     // Función para validar un formulario
+    // Función para validar un formulario
     function validateForm(formId) {
         const form = document.getElementById(formId);
-
         if (!form) return;
 
         const isEditForm = formId.startsWith('editarEmpleadoForm');
+        const employeeId = isEditForm ? formId.replace('editarEmpleadoForm', '') : '';
 
         const fields = [
-            {inputName: 'nombre_persona', errorId: 'errorNombre', validate: containsOnlyLetters, message: "El nombre solo puede contener letras."},
-            {inputName: 'apellido_persona', errorId: 'errorApellido', validate: containsOnlyLetters, message: "El apellido solo puede contener letras."},
-            {inputName: 'cuitl_persona', errorId: 'errorCuitl', validate: value => containsOnlyNumbers(value) && isValidCuilCuit(value), message: "El CUIL/CUIT debe contener solo números y tener exactamente 11 dígitos."},
-            {inputName: 'direccion_persona', errorId: 'errorDireccion', validate: isValidDireccion, message: "La dirección solo puede contener letras, números, espacios y el carácter especial '°'."},
-            {inputName: 'correo_electronico', errorId: 'errorCorreo', validate: isValidEmail, message: "El correo electrónico no es válido."}, // Validación para el correo electrónico
-            {inputName: 'descripcion_contacto_correo', errorId: 'errorCorreoEditar', validate: isValidEmail, message: "El correo electrónico no es válido."}
+            {
+                inputName: 'nombre_persona',
+                errorId: 'errorNombre',
+                validate: containsOnlyLetters,
+                message: "El nombre solo puede contener letras."
+            },
+            {
+                inputName: 'apellido_persona',
+                errorId: 'errorApellido',
+                validate: containsOnlyLetters,
+                message: "El apellido solo puede contener letras."
+            },
+            {
+                inputName: 'cuitl_persona',
+                errorId: 'errorCuitl',
+                validate: value => containsOnlyNumbers(value) && isValidCuilCuit(value),
+                message: "El CUIL/CUIT debe contener solo números y tener exactamente 11 dígitos."
+            },
+            {
+                inputName: 'direccion_persona',
+                errorId: 'errorDireccion',
+                validate: isValidDireccion,
+                message: "La dirección solo puede contener letras, números, espacios y el carácter especial '°'."
+            }
         ];
-        
 
+        // Agregar validación específica para el correo electrónico
+        if (isEditForm) {
+            // Buscar el campo de correo por ID específico del empleado
+            const emailInput = form.querySelector(`#correo_persona_editar_${employeeId}`);
+            if (emailInput) {
+                // Validación en tiempo real
+                emailInput.addEventListener("input", function() {
+                    console.log('Validando email:', this.value);
+                    if (!isValidEmail(this.value)) {
+                        showValidationMessage(this, `errorCorreoEditar${employeeId}`, "El correo electrónico no es válido.");
+                    } else {
+                        hideValidationMessage(this, `errorCorreoEditar${employeeId}`);
+                    }
+                });
+            }
+        }
+
+        // Validación de campos regulares
         fields.forEach(field => {
-            const input = form.querySelector(`[name="${field.inputName}${isEditForm ? '_editar' : ''}"]`);
-            const errorId = isEditForm ? `${field.errorId}${formId.match(/\d+$/)[0]}` : field.errorId;
-        
+            const inputName = `${field.inputName}${isEditForm ? '_editar' : ''}`;
+            const input = form.querySelector(`[name="${inputName}"]`);
+            const errorId = isEditForm ? `${field.errorId}${employeeId}` : field.errorId;
+
             if (input) {
-                console.log(`Campo encontrado: ${field.inputName}, valor actual: ${input.value}`); // Confirma que el input existe y muestra el valor
-        
                 input.addEventListener("input", function() {
-                    console.log(`Validando ${field.inputName}: ${input.value}`); // Este log se activa cuando el usuario escribe
-        
                     if (!field.validate(input.value)) {
                         showValidationMessage(input, errorId, field.message);
                     } else {
                         hideValidationMessage(input, errorId);
                     }
                 });
-            } else {
-                console.warn(`Campo ${field.inputName} no encontrado en el formulario ${formId}`);
             }
         });
 
+        // Validación al enviar el formulario
         form.addEventListener("submit", function(event) {
             let isValid = true;
 
+            // Validar campos regulares
             fields.forEach(field => {
-                const input = form.querySelector(`[name="${field.inputName}${isEditForm ? '_editar' : ''}"]`);
-                const errorId = isEditForm ? `${field.errorId}${formId.match(/\d+$/)[0]}` : field.errorId;
+                const inputName = `${field.inputName}${isEditForm ? '_editar' : ''}`;
+                const input = form.querySelector(`[name="${inputName}"]`);
+                const errorId = isEditForm ? `${field.errorId}${employeeId}` : field.errorId;
 
-                if (input) {
-                    if (!field.validate(input.value)) {
-                        isValid = false;
-                        showValidationMessage(input, errorId, field.message);
-                    } else {
-                        hideValidationMessage(input, errorId);
-                    }
+                if (input && !field.validate(input.value)) {
+                    isValid = false;
+                    showValidationMessage(input, errorId, field.message);
                 }
             });
+
+            // Validar correo electrónico
+            if (isEditForm) {
+                const emailInput = form.querySelector(`#correo_persona_editar_${employeeId}`);
+                if (emailInput && !isValidEmail(emailInput.value)) {
+                    isValid = false;
+                    showValidationMessage(emailInput, `errorCorreoEditar${employeeId}`, "El correo electrónico no es válido.");
+                }
+            }
 
             if (!isValid) {
                 event.preventDefault();
@@ -105,7 +144,6 @@ document.addEventListener("DOMContentLoaded", function() {
     // Validar el formulario de agregar
     validateForm('empleadoForm');
 
-    
     // Validar todos los formularios de editar
     document.querySelectorAll('form[id^="editarEmpleadoForm"]').forEach(form => {
         validateForm(form.id);
