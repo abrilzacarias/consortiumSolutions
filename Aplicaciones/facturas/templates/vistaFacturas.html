@@ -86,9 +86,15 @@
                                                 </button>
                                             </li>
                                             <li>
-                                                <button type="button" onclick="generarLinkPago('{{ key }}')" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
-                                                    Generar Link de Pago
+                                                {% if factura.metodo_pago == 11 %}
+                                                <button type="button" data-modal-target="enviarLinkPago_{{ key }}" data-modal-toggle="enviarLinkPago_{{ key }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
+                                                    <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                                        <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
+                                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
+                                                    </svg>
+                                                    Enviar Link de Pago
                                                 </button>
+                                                {% endif %}
                                             </li>
 
                                         </ul>
@@ -154,64 +160,126 @@
     </div>
 </div>
 {% endfor %}
-</body>
-    <!-- Modal para mostrar el enlace de pago -->
-<!-- Modal para mostrar el enlace de pago -->
-<div id="payment-link-modal" class="hidden fixed inset-0 z-50 bg-gray-500 bg-opacity-75 flex items-center justify-center">
-    <div class="bg-white p-6 rounded-lg shadow-xl max-w-md w-full mx-4">
-        <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-semibold">Enlace de Pago</h3>
-            <button onclick="closePaymentModal()" class="text-gray-500 hover:text-gray-700">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-                </svg>
-            </button>
+
+{% for key, factura in facturas.items %}
+<div id="enviarLinkPago_{{ key }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative p-4 w-full max-w-2xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
+            <!-- Modal header -->
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                <h3 class="text-lg font-semibold text-white">LINK DE PAGO</h3>
+                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="enviarLinkPago_{{ key }}">
+                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                    </svg>
+                    <span class="sr-only">Cerrar</span>
+                </button>
+            </div>
+            <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{factura.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
+            <!-- Modal body -->
+             <!-- agregar la accion y hacer la funcion de editar estado de pago -->
+            <form id="enviarLinkPago_{{ key }}"  method="POST" action="{% url 'facturas:generar_link_pago' key %}">
+                <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                    {% csrf_token %}
+                <div class="flex justify-end mb-4">
+                    <button type="submit" class="text-white bg-purple-800 inline-flex items-center hover:bg-purple-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                        <svg class="mr-1 w-6 h-6" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
+                        </svg>
+                        Enviar 
+                    </button>
+                </div>     
+            </div>
+            </form>
         </div>
-        <p class="mt-2 text-gray-600">Haga clic en el enlace a continuación para proceder con el pago:</p>
-        <a id="payment-link" href="#" target="_blank" 
-           class="block mt-4 text-center px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors">
-            Ir al enlace de pago
-        </a>
-        <button onclick="closePaymentModal()" 
-                class="w-full mt-4 px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded transition-colors">
-            Cerrar
-        </button>
     </div>
 </div>
-</html>
-<script>
-    function generarLinkPago(facturaId) {
-    // Mostrar algún indicador de carga si lo deseas
-    fetch(`/facturas/generar_link_pago/${facturaId}/`)  // Asegúrate de usar la URL correcta
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Error en la respuesta del servidor');
-            }
-            return response.json();
-        })
-        .then(data => {
-            if (data.payment_link) {
-                const modal = document.getElementById("payment-link-modal");
-                const link = document.getElementById("payment-link");
-                
-                link.href = data.payment_link;
-                link.textContent = "Ir al enlace de pago";
-                modal.classList.remove("hidden");
-            } else {
-                alert('No se pudo generar el enlace de pago');
-            }
-        })
-        .catch(error => {
-            console.error("Error:", error);
-            alert('Ocurrió un error al generar el enlace de pago');
-        });
-}
+{% endfor %}
+<!-- Elemento para almacenar el estado de los mensajes -->
+<div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" class="hidden"></div>
 
-// Función para cerrar el modal
-function closePaymentModal() {
-    document.getElementById('payment-link-modal').classList.add('hidden');
-}
-    </script>
+<!-- Small Modal -->
+<div id="small-modal" tabindex="-1" data-modal-target="small-modal" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-900 bg-opacity-50">
+    <div class="relative w-full max-w-md max-h-full mx-auto mt-20">
+        <!-- Modal content -->
+        <div class="relative rounded-lg shadow bg-gray-700">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-gray-600">
+                <h3 class="text-xl font-medium text-white">
+                    ANUNCIO
+                </h3>
+                <button type="button" class="text-gray-400 bg-transparent rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center hover:bg-gray-600 hover:text-white" data-modal-hide="small-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                {% if messages %}
+                    {% for message in messages %}
+                        <p class="text-base leading-relaxed text-gray-300 {% if message.tags %}{{ message.tags }}{% endif %}">
+                            {{ message }}
+                        </p>
+                    {% endfor %}
+                {% endif %}
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center p-4 md:p-5 border-t rounded-b border-gray-600">
+                <button data-modal-hide="small-modal" type="button" class="text-white focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center bg-blue-600 hover:bg-blue-700 focus:ring-blue-800">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showModal() {
+        const modal = document.getElementById('small-modal');
+        modal.classList.remove('hidden');
+        // Añadir clase al body para prevenir scroll
+        document.body.style.overflow = 'hidden';
+    }
+
+    function hideModal() {
+        const modal = document.getElementById('small-modal');
+        modal.classList.add('hidden');
+        // Restaurar scroll
+        document.body.style.overflow = 'auto';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Verificar si hay mensajes
+        const messagesData = document.getElementById('messages-data');
+        if (messagesData && messagesData.dataset.hasMessages === 'true') {
+            showModal();
+        }
+
+        // Manejar cierre del modal
+        const closeButtons = document.querySelectorAll('[data-modal-hide="small-modal"]');
+        closeButtons.forEach(button => {
+            button.addEventListener('click', hideModal);
+        });
+
+        // Cerrar modal al hacer clic fuera
+        const modal = document.getElementById('small-modal');
+        modal.addEventListener('click', function(event) {
+            if (event.target === modal) {
+                hideModal();
+            }
+        });
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                hideModal();
+            }
+        });
+    });
+</script>
+</body>
+</html>
     
 
     

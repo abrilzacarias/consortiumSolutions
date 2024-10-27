@@ -2,6 +2,8 @@ from django.db import models
 from django.db import connection
 from django.utils.timezone import now
 from django.utils import timezone
+from django.conf import settings
+from django.core.mail import send_mail
 
 
 # Create your models here.
@@ -36,12 +38,12 @@ class Factura(models.Model):
             resultados = cursor.fetchall()
         return resultados
     
-    def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura):
+    def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura, id_estado_pago):
         with connection.cursor() as cursor:
             cursor.execute("""
-                INSERT INTO factura (numero_comprobante, fecha_emision_factura, id_venta, id_tipo_factura, link_descarga_factura)
-                VALUES (%s, %s, %s, %s, %s)
-            """, [numero_comprobante, timezone.now().date(), id_venta, 1, link_descarga_factura])
+                INSERT INTO factura (numero_comprobante, fecha_emision_factura, id_venta, id_tipo_factura, link_descarga_factura, id_estado_pago)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """, [numero_comprobante, timezone.now().date(), id_venta, 1, link_descarga_factura, id_estado_pago])
             id_factura = cursor.lastrowid
             connection.commit()
 
@@ -51,6 +53,33 @@ class Factura(models.Model):
                 VALUES (%s, %s, %s)
             """, [subtotal, total, id_factura])
             connection.commit()
+
+    def obtenerUltimoComprobanteFactura(): 
+        with connection.cursor() as cursor:
+            sqlObtenerComprobante = """
+                    SELECT 
+                        MAX(numero_comprobante) AS ultimo_numero_comprobante
+                    FROM 
+                        factura;
+                    """
+            cursor.execute(sqlObtenerComprobante)
+            resultados = cursor.fetchall()
+        return resultados
+    
+    def enviar_correo_link_pago(correo_electronico, link_pago, nombre_cliente, apellido_cliente, descarga_ticket):
+        asunto = 'Link de Pago de su Compra'
+        mensaje = (
+            f'Hola {apellido_cliente} {nombre_cliente}! \n'
+            f'A continuación se deja el link de pago de Mercado Pago:\n'
+            f'{link_pago}\n'
+            f'Por favor, recuerde enviar el comprobante de pago.\n'
+            f'Puedes descargar tu ticket aquí: {descarga_ticket}\n'
+        )
+        remitente = settings.EMAIL_HOST_USER 
+
+        # Enviar el correo
+        send_mail(asunto, mensaje, remitente, [correo_electronico])
+
 
 class DetalleFactura(models.Model):
     id_detalle_factura = models.AutoField(primary_key=True)   # Puede ser un ID único para cada detalle

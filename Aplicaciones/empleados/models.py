@@ -239,7 +239,7 @@ class Empleado(models.Model):
                     else:
                         empleado['tipo_empleado'] = []
 
-                print("Empleados encontrados:", empleados)
+                #print("Empleados encontrados:", empleados)
                 
                 if not empleados:
                     print("No hay empleados activos.")

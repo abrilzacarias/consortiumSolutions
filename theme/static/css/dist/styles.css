@@ -878,6 +878,10 @@ select {
   margin-right: auto;
 }
 
+.-mt-8 {
+  margin-top: -2rem;
+}
+
 .mb-0 {
   margin-bottom: 0px;
 }
@@ -888,6 +892,10 @@ select {
 
 .mb-2 {
   margin-bottom: 0.5rem;
+}
+
+.mb-3 {
+  margin-bottom: 0.75rem;
 }
 
 .mb-3\.5 {
@@ -2010,6 +2018,14 @@ select {
 @media (min-width: 768px) {
   .md\:inset-0 {
     inset: 0px;
+  }
+
+  .md\:ml-4 {
+    margin-left: 1rem;
+  }
+
+  .md\:mt-0 {
+    margin-top: 0px;
   }
 
   .md\:w-1\/2 {
