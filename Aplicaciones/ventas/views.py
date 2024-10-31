@@ -27,6 +27,7 @@ def enviar_factura_prueba(request, id_venta):
 
     ventas = Venta.listarVentas()
     venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
+    print(venta)
     if not venta:
         messages.error(request, 'Venta no encontrada.')
         return redirect('ruta_a_ventasViews')  # Reemplaza con la URL a ventasViews.html
@@ -104,7 +105,7 @@ def enviar_factura_prueba(request, id_venta):
     res = conn.getresponse()
     data = res.read()
     response_data = json.loads(data.decode("utf-8"))
-
+    print(response_data)
     if response_data.get("error") == "N":
         link_descarga_ticket = response_data.get('comprobante_ticket_url', '')
         numero_comprobante = response_data.get('comprobante_nro', '')
