@@ -36,14 +36,47 @@ class Factura(models.Model):
                     """
             cursor.execute(sqlListarFacturas)
             resultados = cursor.fetchall()
-        return resultados
-    
-    def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura, id_estado_pago):
+
+            # Diccionario para almacenar las facturas agrupadas por número de comprobante
+            facturas = {}
+
+            for resultado in resultados:
+                numero_comprobante = resultado[1]  # Asumimos que el número de comprobante es el segundo elemento
+                id_factura = resultado[0]          # Primer elemento es el id_factura
+                id_detalle_factura = resultado[12]  # Posición del id_detalle_factura
+
+                # Si el número de comprobante aún no está en el diccionario, inicializamos su estructura
+                if numero_comprobante not in facturas:
+                    facturas[numero_comprobante] = {
+                        'id_factura': id_factura,
+                        'numero_comprobante': numero_comprobante,
+                        'fecha_emision_factura': resultado[2],
+                        'nombre_cliente': resultado[3],
+                        'apellido_cliente': resultado[4],
+                        'nombre_edificio': resultado[5],
+                        'descarga_ticket': resultado[6],
+                        'id_estado_factura': resultado[7],
+                        'descripcion_estado_factura': resultado[8],
+                        'detalles': []  # Lista para agregar los detalles de cada servicio
+                    }
+                
+                # Agregamos cada servicio como un detalle separado
+                facturas[numero_comprobante]['detalles'].append({
+                    'nombre_servicio': resultado[9],
+                    'cantidad_servicio': resultado[10],
+                    'precio_total_servicio': resultado[11],
+                    'correo_cliente': resultado[12],
+                    'metodo_pago': resultado[13]
+                })
+
+        return list(facturas.values())
+
+    def agregarFactura(numero_comprobante, id_venta, subtotal, total, link_descarga_factura, id_estado_factura):
         with connection.cursor() as cursor:
             cursor.execute("""
-                INSERT INTO factura (numero_comprobante, fecha_emision_factura, id_venta, id_tipo_factura, link_descarga_factura, id_estado_pago)
+                INSERT INTO factura (numero_comprobante, fecha_emision_factura, id_venta, id_tipo_factura, link_descarga_factura, id_estado_factura)
                 VALUES (%s, %s, %s, %s, %s, %s)
-            """, [numero_comprobante, timezone.now().date(), id_venta, 1, link_descarga_factura, id_estado_pago])
+            """, [numero_comprobante, timezone.now().date(), id_venta, 1, link_descarga_factura, id_estado_factura])
             id_factura = cursor.lastrowid
             connection.commit()
 
