@@ -5,7 +5,10 @@ from django.contrib import messages
 from django.urls import reverse
 from django.http import JsonResponse, Http404
 from ..inicio.views import paginacionTablas
+from django.contrib.auth.decorators import login_required, permission_required
 
+#TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN POR LOS PERMISOS
+@login_required
 def listarFacturas(request):
     facturas = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
@@ -17,7 +20,7 @@ def listarFacturas(request):
     context['estados_factura'] = estados_factura 
     
     return render(request, 'vistaFacturas.html', context)
-
+@login_required
 def generar_link_pago(request, id_factura):
     try:
         # Obtener todas las facturas
@@ -69,7 +72,7 @@ def generar_link_pago(request, id_factura):
         messages.error(request, f"Ocurrió un error: {str(e)}")
         return redirect(reverse('facturas:listarFacturas'))
 
-
+@login_required
 def actualizar_estado_factura(request, id_factura):
     if request.method == 'POST':
         # Obtener el nuevo ID del estado desde el formulario

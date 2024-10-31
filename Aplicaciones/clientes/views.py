@@ -12,7 +12,7 @@ empleado = Empleado()
 clientes = Clientes()
 
 @login_required
-@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', raise_exception=False)
 def listarClientes(request):
     es_vendedor = request.user.groups.filter(name='Vendedor').exists()  # Ajusta según tu lógica para identificar vendedores
     resultados = clientes.listarClientes()

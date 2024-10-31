@@ -19,7 +19,7 @@ class Presupuesto(models.Model):
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
             sqlListarPresupuestos = """
-                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto FROM presupuesto pr
+                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto, emp.id_empleado FROM presupuesto pr
                     JOIN edificio e ON e.id_edificio = pr.id_edificio
                     JOIN empleado emp ON emp.id_empleado = pr.id_empleado
                     JOIN persona per ON per.id_persona = emp.id_persona
@@ -35,7 +35,7 @@ class Presupuesto(models.Model):
                 'nombre_edificio': resultado[2],
                 'nombre_persona': resultado[3],
                 'monto_total_presupuesto': resultado[4],
-                
+                'id_empleado': resultado[6],
             }
             presupuestos.append(presupuesto_modificado)
         return presupuestos

@@ -6,8 +6,10 @@ from ..facturas.models import Factura
 from ..inicio.views import paginacionTablas
 import http.client, json
 from datetime import datetime
+from django.contrib.auth.decorators import login_required, permission_required
 
-
+#TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN
+@login_required
 def home(request):
     ventas = Venta.listarVentas()
     metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
@@ -19,7 +21,7 @@ def home(request):
     #context['detalles'] = detalle_venta_queryset  # Asegúrate de que incluye el id_estado_venta
     return render(request, 'ventasViews.html', context)
 
-
+@login_required
 def enviar_factura_prueba(request, id_venta): 
     ultimo = Factura.obtenerUltimoComprobanteFactura()
     ultimo_comprobante = int(ultimo[0][0]) + 1  # Sumar 1 al último comprobante
@@ -122,6 +124,7 @@ def enviar_factura_prueba(request, id_venta):
 
     return JsonResponse(data.decode("utf-8"), safe=False)
 
+@login_required
 def editarMetodoPago(request, id_venta):
     if request.method == 'POST':
         # Imprimir todos los datos que llegan en el POST
@@ -149,7 +152,7 @@ def editarMetodoPago(request, id_venta):
         return render(request, 'ventas/ventasViews.html', context)
 
 
-
+@login_required
 def cambiarEstadoRegistroVenta(request, id_detalle_venta):
     if request.method == 'POST':
         # Obtener los datos enviados desde el formulario
@@ -165,6 +168,7 @@ def cambiarEstadoRegistroVenta(request, id_detalle_venta):
     # Si no es un POST, redirige o maneja de otra manera
     return redirect('ventas:home')
 
+@login_required
 def agregarObservacionDetalleVenta(request, id_detalle_venta):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
