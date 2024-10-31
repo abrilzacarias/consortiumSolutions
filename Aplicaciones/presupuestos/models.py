@@ -223,17 +223,8 @@ class Presupuesto(models.Model):
                 cursor.execute(sqlVendedoresActivos)
                 vendedoresActivos = cursor.fetchall()
                 
-                vendedores_list = [
-                {
-                    'id_empleado': vendedor[0],
-                    'id_persona__nombre_persona': vendedor[1],
-                    'id_persona__apellido_persona': vendedor[2]
-                }
-                for vendedor in vendedoresActivos
-                                ]
-            
                 connection.commit()
-                return vendedores_list
+                return vendedoresActivos
         except Exception as e:
             print("Error al enviar ventas:", str(e))
             connection.rollback()

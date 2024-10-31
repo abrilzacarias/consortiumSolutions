@@ -61,10 +61,34 @@ def agregarPresupuesto(request):
         presupuestos = Presupuesto.listarPresupuestos()
         return render(request, {'presupuestos': presupuestos})
 
+@login_required
 def mostrar_vendedores(request, method='GET'):
-    vendedores = Presupuesto.filtrarVendedores()  
+    user = request.user
+    print()
     
-    return JsonResponse(vendedores, safe=False)
+    if user.is_superuser:
+        # Si es superusuario, mostramos todos los vendedores
+        vendedores = Presupuesto.filtrarVendedores()
+    else:
+        # Si es un vendedor, solo mostramos el registro del vendedor asociado
+        try:
+            user = user.id_usuario
+            vendedor = Empleado.objects.get(id_usuario=user)
+            vendedores = [(vendedor.id_empleado, vendedor.id_persona.nombre_persona, vendedor.id_persona.apellido_persona)]  # Convertimos a lista para mantener formato JSON consistente
+            print(f'Vendedor: {vendedores}')
+        except Empleado.DoesNotExist:
+            return JsonResponse({'error': 'No se encontró el vendedor asociado al usuario'}, status=404)
+        
+    vendedores_list = [
+                {
+                    'id_empleado': vendedor[0],
+                    'id_persona__nombre_persona': vendedor[1],
+                    'id_persona__apellido_persona': vendedor[2]
+                }
+                for vendedor in vendedores
+                                ]
+    
+    return JsonResponse(vendedores_list, safe=False)
 
 
 def mostrar_clientes(request, method='GET'):
