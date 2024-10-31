@@ -151,12 +151,26 @@ $(document).ready(function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    let serviciosSeleccionados = new Set(); 
+
+
     // Función para inicializar Select2
     function initSelect2(selector) {
-        $(selector).select2({
-            placeholder: "Seleccione un servicio",
-            allowClear: true,
-        });
+        if ($(selector).length) {
+            $(selector).select2({
+                placeholder: "Seleccione un servicio",
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "No hay más servicios disponibles";
+                    }
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                }
+            });
+        }
     }
 
     // Función para obtener las categorías y servicios
@@ -170,19 +184,33 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Función para crear un nuevo dropdown de servicios
-    function crearDropdownServicios(servicios) {
+    function crearDropdownServicios(servicios, currentValue = '') {
         let selectHtml = '<select name="servicios[]" class="select2 service-dropdown w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
         selectHtml += '<option value="">Seleccione un servicio</option>';
-
+    
         servicios.forEach(categoria => {
-            selectHtml += `<optgroup label="${categoria.categoria}">`;
-            categoria.servicios.forEach(servicio => {
-                selectHtml += `<option value="${servicio.id}" data-precio="${servicio.precio}">${servicio.nombre} - $${servicio.precio}</option>`;
+            // Filtrar los servicios disponibles para esta categoría
+            let serviciosDisponibles = categoria.servicios.filter(servicio => {
+                const servicioId = servicio.id.toString();
+                // Un servicio está disponible si no está seleccionado o es el valor actual
+                return !serviciosSeleccionados.has(servicioId) || servicioId === currentValue;
             });
-            selectHtml += '</optgroup>';
+    
+            // Solo crear el optgroup si hay servicios disponibles
+            if (serviciosDisponibles.length > 0) {
+                selectHtml += `<optgroup label="${categoria.categoria}">`;
+                serviciosDisponibles.forEach(servicio => {
+                    const selected = servicio.id.toString() === currentValue ? 'selected' : '';
+                    selectHtml += `<option value="${servicio.id}" 
+                                         data-precio="${servicio.precio}" 
+                                         ${selected}>
+                                    ${servicio.nombre} - $${servicio.precio}
+                                 </option>`;
+                });
+                selectHtml += '</optgroup>';
+            }
         });
-
+    
         selectHtml += '</select>';
         return selectHtml;
     }
@@ -219,7 +247,43 @@ document.addEventListener('DOMContentLoaded', function() {
         serviciosContainer.appendChild(nuevoServicio);
     
         // Inicializar Select2 en el nuevo dropdown.
-        initSelect2(nuevoServicio.querySelector('select'));
+        initSelect2(nuevoServicio.querySelector('.select2'));
+
+        // Agregar listener para el cambio
+        $(nuevoServicio).find('.select2').on('change', function() {
+            const previousValue = this.getAttribute('data-previous-value');
+            if (previousValue) {
+                serviciosSeleccionados.delete(previousValue);
+            }
+            
+            const selectedValue = this.value;
+            if (selectedValue) {
+                serviciosSeleccionados.add(selectedValue);
+                this.setAttribute('data-previous-value', selectedValue);
+            }
+            
+            actualizarTodosLosDropdowns(servicios);
+            calcularTotal();
+        });  
+    }
+
+    // Función mejorada para actualizar todos los dropdowns
+    function actualizarTodosLosDropdowns(servicios) {
+        $('.service-select2').each(function() {
+            const currentValue = $(this).val();
+            const container = $(this).closest('.select-container');
+            
+            // Solo destruir si está inicializado
+            if ($(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2('destroy');
+            }
+            
+            // Actualizar el HTML
+            container.html(crearDropdownServicios(servicios, currentValue));
+            
+            // Reinicializar Select2 específicamente para el servicio
+            initServiceSelect2(container.find('.service-select2'));
+        });
     }
     
 
