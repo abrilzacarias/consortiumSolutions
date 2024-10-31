@@ -21,23 +21,21 @@ def home(request):
     #context['detalles'] = detalle_venta_queryset  # Asegúrate de que incluye el id_estado_venta
     return render(request, 'ventasViews.html', context)
 
+
 @login_required
-def enviar_factura_prueba(request, id_venta): 
+def enviar_factura_prueba(request, id_venta):
     ultimo = Factura.obtenerUltimoComprobanteFactura()
     ultimo_comprobante = int(ultimo[0][0]) + 1  # Sumar 1 al último comprobante
     siguiente_comprobante = str(ultimo_comprobante).zfill(8)  # Formatear con ceros a la izquierda
-    print(siguiente_comprobante)  
 
-    ventas = Venta.listarVentas()  
+    ventas = Venta.listarVentas()
     venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
     if not venta:
-        return JsonResponse({'error': 'Venta no encontrada'}, status=404)
+        messages.error(request, 'Venta no encontrada.')
+        return redirect('ruta_a_ventasViews')  # Reemplaza con la URL a ventasViews.html
     if not venta.get('detalles'):
-        return JsonResponse({'error': 'No hay detalles disponibles para esta venta'}, status=404)
-
-    ultimo = Factura.obtenerUltimoComprobanteFactura()
-    ultimo_comprobante = ultimo[0][0]  # Accede al primer elemento de la primera tupla
-    print(ultimo_comprobante)  
+        messages.error(request, 'No hay detalles disponibles para esta venta.')
+        return redirect('ruta_a_ventasViews')
 
     detalles_payload = []
     for detalle_venta in venta['detalles']:
@@ -53,8 +51,7 @@ def enviar_factura_prueba(request, id_venta):
             },
             "leyenda": ""
         })
-        
-        # Añadir costo extra si está presente
+
         if 'costo_extra_detalle_venta' in detalle_venta:
             detalles_payload.append({
                 "cantidad": "1",
@@ -62,7 +59,7 @@ def enviar_factura_prueba(request, id_venta):
                     "descripcion": "Costo extra por servicio",
                     "unidad_bulto": "1",
                     "lista_precios": "Lista de precios API 3",
-                    "codigo": "0",  # Usar un código genérico o uno especial
+                    "codigo": "0",
                     "precio_unitario_sin_iva": str(detalle_venta['costo_extra_detalle_venta']),
                     "alicuota": "0"
                 },
@@ -89,7 +86,7 @@ def enviar_factura_prueba(request, id_venta):
             "vencimiento": "26/03/2028",
             "tipo": "FACTURA C",
             "operacion": "V",
-            "punto_venta": "00679",  
+            "punto_venta": "00679",
             "numero": siguiente_comprobante,
             "moneda": "PES",
             "cotizacion": 1,
@@ -97,32 +94,35 @@ def enviar_factura_prueba(request, id_venta):
             "periodo_facturado_hasta": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
             "rubro": "Servicios",
             "rubro_grupo_contable": "Servicios",
-            "detalle": detalles_payload,  # Usamos todos los detalles aquí
+            "detalle": detalles_payload,
             "bonificacion": "0.00",
             "leyenda_gral": " ",
             "total": str(venta['monto_total_venta'])
         }
     }
 
-    # Realiza la petición HTTP
     conn = http.client.HTTPSConnection("www.tusfacturas.app")
     headers = {'Content-Type': "application/json"}
-    
     conn.request("POST", "/app/api/v2/facturacion/nuevo", json.dumps(payload), headers)
     res = conn.getresponse()
     data = res.read()
     response_data = json.loads(data.decode("utf-8"))
-    print(response_data)
-    link_descarga_factura = response_data.get('comprobante_ticket_url', '')
-    numero_comprobante = response_data.get('comprobante_nro', '')
-  
-    numero_comprobante_final = numero_comprobante.split("-")[1] 
 
-    estado_pago=1
-    Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura, estado_pago)
-    
+    if response_data.get("error") == "N":
+        link_descarga_ticket = response_data.get('comprobante_ticket_url', '')
+        numero_comprobante = response_data.get('comprobante_nro', '')
+        link_descarga_factura = response_data.get('comprobante_pdf_url', '')
+        numero_comprobante_final = numero_comprobante.split("-")[1]
 
-    return JsonResponse(data.decode("utf-8"), safe=False)
+        estado_pago = 1
+        Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_ticket, estado_pago)
+
+        messages.success(request, f'La factura {numero_comprobante} se generó y guardó correctamente.')
+    else:
+        messages.error(request, 'Hubo un problema al generar la factura.')
+
+    return redirect('ventas:home')  
+
 
 @login_required
 def editarMetodoPago(request, id_venta):

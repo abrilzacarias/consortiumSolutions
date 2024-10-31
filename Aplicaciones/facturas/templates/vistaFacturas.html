@@ -56,6 +56,7 @@
                                 <th scope="col" class="px-4 py-4">Fecha Emisión</th>
                                 <th scope="col" class="px-4 py-3">Cliente</th>
                                 <th scope="col" class="px-4 py-3">Edificio</th>
+                                <th scope="col" class="px-4 py-3">Método de Pago</th>
                                 <th scope="col" class="px-4 py-3">Estado de Pago</th>
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
@@ -69,6 +70,13 @@
                                 <td class="px-4 py-3">{{ factura.fecha_emision_factura }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_cliente }} {{ factura.apellido_cliente }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_edificio }}</td>
+                                <td class="px-4 py-3">
+                                    {% for detalle in factura.detalles %}
+                                    {{detalle.nombre_metodo_pago}}
+                                    {% endfor %}
+                                </td>
+                                
+
                                 <td class="px-4 py-3">{{ factura.descripcion_estado_factura }}</td>
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <button id="{{factura.id_factura}}-dropdown-button" data-dropdown-toggle="{{factura.id_factura}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
@@ -136,10 +144,6 @@
             </div>
         </div>
     </section>
-    <!-- Enlace de pago 
-<div class="mt-4">
-    <a href="{{ payment_link }}" class="text-blue-500 hover:underline" target="_blank">Generar Link de Pago</a>
-</div> -->
 
 <!-- Update model -->
 {% for factura in facturas %}
@@ -202,7 +206,9 @@
                     <span class="sr-only">Cerrar</span>
                 </button>
             </div>
-            <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{factura.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
+            {% for detalle in factura.detalles %}
+            <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{detalle.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
+            {% endfor %}
             <!-- Modal body -->
              <!-- agregar la accion y hacer la funcion de editar estado de pago -->
             <form id="enviarLinkPago_{{ factura.id_factura }}"  method="POST" action="{% url 'facturas:generar_link_pago' factura.id_factura %}">

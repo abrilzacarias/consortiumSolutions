@@ -66,7 +66,8 @@ class Factura(models.Model):
                     'cantidad_servicio': resultado[10],
                     'precio_total_servicio': resultado[11],
                     'correo_cliente': resultado[12],
-                    'metodo_pago': resultado[13]
+                    'metodo_pago': resultado[13], 
+                    'nombre_metodo_pago': resultado[14]
                 })
 
         return list(facturas.values())
