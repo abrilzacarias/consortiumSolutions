@@ -35,17 +35,13 @@ def signin(request):
 
             # Redirigir según el rol del usuario
             if 'Vendedor' in grupos_usuario:
-                print("Usuario con rol Vendedor, redirigiendo a presupuestos:home.")
-                return redirect(reverse('presupuestos:home'))
+                return redirect(reverse('clientes:listarClientes'))
             elif 'Facturador' in grupos_usuario:
-                print("Usuario con rol Facturador, redirigiendo a facturas:listarFacturas.")
                 return redirect(reverse('facturas:listarFacturas'))
             elif 'Asesor de Ventas' in grupos_usuario:
-                print("Usuario con rol Asesor de Ventas, redirigiendo a ventas:home.")
                 return redirect(reverse('ventas:home'))
             else:
                 # Si el rol no es válido, redirigir a la página de inicio
-                print("Rol desconocido, redirigiendo a la página de inicio.")
                 return render(request, 'loginviews.html', {
                         'error': 'Correo electrónico o contraseña incorrectos.'
                     })

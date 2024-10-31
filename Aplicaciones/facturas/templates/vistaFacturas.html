@@ -63,21 +63,21 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for key, factura in facturas.items %}
+                            {% for factura in facturas %}
                             <tr class="border-b-factura" data-tipo="{{ factura.id_estado_factura }}">
-                                <td class="px-4 py-3">{{ factura.numero_comprobante }}</td>
+                                <td class="px-4 py-3">{{ factura.numero_comprobante}}</td>
                                 <td class="px-4 py-3">{{ factura.fecha_emision_factura }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_cliente }} {{ factura.apellido_cliente }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_edificio }}</td>
                                 <td class="px-4 py-3">{{ factura.descripcion_estado_factura }}</td>
                                 <td class="px-4 py-3 flex items-center justify-end">
-                                    <button id="{{key}}-dropdown-button" data-dropdown-toggle="{{key}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
+                                    <button id="{{factura.id_factura}}-dropdown-button" data-dropdown-toggle="{{factura.id_factura}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                                             <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                                         </svg>
                                     </button>
-                                    <div id="{{key}}-dropdown" class="hidden z-10 w-44  bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
-                                        <ul class="py-1 text-sm" aria-labelledby="{{key}}-dropdown-button">
+                                    <div id="{{factura.id_factura}}-dropdown" class="hidden z-10 w-44  bg-white rounded divide-y divide-gray-100 shadow dark:divide-gray-600">
+                                        <ul class="py-1 text-sm" aria-labelledby="{{factura.id_factura}}-dropdown-button">
                                             <li>
                                                 <a href="{{ factura.descarga_ticket }}" target="_blank">
                                                     <button type="button" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-gray-900 text-gray-700 dark:text-gray-200">
@@ -98,7 +98,7 @@
                                             </li>
                                             
                                             <li>
-                                                <button type="button" data-modal-target="editarFacturaModal_{{ key }}" data-modal-toggle="editarFacturaModal_{{ key }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
+                                                <button type="button" data-modal-target="editarFacturaModal_{{ factura.id_factura }}" data-modal-toggle="editarFacturaModal_{{ factura.id_factura }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
                                                     <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
                                                         <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z" />
                                                         <path fill-rule="evenodd" clip-rule="evenodd" d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
@@ -107,22 +107,21 @@
                                                 </button>
                                             </li>
                                             <li>
-                                                {% if factura.metodo_pago == 11 %}
-                                                <button type="button" data-modal-target="enviarLinkPago_{{ key }}" data-modal-toggle="enviarLinkPago_{{ key }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
+                                                {% for detalle in factura.detalles %}
+                                                {% if detalle.metodo_pago == 11 %}
+                                                <button type="button" data-modal-target="enviarLinkPago_{{ factura.id_factura }}" data-modal-toggle="enviarLinkPago_{{ factura.id_factura }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
                                                     <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                        <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
-                                                        <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
-                                                        <g id="SVGRepo_iconCarrier"> 
-                                                            <path d="M22 10C22.0185 10.7271 22 11.0542 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H13" stroke="#000000" stroke-width="2" stroke-linecap="round"></path> 
-                                                            <path d="M6 8L8.1589 9.79908C9.99553 11.3296 10.9139 12.0949 12 12.0949C13.0861 12.0949 14.0045 11.3296 15.8411 9.79908" stroke="#000000" stroke-width="2" stroke-linecap="round"></path> 
-                                                            <circle cx="19" cy="5" r="3" stroke="#000000" stroke-width="2"></circle>
-                                                        </g>
+                                                        <path d="M22 10C22.0185 10.7271 22 11.0542 22 12C22 15.7712 22 17.6569 20.8284 18.8284C19.6569 20 17.7712 20 14 20H10C6.22876 20 4.34315 20 3.17157 18.8284C2 17.6569 2 15.7712 2 12C2 8.22876 2 6.34315 3.17157 5.17157C4.34315 4 6.22876 4 10 4H13" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+                                                        <path d="M6 8L8.1589 9.79908C9.99553 11.3296 10.9139 12.0949 12 12.0949C13.0861 12.0949 14.0045 11.3296 15.8411 9.79908" stroke="#000000" stroke-width="2" stroke-linecap="round"></path>
+                                                        <circle cx="19" cy="5" r="3" stroke="#000000" stroke-width="2"></circle>
                                                     </svg>
-                                                    
                                                     Enviar Link de Pago
                                                 </button>
                                                 {% endif %}
+                                                {% endfor %}
                                             </li>
+                                                
+                                            
 
                                         </ul>
                                     </div>
@@ -143,8 +142,8 @@
 </div> -->
 
 <!-- Update model -->
-{% for key, factura in facturas.items %}
-<div id="editarFacturaModal_{{ key }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+{% for factura in facturas %}
+<div id="editarFacturaModal_{{ factura.id_factura }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
@@ -160,7 +159,7 @@
             </div>
             <!-- Modal body -->
              <!-- agregar la accion y hacer la funcion de editar estado de pago -->
-            <form id="editarFacturaModal_{{ key }}"  method="POST" action="{% url 'facturas:actualizar_estado_factura' key %}">
+            <form id="editarFacturaModal_{{ factura.id_factura }}"  method="POST" action="{% url 'facturas:actualizar_estado_factura' factura.id_factura %}">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     {% csrf_token %}
                     <div>
@@ -188,8 +187,8 @@
 </div>
 {% endfor %}
 
-{% for key, factura in facturas.items %}
-<div id="enviarLinkPago_{{ key }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+{% for factura in facturas %}
+<div id="enviarLinkPago_{{ factura.id_factura }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
@@ -206,7 +205,7 @@
             <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{factura.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
             <!-- Modal body -->
              <!-- agregar la accion y hacer la funcion de editar estado de pago -->
-            <form id="enviarLinkPago_{{ key }}"  method="POST" action="{% url 'facturas:generar_link_pago' key %}">
+            <form id="enviarLinkPago_{{ factura.id_factura }}"  method="POST" action="{% url 'facturas:generar_link_pago' factura.id_factura %}">
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     {% csrf_token %}
                 <div class="flex justify-end mb-4">

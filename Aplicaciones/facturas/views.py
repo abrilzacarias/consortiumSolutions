@@ -7,32 +7,16 @@ from django.http import JsonResponse, Http404
 from ..inicio.views import paginacionTablas
 
 def listarFacturas(request):
-    resultados = Factura.listarFacturas()
+    facturas = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
-    facturas = {
-        str(entry[0]): {  # Usar id como clave
-            'numero_comprobante': entry[1],
-            'fecha_emision_factura': entry[2],
-            'nombre_cliente': entry[3],
-            'apellido_cliente': entry[4],
-            'nombre_edificio': entry[5],
-            'descarga_ticket': entry[6],
-            'id_estado_factura' : entry[7],
-            'descripcion_estado_factura' : entry[8], 
-            'nombres_servicios' : entry[9], 
-            'cantidades_servicios' : entry[10], 
-            'precios_totales_servicios' : entry[11],
-            'correo_cliente' : entry[12],
-            'metodo_pago' : entry[13]
-        }
-        for entry in resultados
-    }
+    print(facturas)
+
     
-    #context = paginacionTablas(request, facturas, 'empleados')
-    # Llama a la función para generar el link de pago
-    #payment_link = generar_link_pago()
-  
-    return render(request, 'vistaFacturas.html', {'facturas': facturas, 'estados_factura': estados_factura}) 
+    # Pasar la lista `facturas` para paginación
+    context = paginacionTablas(request, facturas, 'facturas')
+    context['estados_factura'] = estados_factura 
+    
+    return render(request, 'vistaFacturas.html', context)
 
 def generar_link_pago(request, id_factura):
     try:
