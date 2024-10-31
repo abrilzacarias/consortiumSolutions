@@ -6,8 +6,10 @@ from ..facturas.models import Factura
 from ..inicio.views import paginacionTablas
 import http.client, json
 from datetime import datetime
+from django.contrib.auth.decorators import login_required, permission_required
 
-
+#TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN
+@login_required
 def home(request):
     ventas = Venta.listarVentas()
     metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
@@ -20,22 +22,21 @@ def home(request):
     return render(request, 'ventasViews.html', context)
 
 
-def enviar_factura_prueba(request, id_venta): 
+@login_required
+def enviar_factura_prueba(request, id_venta):
     ultimo = Factura.obtenerUltimoComprobanteFactura()
     ultimo_comprobante = int(ultimo[0][0]) + 1  # Sumar 1 al último comprobante
     siguiente_comprobante = str(ultimo_comprobante).zfill(8)  # Formatear con ceros a la izquierda
-    print(siguiente_comprobante)  
 
-    ventas = Venta.listarVentas()  
+    ventas = Venta.listarVentas()
     venta = next((v for v in ventas if v['id_venta'] == id_venta), None)
+    print(venta)
     if not venta:
-        return JsonResponse({'error': 'Venta no encontrada'}, status=404)
+        messages.error(request, 'Venta no encontrada.')
+        return redirect('ruta_a_ventasViews')  # Reemplaza con la URL a ventasViews.html
     if not venta.get('detalles'):
-        return JsonResponse({'error': 'No hay detalles disponibles para esta venta'}, status=404)
-
-    ultimo = Factura.obtenerUltimoComprobanteFactura()
-    ultimo_comprobante = ultimo[0][0]  # Accede al primer elemento de la primera tupla
-    print(ultimo_comprobante)  
+        messages.error(request, 'No hay detalles disponibles para esta venta.')
+        return redirect('ruta_a_ventasViews')
 
     detalles_payload = []
     for detalle_venta in venta['detalles']:
@@ -51,8 +52,7 @@ def enviar_factura_prueba(request, id_venta):
             },
             "leyenda": ""
         })
-        
-        # Añadir costo extra si está presente
+
         if 'costo_extra_detalle_venta' in detalle_venta:
             detalles_payload.append({
                 "cantidad": "1",
@@ -60,7 +60,7 @@ def enviar_factura_prueba(request, id_venta):
                     "descripcion": "Costo extra por servicio",
                     "unidad_bulto": "1",
                     "lista_precios": "Lista de precios API 3",
-                    "codigo": "0",  # Usar un código genérico o uno especial
+                    "codigo": "0",
                     "precio_unitario_sin_iva": str(detalle_venta['costo_extra_detalle_venta']),
                     "alicuota": "0"
                 },
@@ -87,7 +87,7 @@ def enviar_factura_prueba(request, id_venta):
             "vencimiento": "26/03/2028",
             "tipo": "FACTURA C",
             "operacion": "V",
-            "punto_venta": "00679",  
+            "punto_venta": "00679",
             "numero": siguiente_comprobante,
             "moneda": "PES",
             "cotizacion": 1,
@@ -95,33 +95,37 @@ def enviar_factura_prueba(request, id_venta):
             "periodo_facturado_hasta": venta['fecha_hora_venta'].strftime("%d/%m/%Y"),
             "rubro": "Servicios",
             "rubro_grupo_contable": "Servicios",
-            "detalle": detalles_payload,  # Usamos todos los detalles aquí
+            "detalle": detalles_payload,
             "bonificacion": "0.00",
             "leyenda_gral": " ",
             "total": str(venta['monto_total_venta'])
         }
     }
 
-    # Realiza la petición HTTP
     conn = http.client.HTTPSConnection("www.tusfacturas.app")
     headers = {'Content-Type': "application/json"}
-    
     conn.request("POST", "/app/api/v2/facturacion/nuevo", json.dumps(payload), headers)
     res = conn.getresponse()
     data = res.read()
     response_data = json.loads(data.decode("utf-8"))
     print(response_data)
-    link_descarga_factura = response_data.get('comprobante_ticket_url', '')
-    numero_comprobante = response_data.get('comprobante_nro', '')
-  
-    numero_comprobante_final = numero_comprobante.split("-")[1] 
+    if response_data.get("error") == "N":
+        link_descarga_ticket = response_data.get('comprobante_ticket_url', '')
+        numero_comprobante = response_data.get('comprobante_nro', '')
+        link_descarga_factura = response_data.get('comprobante_pdf_url', '')
+        numero_comprobante_final = numero_comprobante.split("-")[1]
 
-    estado_pago=1
-    Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_factura, estado_pago)
-    
+        estado_pago = 1
+        Factura.agregarFactura(numero_comprobante_final, id_venta, venta['monto_total_venta'], venta['monto_total_venta'], link_descarga_ticket, estado_pago)
 
-    return JsonResponse(data.decode("utf-8"), safe=False)
+        messages.success(request, f'La factura {numero_comprobante} se generó y guardó correctamente.')
+    else:
+        messages.error(request, 'Hubo un problema al generar la factura.')
 
+    return redirect('ventas:home')  
+
+
+@login_required
 def editarMetodoPago(request, id_venta):
     if request.method == 'POST':
         # Imprimir todos los datos que llegan en el POST
@@ -149,7 +153,7 @@ def editarMetodoPago(request, id_venta):
         return render(request, 'ventas/ventasViews.html', context)
 
 
-
+@login_required
 def cambiarEstadoRegistroVenta(request, id_detalle_venta):
     if request.method == 'POST':
         # Obtener los datos enviados desde el formulario
@@ -165,6 +169,7 @@ def cambiarEstadoRegistroVenta(request, id_detalle_venta):
     # Si no es un POST, redirige o maneja de otra manera
     return redirect('ventas:home')
 
+@login_required
 def agregarObservacionDetalleVenta(request, id_detalle_venta):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')

@@ -92,7 +92,7 @@
                                                         <path fill-rule="evenodd" clip-rule="evenodd"
                                                             d="M2 6a2 2 0 012-2h4a1 1 0 010 2H4v10h10v-4a1 1 0 112 0v4a2 2 0 01-2 2H4a2 2 0 01-2-2V6z" />
                                                     </svg>
-                                                    Editar
+                                                    Metodo Pago
                                                 </button>
                                             </li>
                                             <li>
@@ -111,6 +111,8 @@
                                                     Detalles
                                                 </button>
                                             </li>
+
+                                            {% if request.user.is_superuser or 'Facturador' in grupos_usuario %}
                                             <li>
                                                 <form action="{% url 'ventas:enviar_factura_prueba' venta.id_venta %}" method="POST">
                                                     {% csrf_token %}
@@ -126,6 +128,7 @@
                                                     </button>
                                                 </form>
                                             </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </td>
@@ -422,11 +425,12 @@
             <div class="p-4 md:p-5 space-y-4">
                 {% if messages %}
                     {% for message in messages %}
-                        <p class="text-base leading-relaxed text-gray-400">
-                            {{ message }}
-                        </p>
+                    <p class="text-base leading-relaxed text-gray-400">
+                        {{ message }}
+                    </p>
                     {% endfor %}
                 {% endif %}
+
             </div>
             <!-- Modal footer -->
             <div class="flex items-center p-4 md:p-5 border-t rounded-b border-gray-600">

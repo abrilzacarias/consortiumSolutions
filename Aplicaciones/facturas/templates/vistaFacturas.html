@@ -56,6 +56,7 @@
                                 <th scope="col" class="px-4 py-4">Fecha Emisión</th>
                                 <th scope="col" class="px-4 py-3">Cliente</th>
                                 <th scope="col" class="px-4 py-3">Edificio</th>
+                                <th scope="col" class="px-4 py-3">Método de Pago</th>
                                 <th scope="col" class="px-4 py-3">Estado de Pago</th>
                                 <th scope="col" class="px-4 py-3">
                                     <span class="sr-only">Actions</span>
@@ -69,6 +70,13 @@
                                 <td class="px-4 py-3">{{ factura.fecha_emision_factura }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_cliente }} {{ factura.apellido_cliente }}</td>
                                 <td class="px-4 py-3">{{ factura.nombre_edificio }}</td>
+                                <td class="px-4 py-3">
+                                    {% for detalle in factura.detalles %}
+                                    {{detalle.nombre_metodo_pago}}
+                                    {% endfor %}
+                                </td>
+                                
+
                                 <td class="px-4 py-3">{{ factura.descripcion_estado_factura }}</td>
                                 <td class="px-4 py-3 flex items-center justify-end">
                                     <button id="{{factura.id_factura}}-dropdown-button" data-dropdown-toggle="{{factura.id_factura}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-700 p-1.5 dark:hover-bg-gray-800 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none dark:text-gray-400 dark:hover:text-gray-100" type="button">
@@ -136,10 +144,6 @@
             </div>
         </div>
     </section>
-    <!-- Enlace de pago 
-<div class="mt-4">
-    <a href="{{ payment_link }}" class="text-blue-500 hover:underline" target="_blank">Generar Link de Pago</a>
-</div> -->
 
 <!-- Update model -->
 {% for factura in facturas %}
@@ -150,7 +154,7 @@
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                 <h3 class="text-lg font-semibold text-white">Cambiar Estado</h3>
-                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="editarFacturaModal_{{ key }}">
+                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="editarFacturaModal_{{ factura.id_factura }}" data-modal-toggle="editarFacturaModal_{{ factura.id_factura }}">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
                     </svg>
@@ -202,7 +206,9 @@
                     <span class="sr-only">Cerrar</span>
                 </button>
             </div>
-            <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{factura.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
+            {% for detalle in factura.detalles %}
+            <h2 class="block mb-2 text-sm font-center text-white">El link de pago que se generará, será enviado a "{{detalle.correo_cliente}}". En caso de ser otro el correo electronico del mismo, modificar en la sección de clientes. </h2>
+            {% endfor %}
             <!-- Modal body -->
              <!-- agregar la accion y hacer la funcion de editar estado de pago -->
             <form id="enviarLinkPago_{{ factura.id_factura }}"  method="POST" action="{% url 'facturas:generar_link_pago' factura.id_factura %}">
