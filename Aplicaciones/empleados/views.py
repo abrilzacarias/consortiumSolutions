@@ -5,7 +5,9 @@ from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect
 from ..inicio.views import paginacionTablas
+from django.contrib.auth.decorators import login_required, permission_required
 
+@login_required
 def home(request):
     empleados = Empleado().mostrarEmpleados()
     for empleado in empleados:

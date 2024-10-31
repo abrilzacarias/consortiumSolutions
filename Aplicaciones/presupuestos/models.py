@@ -19,7 +19,7 @@ class Presupuesto(models.Model):
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
             sqlListarPresupuestos = """
-                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto FROM presupuesto pr
+                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto, emp.id_empleado FROM presupuesto pr
                     JOIN edificio e ON e.id_edificio = pr.id_edificio
                     JOIN empleado emp ON emp.id_empleado = pr.id_empleado
                     JOIN persona per ON per.id_persona = emp.id_persona
@@ -35,7 +35,7 @@ class Presupuesto(models.Model):
                 'nombre_edificio': resultado[2],
                 'nombre_persona': resultado[3],
                 'monto_total_presupuesto': resultado[4],
-                
+                'id_empleado': resultado[6],
             }
             presupuestos.append(presupuesto_modificado)
         return presupuestos
@@ -196,6 +196,39 @@ class Presupuesto(models.Model):
             print("Error al enviar ventas:", str(e))
             connection.rollback()
             return None
+    
+    @classmethod
+    def filtrarVendedores(self):
+        #filtra los vendedores que no tienen fecha de baja, es decir, que estan activos
+        try:
+            with connection.cursor() as cursor:
+                sqlVendedoresActivos = """
+                    SELECT 
+                        e.id_empleado,
+                        p.nombre_persona,
+                        p.apellido_persona
+                    FROM 
+                            empleado e
+                        JOIN 
+                            persona p ON e.id_persona = p.id_persona  
+                        LEFT JOIN 
+                            login_myuser_groups g ON e.id_usuario = g.myuser_id  
+                        LEFT JOIN 
+                            auth_group ag ON g.group_id = ag.id  
+                        WHERE 
+                            e.fecha_baja_empleado IS NULL
+                    AND 
+                        ag.name = 'Vendedor';
+                                    """
+                cursor.execute(sqlVendedoresActivos)
+                vendedoresActivos = cursor.fetchall()
+                
+                connection.commit()
+                return vendedoresActivos
+        except Exception as e:
+            print("Error al enviar ventas:", str(e))
+            connection.rollback()
+            return None
 
 
 
@@ -246,4 +279,7 @@ class DetallePresupuesto(models.Model):
             detalle_presupuesto.append(detalle_presupuesto_modificado)
         
         return detalle_presupuesto
+    
+    
+        
 

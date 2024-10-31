@@ -9,16 +9,34 @@ from ..inicio.views import paginacionTablas
 from django.contrib.auth.decorators import login_required, permission_required
 
 @login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def home(request):
+    es_vendedor = request.user.groups.filter(name='Vendedor').exists()
     presupuestos = Presupuesto.listarPresupuestos()
+    print(presupuestos)
+    if es_vendedor:
+        try:
+            vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
+            id_vendedor_user = vendedorUsuario.id_empleado
+        except Empleado.DoesNotExist:
+            pass
+    
+    if es_vendedor:
+        print("El vendedor existe.")
+        presupuestos = [p for p in presupuestos if p['id_empleado'] == id_vendedor_user]
+
     context = paginacionTablas(request, presupuestos, 'presupuestos')
     return render(request, 'listarPresupuestos.html', context)
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def detalle_presupuesto(request, id_presupuesto): 
     detalle_presupuesto = [detalle for detalle in DetallePresupuesto.listarDetallePresupuesto() if detalle['id_presupuesto'] == id_presupuesto]
     print(detalle_presupuesto)
     return JsonResponse(detalle_presupuesto, safe=False)
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def agregarPresupuesto(request):
     if request.method == 'POST':
         #campos de presupuesto
@@ -61,17 +79,38 @@ def agregarPresupuesto(request):
         presupuestos = Presupuesto.listarPresupuestos()
         return render(request, {'presupuestos': presupuestos})
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def mostrar_vendedores(request, method='GET'):
-    vendedores = list(
-        Empleado.objects.select_related('id_persona').filter(tipo_empleado_id=1).values(
-            'id_empleado',
-            'id_persona__nombre_persona',
-            'id_persona__apellido_persona'
-        )
-    )
-    return JsonResponse(vendedores, safe=False)
+    user = request.user
+    print()
+    
+    if user.is_superuser:
+        # Si es superusuario, mostramos todos los vendedores
+        vendedores = Presupuesto.filtrarVendedores()
+    else:
+        # Si es un vendedor, solo mostramos el registro del vendedor asociado
+        try:
+            user = user.id_usuario
+            vendedor = Empleado.objects.get(id_usuario=user)
+            vendedores = [(vendedor.id_empleado, vendedor.id_persona.nombre_persona, vendedor.id_persona.apellido_persona)]  # Convertimos a lista para mantener formato JSON consistente
+            print(f'Vendedor: {vendedores}')
+        except Empleado.DoesNotExist:
+            return JsonResponse({'error': 'No se encontró el vendedor asociado al usuario'}, status=404)
+        
+    vendedores_list = [
+                {
+                    'id_empleado': vendedor[0],
+                    'id_persona__nombre_persona': vendedor[1],
+                    'id_persona__apellido_persona': vendedor[2]
+                }
+                for vendedor in vendedores
+                                ]
+    
+    return JsonResponse(vendedores_list, safe=False)
 
-
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def mostrar_clientes(request, method='GET'):
     servicios = list(
         Cliente.objects.select_related('id_persona')
@@ -81,12 +120,15 @@ def mostrar_clientes(request, method='GET'):
     
     return JsonResponse(servicios, safe=False)
 
-
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def mostrar_edificios(request, id_cliente):
     edificios = list(Edificio.objects.filter(id_cliente=id_cliente).values('id_edificio', 'nombre_edificio'))
     
     return JsonResponse(edificios, safe=False)
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def obtener_servicios(request):
     categorias = CategoriaServicio.objects.prefetch_related('servicios').all()
     
@@ -109,6 +151,8 @@ def obtener_servicios(request):
 
     return JsonResponse(response_data, safe=False)
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def eliminarPresupuesto(request, id_presupuesto):
     if request.method == 'POST':
         presupuesto = get_object_or_404(Presupuesto, id_presupuesto=id_presupuesto)
@@ -128,7 +172,8 @@ def eliminarPresupuesto(request, id_presupuesto):
 
     return redirect('/presupuestos/')  # Redirige en caso de solicitud no POST
 
-
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def editarPresupuesto(request):
     if request.method == 'POST':
         id_presupuesto = request.POST.get('id_presupuesto')
@@ -179,7 +224,8 @@ def editarPresupuesto(request):
     return redirect('/presupuestos/')
 
 
-
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def obtenerPresupuesto(request, id_presupuesto):
     if request.method == 'GET':
         # Obtener el presupuesto y los detalles asociados usando el ORM
@@ -224,7 +270,8 @@ def obtenerPresupuesto(request, id_presupuesto):
     # Manejar casos donde el método de solicitud no sea GET
     return JsonResponse({'error': 'Método de solicitud no válido'}, status=405)
 
-
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def enviarVentas(request, id_presupuesto):
     print(f"ID Presupuesto recibido en enviarVentas: {id_presupuesto}")  # Imprimir el id_presupuesto
     id_venta = Presupuesto.enviarVentas(id_presupuesto)
@@ -236,6 +283,8 @@ def enviarVentas(request, id_presupuesto):
         print("Error al crear la venta.")  # Imprimir mensaje de error
         return redirect('/presupuestos/')
 
+@login_required
+@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
 def eliminarDetallePresupuesto(request, id_detalle):
     if request.method == 'DELETE':
         # Obtener el detalle correspondiente
