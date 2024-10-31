@@ -3,6 +3,13 @@ from django.db import connection
 from django.utils.timezone import now
 from Aplicaciones.empleados.models import Empleado
 from Aplicaciones.servicios.models import Servicio
+from django.utils import timezone
+from datetime import datetime
+
+
+# Obtener la fecha y hora actual en la zona horaria local
+current_datetime = timezone.localtime(timezone.now())
+ 
 
 class MetodoPago(models.Model):
     id_metodo_pago = models.AutoField(primary_key=True)
@@ -35,54 +42,80 @@ class Venta(models.Model):
         db_table = 'venta'  # Nombre de la tabla en la base de datos
         managed = False  # Esto indica que Django no debe crear ni modificar esta tabla
 
-        
-    @classmethod
+    @classmethod     
     def listarVentas(cls):
         with connection.cursor() as cursor:
             sqlListarVentas = """
-                    SELECT * FROM vista_ventas;
-                    """
+                SELECT * FROM vista_ventas;
+            """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            #print(resultados)
-            ventas = {}
 
-            for resultado in resultados:
-                numero_factura = resultado[1]  # Suponiendo que el número de factura es el segundo elemento
-                id_venta = resultado[0]         # Primer elemento es el id_venta
-                id_detalle_venta = resultado[12] # Posición del id_detalle_venta
+        ventas = {}
 
-                if numero_factura not in ventas:
-                    ventas[numero_factura] = {
-                        'id_venta': id_venta,  # Agregado
-                        'numero_factura': numero_factura,
-                        'fecha_hora_venta': resultado[2],
-                        'nombre_edificio': resultado[3],
-                        'cuit_edificio': resultado[4],
-                        'direccion_edificio': resultado[5],
-                        'id_metodo_pago': resultado[6],
-                        'nombre_metodo_pago': resultado[7],
-                        'cod_metodo_pago': resultado[8],
-                        'nombre_empleado': resultado[9],
-                        'monto_total_venta': resultado[10],
-                        'detalles': []
-                    }
+        for resultado in resultados:
+            numero_factura = resultado[1]  # Suponiendo que el número de factura es el segundo elemento
+            id_venta = resultado[0]         # Primer elemento es el id_venta
 
-                detalle = {
-                    'id_detalle_venta': resultado[14],  # Agregado
-                    'nombre_servicio': resultado[11],
-                    'cantidad_detalle_venta': resultado[15],
-                    'precio_detalle_venta': resultado[13],
-                    'costo_extra_detalle_venta': resultado[16],  # Agregado
-                    'descripcion_estado_venta': resultado[18],  # Descripción del estado de venta
-                    'id_estado_venta':  resultado[20]  # Id del estado de venta
-
+            # Verifica si la venta ya fue registrada en el diccionario
+            if numero_factura not in ventas:
+                ventas[numero_factura] = {
+                    'id_venta': id_venta,
+                    'numero_factura': numero_factura,
+                    'fecha_hora_venta': resultado[2],
+                    'nombre_edificio': resultado[3],
+                    'cuit_edificio': resultado[4],
+                    'direccion_edificio': resultado[5],
+                    'id_metodo_pago': resultado[6],
+                    'nombre_metodo_pago': resultado[7],
+                    'cod_metodo_pago': resultado[8],
+                    'nombre_empleado': resultado[9],
+                    'monto_total_venta': resultado[10],
+                    'detalles': []
                 }
-                ventas[numero_factura]['detalles'].append(detalle)
-                #print(ventas[numero_factura]['detalles'])
 
-            return list(ventas.values())
-        
+            # Crea un diccionario para el detalle de la venta
+            detalle = {
+                'id_detalle_venta': resultado[14],  # Posición del id_detalle_venta
+                'nombre_servicio': resultado[11],
+                'cantidad_detalle_venta': resultado[15],
+                'precio_detalle_venta': resultado[12],
+                'costo_extra_detalle_venta': resultado[16],
+                'descripcion_estado_venta': resultado[18],
+                'id_estado_venta': resultado[20],
+                'observaciones': []  # Inicializa con una lista vacía
+            }
+
+            ids_observaciones = resultado[22].split(',') if resultado[22] else []  # Asegúrate de que el índice sea correcto
+            descripciones_observaciones = resultado[23].split(', ') if resultado[23] else []
+            fechas_observaciones = resultado[24].split(', ') if resultado[24] else []
+            horas_observaciones = resultado[25].split(', ') if resultado[25] else []
+
+            # Crea una lista de diccionarios para las observaciones
+            observaciones = []
+            for i in range(len(ids_observaciones)):
+                # Solo agrega la observación si hay un id
+                if ids_observaciones[i]:  # Asegúrate de que no esté vacío
+                    observacion = {
+                        'id_observacion': ids_observaciones[i],
+                        'descripcion_observacion': descripciones_observaciones[i] if i < len(descripciones_observaciones) else None,
+                        'fecha_observacion': fechas_observaciones[i] if i < len(fechas_observaciones) else None,
+                        'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else None,
+                    }
+                    observaciones.append(observacion)
+
+            # Asigna las observaciones al detalle
+            detalle['observaciones'] = observaciones
+
+            # Agrega el detalle a la lista de detalles de la venta
+            ventas[numero_factura]['detalles'].append(detalle)
+            
+            print(ventas)
+
+        # Devuelve la lista de ventas
+        return list(ventas.values())
+
+                
     @classmethod
     def actualizarMetodoPago(cls, id_nuevo_metodo_pago, id_venta):
         with connection.cursor() as cursor:
@@ -106,6 +139,25 @@ class DetalleVenta(models.Model):
 
     def _str_(self):
         return f'Detalle Venta {self.id_detalle_venta}'
+    
+    @classmethod
+    def agregarObservacionDetalleVenta(cls, id_detalle_venta, descripcion_observacion, id_detalle_preventa=None, id_cliente=None):
+        try:
+            with connection.cursor() as cursor:
+                sqlInsertarObservacionVenta = """
+                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_venta, id_detalle_preventa, id_cliente)
+                    VALUES (%s, %s, %s, %s, %s, %s);
+                """
+                current_date = timezone.localtime(timezone.now()).date()
+                current_time = timezone.localtime(timezone.now()).time()
+                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_venta, id_detalle_preventa, id_cliente])
+                idObservacion = cursor.lastrowid
+                connection.commit()
+                return idObservacion
+        except Exception as e:
+            print("Error al insertar:", str(e))
+            return None
+
 
 class RegistroEstadoVenta(models.Model):
     id_registro_estado_venta = models.AutoField(primary_key=True)

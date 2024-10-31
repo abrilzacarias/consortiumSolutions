@@ -35,6 +35,7 @@
                                 </div>
                             </form>
                         </div>
+                        {% if request.user.is_superuser %}
                         <div class="w-full md:w-auto flex flex-col md:flex-row items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0 -mt-8 md:mt-0 md:ml-4">
                             <button type="button" id="agregarClienteBoton" data-modal-target="agregarClienteModal" data-modal-toggle="agregarClienteModal" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
                                 <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -43,6 +44,7 @@
                                 Añadir Cliente
                             </button>
                         </div>
+                        {% endif %}
                     </div>
                     <div class="flex flex-wrap justify-center space-x-2 mt-2 mb-3">
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-todos">Todos</button>
@@ -110,6 +112,7 @@
                                                     Editar
                                                 </button>
                                             </li>
+                                            {% if request.user.is_superuser %}
                                             <li>
                                                 <button type="button" data-modal-target="borrarClienteModal_{{ cliente.id_cliente }}" data-modal-toggle="borrarClienteModal_{{ cliente.id_cliente }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 text-red-500 dark:hover:text-red-600">
                                                     <svg class="w-4 h-4 mr-2" viewbox="0 0 14 15" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -118,6 +121,7 @@
                                                     Eliminar
                                                 </button>
                                             </li>
+                                            {% endif %}
                                             <li>
                                                 <button type="button" data-modal-target="edificiosClienteModal_{{ cliente.id_cliente }}" data-modal-toggle="edificiosClienteModal_{{ cliente.id_cliente }}" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 dark:hover:bg-gray-600 dark: hover:text-gray-900 text-gray-700 dark:text-gray-200">
                                                     <svg class="h-4 w-4 text-gray-800 mr-2"  width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"> 
@@ -139,6 +143,10 @@
                                     </div>
                                 </td>
                             </tr>
+                            {% empty %}
+                                <tr>
+                                    <td colspan="10" class="px-4 py-3 text-center text-gray-400">No hay clientes asignados a este vendedor.</td>
+                                </tr>
                             {% endfor %}
                             
                         </tbody>
@@ -265,7 +273,6 @@
 
 <!-- Update modal -->
 {% for cliente in resultados %}
-
 <div id="editarClienteModal_{{ cliente.id_cliente }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
@@ -286,37 +293,37 @@
                 <div class="grid gap-4 mb-4 sm:grid-cols-2">
                     <div class="mb-0">
                         <label for="nombre_persona" class="block mb-2 text-sm font-medium text-white">Nombre</label>
-                        <input type="text" name="nombre_persona" id="nombre_persona_{{ cliente.id_cliente }}" value="{{ cliente.nombre_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Nombre del cliente" required>
+                        <input type="text" name="nombre_persona" id="nombre_persona_{{ cliente.id_cliente }}" value="{{ cliente.nombre_cliente }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="Nombre del cliente" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorNombre_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="apellido_persona" class="block mb-2 text-sm font-medium text-white">Apellido</label>
-                        <input type="text" name="apellido_persona" id="apellido_persona_{{ cliente.id_cliente }}" value="{{ cliente.apellido_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Apellido del cliente" required>
+                        <input type="text" name="apellido_persona" id="apellido_persona_{{ cliente.id_cliente }}" value="{{ cliente.apellido_cliente }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="Apellido del cliente" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorApellido_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="cuitl_persona" class="block mb-2 text-sm font-medium text-white">CUIT/CUIL</label>
-                        <input type="text" name="cuitl_persona" id="cuitl_persona_{{ cliente.id_cliente }}" value="{{ cliente.cuit_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="CUIT/CUIL" required>
+                        <input type="text" name="cuitl_persona" id="cuitl_persona_{{ cliente.id_cliente }}" value="{{ cliente.cuit_cliente }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="CUIT/CUIL" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorCuitl_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="direccion_persona" class="block mb-2 text-sm font-medium text-white">Dirección</label>
-                        <input type="text" name="direccion_persona" id="direccion_persona_{{ cliente.id_cliente }}" value="{{ cliente.direccion_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Dirección" required>
+                        <input type="text" name="direccion_persona" id="direccion_persona_{{ cliente.id_cliente }}" value="{{ cliente.direccion_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Dirección">
                         <div id="errorDireccion_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="matricula_cliente" class="block mb-2 text-sm font-medium text-white">Matrícula</label>
-                        <input type="text" name="matricula_cliente" id="matricula_cliente_{{ cliente.id_cliente }}" value="{{ cliente.matricula_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Matrícula" required>
+                        <input type="text" name="matricula_cliente" id="matricula_cliente_{{ cliente.id_cliente }}" value="{{ cliente.matricula_cliente }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="Matrícula" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorMatricula_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="vencimiento_matricula" class="block mb-2 text-sm font-medium text-white">Vencimiento Matrícula</label>
-                        <input type="date" name="vencimiento_matricula" id="vencimiento_matricula_{{ cliente.id_cliente }}" value="{{ cliente.fecha_vencimiento|date:'Y-m-d' }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white" placeholder="Fecha de Vencimiento" required>
+                        <input type="date" name="vencimiento_matricula" id="vencimiento_matricula_{{ cliente.id_cliente }}" value="{{ cliente.fecha_vencimiento|date:'Y-m-d' }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="Fecha de Vencimiento" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorVencimiento_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
                         <label for="clave_afgip_cliente" class="block mb-2 text-sm font-medium text-white">CLAVE</label>
-                        <input type="text" name="clave_afgip_cliente" id="clave_afgip_cliente_{{ cliente.id_cliente }}" value="{{ cliente.clave_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" placeholder="Clave del Cliente" required>
+                        <input type="text" name="clave_afgip_cliente" id="clave_afgip_cliente_{{ cliente.id_cliente }}" value="{{ cliente.clave_cliente }}" class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" placeholder="Clave del Cliente" required {% if es_vendedor %}readonly{% endif %}>
                         <div id="errorClave_{{ cliente.id_cliente }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                     </div>
                     <div class="mb-0">
@@ -328,7 +335,7 @@
                     </div>
                     <div class="mb-6 flex flex-col space-y-4">
                         <label for="vendedor_asignado" class="block text-sm font-medium text-gray-200">Vendedor Asignado:</label>
-                        <select class="text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="vendedor_asignado">
+                        <select class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" name="vendedor_asignado" {% if es_vendedor %}disabled{% endif %}>
                             <option value="" {% if not cliente.id_vendedor_asignado %}selected{% endif %}>Seleccionar Vendedor</option>
                             {% for empleado in empleados %}
                             <option value="{{ empleado.id_empleado }}" {% if empleado.id_empleado == cliente.id_vendedor_asignado %}selected{% endif %}>{{ empleado.nombre_persona }} {{ empleado.apellido_persona }}</option>
@@ -429,19 +436,24 @@
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                 <h3 class="text-lg font-semibold text-white">Edificios de {{cliente.nombre_cliente}}</h3>
-                <button type="button" id="agregarEdificioBoton" data-modal-target="agregarEdificioModal_{{cliente.id_cliente}}" data-modal-toggle="agregarEdificioModal_{{cliente.id_cliente}}" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
-                    <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                    </svg>
-                    Añadir Edificio
-                </button>
-                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="edificiosClienteModal_{{ cliente.id_cliente }}">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="sr-only">Cerrar</span>
-                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <button type="button" id="agregarEdificioBoton" data-modal-target="agregarEdificioModal_{{cliente.id_cliente}}" data-modal-toggle="agregarEdificioModal_{{cliente.id_cliente}}" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
+                        <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                        </svg>
+                        Añadir Edificio
+                    </button>
+                    
+                    <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="edificiosClienteModal_{{ cliente.id_cliente }}">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="sr-only">Cerrar</span>
+                    </button>
+                </div>
             </div>
+            
             <!-- Modal body -->
             <div class="overflow-x-auto"> 
                 <table class="w-full text-sm text-left text-gray-400">
@@ -455,7 +467,6 @@
                                 <span class="sr-only">Acciones</span>
                             </th>
                         </tr>
-
                     </thead>
                     <tbody>
                         {% for edificio in cliente.edificios %}
@@ -572,7 +583,6 @@
 <!-- Update modal -->
 {% for cliente in resultados %}
 {% for edificio in cliente.edificios %}
-
 <div id="editarEdificioModal_{{ edificio.id_edificio }}" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative p-4 w-full max-w-2xl max-h-full">
         <!-- Modal content -->
@@ -678,21 +688,26 @@
         <!-- Modal content -->
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
             <!-- Modal header -->
-            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
                 <h3 class="text-lg font-semibold text-white">Observaciones de {{cliente.nombre_cliente}}</h3>
-                <button type="button" id="agregarObservacionBoton" data-modal-target="agregarObservacionModal_{{cliente.id_cliente}}" data-modal-toggle="agregarObservacionModal_{{cliente.id_cliente}}" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
-                    <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                        <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
-                    </svg>
-                    Añadir Observación
-                </button>
-                <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="observacionesClienteModal_{{ cliente.id_cliente }}">
-                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
-                    </svg>
-                    <span class="sr-only">Cerrar</span>
-                </button>
+                
+                <div class="flex items-center space-x-2">
+                    <button type="button" id="agregarObservacionBoton" data-modal-target="agregarObservacionModal_{{cliente.id_cliente}}" data-modal-toggle="agregarObservacionModal_{{cliente.id_cliente}}" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
+                        <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                        </svg>
+                        Añadir Observación
+                    </button>
+                    
+                    <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 inline-flex items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="observacionesClienteModal_{{ cliente.id_cliente }}">
+                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
+                        </svg>
+                        <span class="sr-only">Cerrar</span>
+                    </button>
+                </div>
             </div>
+            
             <!-- Modal body -->
             <div class="overflow-x-auto"> 
                 <table class="w-full text-sm text-left text-gray-400">
