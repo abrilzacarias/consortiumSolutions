@@ -8,8 +8,9 @@ from ..servicios.models import CategoriaServicio
 from ..inicio.views import paginacionTablas
 from django.contrib.auth.decorators import login_required, permission_required
 
+#TODO  @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def home(request):
     es_vendedor = request.user.groups.filter(name='Vendedor').exists()
     presupuestos = Presupuesto.listarPresupuestos()
@@ -29,14 +30,14 @@ def home(request):
     return render(request, 'listarPresupuestos.html', context)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def detalle_presupuesto(request, id_presupuesto): 
     detalle_presupuesto = [detalle for detalle in DetallePresupuesto.listarDetallePresupuesto() if detalle['id_presupuesto'] == id_presupuesto]
     print(detalle_presupuesto)
     return JsonResponse(detalle_presupuesto, safe=False)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def agregarPresupuesto(request):
     if request.method == 'POST':
         #campos de presupuesto
@@ -80,7 +81,7 @@ def agregarPresupuesto(request):
         return render(request, {'presupuestos': presupuestos})
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def mostrar_vendedores(request, method='GET'):
     user = request.user
     print()
@@ -110,7 +111,7 @@ def mostrar_vendedores(request, method='GET'):
     return JsonResponse(vendedores_list, safe=False)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def mostrar_clientes(request, method='GET'):
     servicios = list(
         Cliente.objects.select_related('id_persona')
@@ -128,7 +129,7 @@ def mostrar_edificios(request, id_cliente):
     return JsonResponse(edificios, safe=False)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def obtener_servicios(request):
     categorias = CategoriaServicio.objects.prefetch_related('servicios').all()
     
@@ -152,7 +153,7 @@ def obtener_servicios(request):
     return JsonResponse(response_data, safe=False)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def eliminarPresupuesto(request, id_presupuesto):
     if request.method == 'POST':
         presupuesto = get_object_or_404(Presupuesto, id_presupuesto=id_presupuesto)
@@ -173,7 +174,7 @@ def eliminarPresupuesto(request, id_presupuesto):
     return redirect('/presupuestos/')  # Redirige en caso de solicitud no POST
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def editarPresupuesto(request):
     if request.method == 'POST':
         id_presupuesto = request.POST.get('id_presupuesto')
@@ -225,7 +226,7 @@ def editarPresupuesto(request):
 
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def obtenerPresupuesto(request, id_presupuesto):
     if request.method == 'GET':
         # Obtener el presupuesto y los detalles asociados usando el ORM
@@ -271,7 +272,7 @@ def obtenerPresupuesto(request, id_presupuesto):
     return JsonResponse({'error': 'Método de solicitud no válido'}, status=405)
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def enviarVentas(request, id_presupuesto):
     print(f"ID Presupuesto recibido en enviarVentas: {id_presupuesto}")  # Imprimir el id_presupuesto
     id_venta = Presupuesto.enviarVentas(id_presupuesto)
@@ -284,7 +285,7 @@ def enviarVentas(request, id_presupuesto):
         return redirect('/presupuestos/')
 
 @login_required
-@permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
+@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def eliminarDetallePresupuesto(request, id_detalle):
     if request.method == 'DELETE':
         # Obtener el detalle correspondiente
