@@ -4,7 +4,7 @@ from ..empleados.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
 from django.utils import timezone
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from datetime import datetime
 from ..inicio.views import paginacionTablas
 
@@ -14,7 +14,7 @@ clientes = Clientes()
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def listarClientes(request):
-    es_vendedor = request.user.groups.filter(name='empleados').exists()  # Ajusta según tu lógica para identificar vendedores
+    es_vendedor = request.user.groups.filter(name='Vendedor').exists()  # Ajusta según tu lógica para identificar vendedores
     resultados = clientes.listarClientes()
     empleados = empleado.mostrarEmpleados()
     resultados_modificados = []
@@ -22,7 +22,7 @@ def listarClientes(request):
     if es_vendedor:
         try:
             vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
-            id_vendedor_user = vendedorUsuario.id_vendedor
+            id_vendedor_user = vendedorUsuario.id_empleado
             print("El vendedor existe.")
         except Empleado.DoesNotExist:
             pass
@@ -114,9 +114,12 @@ def listarClientes(request):
 
     context = paginacionTablas(request, resultados_modificados, 'resultados')
     context['empleados'] = empleados
-        
+    context['es_vendedor'] = es_vendedor
+    print(context)
     return render(request, 'clientesviews.html', context)
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url='')
 def agregarCliente(request):
     if request.method == 'POST':
         nombre_cliente = request.POST.get('nombre_cliente')
@@ -159,7 +162,8 @@ def agregarCliente(request):
         empleados = empleado.mostrarEmpleados()
         return render(request, 'clientesviews.html', {'empleados': empleados})
 
-
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def editarCliente(request, id_cliente):
     clientes = Clientes()
     
@@ -259,11 +263,14 @@ def editarCliente(request, id_cliente):
         return render(request, 'clientesviews.html', {'cliente': cliente, 'empleados': empleados})
 
 
-
+@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url='')
 def eliminarCliente(request, id_cliente):
     clientes.eliminarCliente(id_cliente)
     return redirect('/clientes/') 
 
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def agregarEdificio(request, id_cliente):
     if request.method == 'POST':
         nombre_edificio = request.POST.get('nombre_edificio')
@@ -278,6 +285,8 @@ def agregarEdificio(request, id_cliente):
 
     return redirect('/clientes/')
 
+@login_required
+@user_passes_test(lambda u: u.is_superuser, login_url='')
 def agregarDesignacionVendedor(request, id_cliente):
     if request.method == 'POST':
         vendedor_asignado = request.POST.get('vendedor_asignado')  
@@ -293,13 +302,16 @@ def agregarDesignacionVendedor(request, id_cliente):
     else:
         return HttpResponseNotAllowed(['POST'])
 
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def agregarObservacionCliente(request, id_cliente):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
         clientes.agregarObservacion(id_cliente, descripcion_observacion)
     return redirect('/clientes/')
 
-
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def eliminarContactoCliente(request, id_contacto):
     if request.method == 'DELETE':
         try:
@@ -313,7 +325,8 @@ def eliminarContactoCliente(request, id_contacto):
     else:
         return HttpResponse(status=405)
     
-
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def editarEdificio(request, id_edificio):
     clientes = Clientes()
     if request.method == 'POST':
@@ -330,6 +343,8 @@ def editarEdificio(request, id_edificio):
     else:
         return redirect('/clientes/')
     
+@login_required
+@permission_required('inicio.change_cliente', login_url='', raise_exception=True)
 def eliminarEdificio(request, id_edificio):
 
     Clientes().eliminarEdificio(id_edificio)
