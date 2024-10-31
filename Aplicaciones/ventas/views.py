@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import MetodoPago, Venta, EstadoVenta, RegistroEstadoVenta  # Asegúrate de importar la clase MetodoPago
+from .models import MetodoPago, Venta, EstadoVenta, RegistroEstadoVenta, DetalleVenta  # Asegúrate de importar la clase MetodoPago
 from django.contrib import messages
 from ..facturas.models import Factura
 from ..inicio.views import paginacionTablas
@@ -165,3 +165,8 @@ def cambiarEstadoRegistroVenta(request, id_detalle_venta):
     # Si no es un POST, redirige o maneja de otra manera
     return redirect('ventas:home')
 
+def agregarObservacionDetalleVenta(request, id_detalle_venta):
+    if request.method == 'POST':
+        descripcion_observacion = request.POST.get('descripcion_observacion')
+        DetalleVenta.agregarObservacionDetalleVenta(id_detalle_venta, descripcion_observacion)
+    return redirect('/ventas/')
