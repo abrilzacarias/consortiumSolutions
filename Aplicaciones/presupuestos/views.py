@@ -62,13 +62,8 @@ def agregarPresupuesto(request):
         return render(request, {'presupuestos': presupuestos})
 
 def mostrar_vendedores(request, method='GET'):
-    vendedores = list(
-        Empleado.objects.select_related('id_persona').filter(tipo_empleado_id=1).values(
-            'id_empleado',
-            'id_persona__nombre_persona',
-            'id_persona__apellido_persona'
-        )
-    )
+    vendedores = Presupuesto.filtrarVendedores()  
+    
     return JsonResponse(vendedores, safe=False)
 
 

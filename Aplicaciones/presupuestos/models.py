@@ -196,6 +196,48 @@ class Presupuesto(models.Model):
             print("Error al enviar ventas:", str(e))
             connection.rollback()
             return None
+    
+    @classmethod
+    def filtrarVendedores(self):
+        #filtra los vendedores que no tienen fecha de baja, es decir, que estan activos
+        try:
+            with connection.cursor() as cursor:
+                sqlVendedoresActivos = """
+                    SELECT 
+                        e.id_empleado,
+                        p.nombre_persona,
+                        p.apellido_persona
+                    FROM 
+                            empleado e
+                        JOIN 
+                            persona p ON e.id_persona = p.id_persona  
+                        LEFT JOIN 
+                            login_myuser_groups g ON e.id_usuario = g.myuser_id  
+                        LEFT JOIN 
+                            auth_group ag ON g.group_id = ag.id  
+                        WHERE 
+                            e.fecha_baja_empleado IS NULL
+                    AND 
+                        ag.name = 'Vendedor';
+                                    """
+                cursor.execute(sqlVendedoresActivos)
+                vendedoresActivos = cursor.fetchall()
+                
+                vendedores_list = [
+                {
+                    'id_empleado': vendedor[0],
+                    'id_persona__nombre_persona': vendedor[1],
+                    'id_persona__apellido_persona': vendedor[2]
+                }
+                for vendedor in vendedoresActivos
+                                ]
+            
+                connection.commit()
+                return vendedores_list
+        except Exception as e:
+            print("Error al enviar ventas:", str(e))
+            connection.rollback()
+            return None
 
 
 
@@ -246,4 +288,7 @@ class DetallePresupuesto(models.Model):
             detalle_presupuesto.append(detalle_presupuesto_modificado)
         
         return detalle_presupuesto
+    
+    
+        
 
