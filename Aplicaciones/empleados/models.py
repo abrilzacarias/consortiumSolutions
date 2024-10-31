@@ -239,14 +239,11 @@ class Empleado(models.Model):
                     else:
                         empleado['tipo_empleado'] = []
 
-                #print("Empleados encontrados:", empleados)
-                
                 if not empleados:
                     print("No hay empleados activos.")
                     return []
 
                 return empleados
-
         except Exception as e:
             print("Error al mostrar los empleados:", str(e))
             return []

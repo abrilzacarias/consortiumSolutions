@@ -111,6 +111,8 @@
                                                     Detalles
                                                 </button>
                                             </li>
+
+                                            {% if request.user.is_superuser or 'Facturador' in grupos_usuario %}
                                             <li>
                                                 <form action="{% url 'ventas:enviar_factura_prueba' venta.id_venta %}" method="POST">
                                                     {% csrf_token %}
@@ -126,6 +128,7 @@
                                                     </button>
                                                 </form>
                                             </li>
+                                            {% endif %}
                                         </ul>
                                     </div>
                                 </td>
