@@ -11,7 +11,6 @@ document.addEventListener('DOMContentLoaded', function() {
         newContactGroup.className = 'flex items-center space-x-2';
         newContactGroup.innerHTML = `
             <select class="w-1/75 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto[]">
-                <option value="1">Correo Electrónico</option>
                 <option value="2">Teléfono</option>
                 <option value="3">Página Web</option>
             </select>

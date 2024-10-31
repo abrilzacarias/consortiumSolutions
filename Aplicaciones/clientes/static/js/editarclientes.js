@@ -8,7 +8,6 @@ function createContactGroup(clienteId, contactoId = null, tipoContacto = '', des
 
   div.innerHTML = `
       <select class="w-1/4 text-sm rounded-lg bg-gray-700 border-gray-600 text-white" name="tipo_contacto_${contactoId || 'nuevo'}">
-          <option value="1" ${tipoContacto === '1' ? 'selected' : ''}>Correo Electrónico</option>
           <option value="2" ${tipoContacto === '2' ? 'selected' : ''}>Teléfono</option>
           <option value="3" ${tipoContacto === '3' ? 'selected' : ''}>Página Web</option>
       </select>
