@@ -9,7 +9,46 @@ function detallesPresupuesto(buttonElement) {
         tbody.innerHTML = '';
 
         if (Array.isArray(data) && data.length > 0) {
+            // Primero, eliminar cualquier modal existente para evitar duplicados
             data.forEach(detalle => {
+                const existingModal = document.querySelector(`#observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}`);
+                if (existingModal) {
+                    existingModal.remove();
+                }
+            });
+
+            data.forEach(detalle => {
+                // Crear el modal HTML para cada detalle
+                const modalHTML = `
+                    <div id="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}" 
+                         tabindex="-1" 
+                         aria-hidden="true" 
+                         class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                        <div class="relative p-4 w-full max-w-2xl max-h-full">
+                            <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
+                                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                                    <h3 class="text-lg font-semibold text-white">Observaciones de ${detalle.nombre_servicio}</h3>
+                                    <button type="button" 
+                                            class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-4 inline-flex items-center" 
+                                            data-modal-hide="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}">
+                                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                        </svg>
+                                        <span class="sr-only">Cerrar</span>
+                                    </button>
+                                </div>
+                                <!-- Aquí puedes agregar el contenido del modal -->
+                                <div class="space-y-4">
+                                    <p class="text-white">Contenido del modal para el detalle ${detalle.id_detalle_presupuesto}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                // Agregar el modal al body del documento
+                document.body.insertAdjacentHTML('beforeend', modalHTML);
+
                 // Crear una nueva fila
                 const row = document.createElement('tr');
                 row.classList.add('border-b');
@@ -21,25 +60,72 @@ function detallesPresupuesto(buttonElement) {
                     <td class="px-4 py-3">${detalle.cantidad_detalle_presupuesto || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.costo_extra_presupuesto || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.precio_total_detalle_presupuesto || 'No disponible'}</td>
+                    <td class="px-4 py-3">
+                        <button id="${detalle.id_detalle_presupuesto}-dropdown-button" 
+                                data-dropdown-toggle="${detalle.id_detalle_presupuesto}-dropdown" 
+                                class="inline-flex items-center text-sm font-medium hover:bg-gray-100 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none" 
+                                type="button">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                            </svg>
+                        </button>
+                        <div id="${detalle.id_detalle_presupuesto}-dropdown" 
+                             class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
+                            <ul class="py-1 text-sm text-gray-700" 
+                                aria-labelledby="${detalle.id_detalle_presupuesto}-dropdown-button">
+                                <li>
+                                    <button type="button" 
+                                            data-modal-target="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}" 
+                                            data-modal-toggle="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}" 
+                                            class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
+                                        <svg class="w-4 h-4 mr-2" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
+                                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 5h9M5 9h5m8-8H2a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h4l3.5 4 3.5-4h5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"/>
+                                        </svg>
+                                        Observaciones
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                    </td>
                 `;
 
                 // Agregar la fila al tbody
                 tbody.appendChild(row);
             });
         } else {
-            tbody.innerHTML = '<tr><td colspan="4" class="px-4 py-3 text-center">No se encontraron detalles para este presupuesto.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-3 text-center">No se encontraron detalles para este presupuesto.</td></tr>';
         }
 
-        // Mostrar el modal
+        // Mostrar el modal principal
         const modal = document.querySelector('#readProductModal');
         if (modal) {
             modal.classList.remove('hidden');
         }
+
+        // Reinicializar Flowbite después de agregar los nuevos elementos
+        initFlowbite();
+
+        // Agregar manejadores de eventos para los dropdowns
+        data.forEach(detalle => {
+            const dropdownButton = document.getElementById(`${detalle.id_detalle_presupuesto}-dropdown-button`);
+            const modalButton = document.querySelector(`[data-modal-target="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}"]`);
+            
+            if (modalButton) {
+                modalButton.addEventListener('click', () => {
+                    // Cerrar el dropdown cuando se abre el modal
+                    const dropdown = document.getElementById(`${detalle.id_detalle_presupuesto}-dropdown`);
+                    if (dropdown) {
+                        dropdown.classList.add('hidden');
+                    }
+                });
+            }
+        });
     })
     .catch(error => {
         console.error('Error fetching data:', error);
     });
 }
+
 
 function initializeSelect2Components() {
     initializeSelect2('#vendedor_asignado', '/presupuestos/vendedores/', vendedorFormatter);
@@ -151,12 +237,26 @@ $(document).ready(function() {
 
 
 document.addEventListener('DOMContentLoaded', function() {
+
+    let serviciosSeleccionados = new Set(); 
+
+
     // Función para inicializar Select2
     function initSelect2(selector) {
-        $(selector).select2({
-            placeholder: "Seleccione un servicio",
-            allowClear: true,
-        });
+        if ($(selector).length) {
+            $(selector).select2({
+                placeholder: "Seleccione un servicio",
+                allowClear: true,
+                language: {
+                    noResults: function() {
+                        return "No hay más servicios disponibles";
+                    }
+                },
+                escapeMarkup: function(markup) {
+                    return markup;
+                }
+            });
+        }
     }
 
     // Función para obtener las categorías y servicios
@@ -170,19 +270,33 @@ document.addEventListener('DOMContentLoaded', function() {
             });
     }
 
-    // Función para crear un nuevo dropdown de servicios
-    function crearDropdownServicios(servicios) {
+    function crearDropdownServicios(servicios, currentValue = '') {
         let selectHtml = '<select name="servicios[]" class="select2 service-dropdown w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
         selectHtml += '<option value="">Seleccione un servicio</option>';
-
+    
         servicios.forEach(categoria => {
-            selectHtml += `<optgroup label="${categoria.categoria}">`;
-            categoria.servicios.forEach(servicio => {
-                selectHtml += `<option value="${servicio.id}" data-precio="${servicio.precio}">${servicio.nombre} - $${servicio.precio}</option>`;
+            // Filtrar los servicios disponibles para esta categoría
+            let serviciosDisponibles = categoria.servicios.filter(servicio => {
+                const servicioId = servicio.id.toString();
+                // Un servicio está disponible si no está seleccionado o es el valor actual
+                return !serviciosSeleccionados.has(servicioId) || servicioId === currentValue;
             });
-            selectHtml += '</optgroup>';
+    
+            // Solo crear el optgroup si hay servicios disponibles
+            if (serviciosDisponibles.length > 0) {
+                selectHtml += `<optgroup label="${categoria.categoria}">`;
+                serviciosDisponibles.forEach(servicio => {
+                    const selected = servicio.id.toString() === currentValue ? 'selected' : '';
+                    selectHtml += `<option value="${servicio.id}" 
+                                         data-precio="${servicio.precio}" 
+                                         ${selected}>
+                                    ${servicio.nombre} - $${servicio.precio}
+                                 </option>`;
+                });
+                selectHtml += '</optgroup>';
+            }
         });
-
+    
         selectHtml += '</select>';
         return selectHtml;
     }
@@ -219,7 +333,43 @@ document.addEventListener('DOMContentLoaded', function() {
         serviciosContainer.appendChild(nuevoServicio);
     
         // Inicializar Select2 en el nuevo dropdown.
-        initSelect2(nuevoServicio.querySelector('select'));
+        initSelect2(nuevoServicio.querySelector('.select2'));
+
+        // Agregar listener para el cambio
+        $(nuevoServicio).find('.select2').on('change', function() {
+            const previousValue = this.getAttribute('data-previous-value');
+            if (previousValue) {
+                serviciosSeleccionados.delete(previousValue);
+            }
+            
+            const selectedValue = this.value;
+            if (selectedValue) {
+                serviciosSeleccionados.add(selectedValue);
+                this.setAttribute('data-previous-value', selectedValue);
+            }
+            
+            actualizarTodosLosDropdowns(servicios);
+            calcularTotal();
+        });  
+    }
+
+    // Función mejorada para actualizar todos los dropdowns
+    function actualizarTodosLosDropdowns(servicios) {
+        $('.service-select2').each(function() {
+            const currentValue = $(this).val();
+            const container = $(this).closest('.select-container');
+            
+            // Solo destruir si está inicializado
+            if ($(this).hasClass('select2-hidden-accessible')) {
+                $(this).select2('destroy');
+            }
+            
+            // Actualizar el HTML
+            container.html(crearDropdownServicios(servicios, currentValue));
+            
+            // Reinicializar Select2 específicamente para el servicio
+            initServiceSelect2(container.find('.service-select2'));
+        });
     }
     
 

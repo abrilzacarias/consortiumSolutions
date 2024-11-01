@@ -2,8 +2,7 @@ from django.db import models
 from django.db import connection
 from django.utils.timezone import now
 
-from django.db import models
-
+        
 class Presupuesto(models.Model):
     id_presupuesto = models.AutoField(primary_key=True)
     fecha_hora_presupuesto = models.DateTimeField()
@@ -230,7 +229,42 @@ class Presupuesto(models.Model):
             connection.rollback()
             return None
 
+class Observacion(models.Model):
+    id_observacion = models.AutoField(primary_key=True)
+    descripcion_observacion = models.CharField(max_length=2000)
+    fecha_observacion = models.DateField()
+    hora_observacion = models.TimeField()
+    id_detalle_presupuesto = models.ForeignKey('DetallePresupuesto', on_delete=models.CASCADE, related_name='observaciones',db_column='id_detalle_presupuesto')
 
+    class Meta:
+        db_table = 'observacion'
+
+    
+    @classmethod
+    def listarObservaciones(cls, id_detalle_presupuesto):
+        with connection.cursor() as cursor:
+            sqlListarObservaciones = """
+                SELECT 
+                    o.id_observacion,
+                    o.descripcion_observacion,
+                    o.fecha_observacion,
+                    o.hora_observacion
+                FROM observacion o
+                WHERE o.id_detalle_presupuesto = %s;
+            """
+            cursor.execute(sqlListarObservaciones, [id_detalle_presupuesto])
+            resultados = cursor.fetchall()
+            observaciones = []
+        
+        for resultado in resultados:
+            observaciones.append({
+                'id_observacion': resultado[0],
+                'descripcion_observacion': resultado[1],
+                'fecha_observacion': resultado[2],
+                'hora_observacion': resultado[3],
+            })
+        
+        return observaciones
 
 class DetallePresupuesto(models.Model):
     id_detalle_presupuesto = models.AutoField(primary_key=True)
@@ -248,38 +282,62 @@ class DetallePresupuesto(models.Model):
     def listarDetallePresupuesto(cls):
         with connection.cursor() as cursor:
             sqlListarDetallePresupuesto = """
-                    SELECT 
-                        dp.id_detalle_presupuesto, 
-                        dp.cantidad_detalle_presupuesto, 
-                        dp.costo_extra_presupuesto, 
-                        dp.precio_total_detalle_presupuesto, 
-                        dp.id_presupuesto, 
-                        dp.id_servicio, 
-                        s.nombre_servicio,
-                        s.precio_base_servicio 
-                    FROM detalle_presupuesto dp 
-                    JOIN presupuesto p ON dp.id_presupuesto = p.id_presupuesto
-                    JOIN servicio s ON dp.id_servicio = s.id_servicio;
-                """
+                SELECT 
+                    dp.id_detalle_presupuesto, 
+                    dp.cantidad_detalle_presupuesto, 
+                    dp.costo_extra_presupuesto, 
+                    dp.precio_total_detalle_presupuesto, 
+                    dp.id_presupuesto, 
+                    dp.id_servicio, 
+                    s.nombre_servicio,
+                    s.precio_base_servicio
+                FROM detalle_presupuesto dp 
+                JOIN presupuesto p ON dp.id_presupuesto = p.id_presupuesto
+                JOIN servicio s ON dp.id_servicio = s.id_servicio;
+            """
             cursor.execute(sqlListarDetallePresupuesto)
             resultados = cursor.fetchall()
+            
+            print(f"Resultados de la consulta: {resultados}")  # Imprime los resultados de la consulta
+            
             detalle_presupuesto = []
             
-        for resultado in resultados:
-            detalle_presupuesto_modificado = {
-                'id_detalle_presupuesto': resultado[0],
-                'cantidad_detalle_presupuesto': resultado[1],
-                'costo_extra_presupuesto': resultado[2],
-                'precio_total_detalle_presupuesto': resultado[3],
-                'id_presupuesto': resultado[4],
-                'id_servicio': resultado[5],
-                'nombre_servicio': resultado[6],
-                'precio_servicio': float(resultado[7])  # Agrega el precio del servicio
-            }
-            detalle_presupuesto.append(detalle_presupuesto_modificado)
+            for resultado in resultados:
+                # Obtener las observaciones para cada detalle
+                observaciones = Observacion.listarObservaciones(resultado[0])  # Aquí pasas el id_detalle_presupuesto
+                
+                detalle_presupuesto_modificado = {
+                    'id_detalle_presupuesto': resultado[0],
+                    'cantidad_detalle_presupuesto': resultado[1],
+                    'costo_extra_presupuesto': resultado[2],
+                    'precio_total_detalle_presupuesto': resultado[3],
+                    'id_presupuesto': resultado[4],
+                    'id_servicio': resultado[5],
+                    'nombre_servicio': resultado[6],
+                    'precio_servicio': float(resultado[7]),  # Agrega el precio del servicio
+                    'observaciones': observaciones  # Agrega las observaciones
+                }
+                detalle_presupuesto.append(detalle_presupuesto_modificado)
         
         return detalle_presupuesto
     
     
         
 
+    @classmethod
+    def agregarObservacionPresupuesto(cls, id_detalle_presupuesto, descripcion_observacion, id_detalle_venta=None, id_cliente=None):
+        try:
+            with connection.cursor() as cursor:
+                sqlInsertarObservacionVenta = """
+                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_presupuesto, id_detalle_venta, id_cliente)
+                    VALUES (%s, %s, %s, %s, %s, %s);
+                """
+                current_date = timezone.localtime(timezone.now()).date()
+                current_time = timezone.localtime(timezone.now()).time()
+                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_presupuesto, id_detalle_venta, id_cliente])
+                idObservacion = cursor.lastrowid
+                connection.commit()
+                return idObservacion
+        except Exception as e:
+            print("Error al insertar:", str(e))
+            return None

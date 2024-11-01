@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.http import JsonResponse
-from .models import Presupuesto, DetallePresupuesto
+from .models import Presupuesto, DetallePresupuesto, Observacion
 from django.contrib import messages
 from ..clientes.models import Cliente, Edificio
 from ..empleados.models import Empleado
@@ -29,8 +29,6 @@ def home(request):
     context = paginacionTablas(request, presupuestos, 'presupuestos')
     return render(request, 'listarPresupuestos.html', context)
 
-@login_required
-@permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def detalle_presupuesto(request, id_presupuesto): 
     detalle_presupuesto = [detalle for detalle in DetallePresupuesto.listarDetallePresupuesto() if detalle['id_presupuesto'] == id_presupuesto]
     print(detalle_presupuesto)
@@ -116,10 +114,11 @@ def mostrar_clientes(request, method='GET'):
     servicios = list(
         Cliente.objects.select_related('id_persona')
         .filter(fecha_baja_cliente__isnull=True)
-        .values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona')
+        .values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona')  # Corrige aquí
     )
     
     return JsonResponse(servicios, safe=False)
+
 
 @login_required
 @permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
@@ -235,7 +234,7 @@ def obtenerPresupuesto(request, id_presupuesto):
 
         # Obtener el edificio y el cliente relacionado
         edificio = get_object_or_404(Edificio, id_edificio=presupuesto.id_edificio)
-        id_cliente = edificio.id_cliente_id  # Suponiendo que `id_cliente` está en el modelo Edificio
+        id_cliente = edificio.id_cliente_id  # Suponiendo que id_cliente está en el modelo Edificio
         
         # Preparar los datos del presupuesto
         presupuesto_data = {
@@ -299,3 +298,9 @@ def eliminarDetallePresupuesto(request, id_detalle):
             return JsonResponse({'message': f'Error al eliminar el detalle de presupuesto: {str(e)}'}, status=500)
 
     return JsonResponse({'message': 'Método no permitido.'}, status=405)
+
+def agregarObservacionPresupuesto(request, id_detalle_presupuesto):
+    if request.method == 'POST':
+        descripcion_observacion = request.POST.get('descripcion_observacion')
+        DetallePresupuesto.agregarObservacionPresupuesto(id_detalle_presupuesto, descripcion_observacion)
+    return redirect('/presupuestos/')

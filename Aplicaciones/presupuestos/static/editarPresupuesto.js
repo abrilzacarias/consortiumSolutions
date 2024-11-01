@@ -43,24 +43,31 @@ function initializeSelect2Editar(selector, data, formatter) {
 }
 
 // Función para crear un nuevo campo de servicio
-// Función para crear un nuevo campo de servicio
 function addNewService(servicios) {
     console.log("Servicios disponibles para agregar:", servicios); // Verificar servicios disponibles
     const serviciosContainer = document.getElementById('serviciosContainerEditar');
+
+    // Obtener servicios ya seleccionados para evitar duplicados
+    const serviciosSeleccionados = Array.from(document.querySelectorAll('select[name="servicios_editar[]"]'))
+        .map(select => select.value);
 
     const nuevoServicio = document.createElement('div');
     nuevoServicio.className = 'flex items-center space-x-2 w-full';
     nuevoServicio.innerHTML = `
         <div class="w-1/3">
-        <input type="hidden" name="id_detalles_editar[]" value="${null}">
+            <input type="hidden" name="id_detalles_editar[]" value="${null}">
             <select name="servicios_editar[]" class="select2 service-dropdown-editar w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" data-precio="">
                 ${Object.values(servicios).map(servicio => {
+                    // Si el servicio ya fue seleccionado, no incluirlo en el select
+                    if (serviciosSeleccionados.includes(servicio.id.toString())) {
+                        return '';
+                    }
                     console.log("Generando opción para servicio:", servicio); // Verificar cada servicio
                     return `
-                    <option value="${servicio.id}" data-precio="${servicio.precio}">
-                        ${servicio.nombre} - $${servicio.precio}
-                    </option>
-                `;
+                        <option value="${servicio.id}" data-precio="${servicio.precio}">
+                            ${servicio.nombre} - $${servicio.precio}
+                        </option>
+                    `;
                 }).join('')}
             </select>
         </div>
@@ -95,7 +102,6 @@ function addNewService(servicios) {
     // Recalcular el total inicial
     calcularTotalEditar();
 }
-
 
 // Función para configurar los manejadores de eventos una sola vez
 function setupGlobalHandlers() {
