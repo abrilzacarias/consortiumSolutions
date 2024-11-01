@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from .models import Contacto, Empleado, TipoEmpleado
 import datetime
+from django.utils import timezone
 from django.http import HttpResponse, JsonResponse
 from django.contrib import messages
 from django.shortcuts import redirect
 from ..inicio.views import paginacionTablas
 from django.contrib.auth.decorators import login_required, permission_required
+current_datetime = timezone.localtime(timezone.now())
 
 @login_required
 def home(request):
@@ -37,8 +39,7 @@ def agregarEmpleado(request):
         direccion_persona = request.POST.get('direccion_persona')
         
         # Datos de empleado
-        fechaYHoraActual = datetime.datetime.now()
-        fecha_alta_empleado = fechaYHoraActual.strftime("%Y-%m-%d")
+        fecha_alta_empleado = current_datetime
         fecha_baja_empleado = request.POST.get('fecha_baja_empleado', None)
         id_tipo_empleado_lista = request.POST.getlist('tipo_empleado')  # Recibe una lista de tipos de empleado
         correo_electronico = request.POST.get('correo_electronico') #se usa para crear el USER

@@ -5,43 +5,38 @@ class Actividades():
     def listarActividades(self):
         with connection.cursor() as cursor:
             sql_listar_actividades = """
-                SELECT 
+                                SELECT 
                     ROW_NUMBER() OVER (ORDER BY fecha_actividad DESC) AS actividad_id,
                     tipo_actividad,
                     descripcion,
                     fecha_actividad
                 FROM (
-                    -- Alta vendedor
+                    -- Alta empleado
                     SELECT 
-                        'Alta vendedor' AS tipo_actividad,
-                        CONCAT('Vendedor agregado: ', p.nombre_persona) AS descripcion,
+                        'Alta empleado' AS tipo_actividad,
+                        CONCAT('Empleado agregado: ', p.nombre_persona) AS descripcion,
                         e.fecha_alta_empleado AS fecha_actividad
                     FROM 
                         empleado e 
                     JOIN 
                         persona p ON p.id_persona = e.id_persona
-                    JOIN 
-                        tipo_empleado te ON te.id_tipo_empleado = e.id_tipo_empleado
                     WHERE 
-                        te.descripcion_tipo_empleado = 'Vendedor'
-                        AND e.fecha_alta_empleado IS NOT NULL
+                        e.fecha_alta_empleado IS NOT NULL
+                        AND e.fecha_baja_empleado IS NULL
 
                     UNION ALL
 
-                    -- Baja vendedor
+                    -- Baja empleado
                     SELECT 
-                        'Baja vendedor' AS tipo_actividad,
-                        CONCAT('Vendedor dado de baja: ', p.nombre_persona) AS descripcion,
+                        'Baja empleado' AS tipo_actividad,
+                        CONCAT('Empleado dado de baja: ', p.nombre_persona) AS descripcion,
                         e.fecha_baja_empleado AS fecha_actividad
                     FROM 
                         empleado e 
                     JOIN 
                         persona p ON p.id_persona = e.id_persona
-                    JOIN 
-                        tipo_empleado te ON te.id_tipo_empleado = e.id_tipo_empleado
                     WHERE 
-                        te.descripcion_tipo_empleado = 'Vendedor'
-                        AND e.fecha_baja_empleado IS NOT NULL
+                        e.fecha_baja_empleado IS NOT NULL
 
                     UNION ALL
 
@@ -57,7 +52,7 @@ class Actividades():
                     WHERE 
                         c.fecha_baja_cliente IS NOT NULL
                     
-                        UNION ALL
+                    UNION ALL
 
                     -- Alta cliente
                     SELECT 
