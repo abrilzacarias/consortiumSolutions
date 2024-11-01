@@ -79,6 +79,7 @@
                                         class="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow">
                                         <ul class="py-1 text-sm text-gray-700"
                                             aria-labelledby="{{ venta.id_venta }}-dropdown-button">
+                                            {% if request.user.is_superuser or 'Asesor de Ventas' in grupos_usuario %}
                                             <li>
                                                 <button type="button" data-modal-target="editarMetodoPagoModal-{{ venta.id_venta }}"
                                                     data-modal-toggle="editarMetodoPagoModal-{{ venta.id_venta }}"
@@ -111,7 +112,7 @@
                                                     Detalles
                                                 </button>
                                             </li>
-
+                                            {% endif %}
                                             {% if request.user.is_superuser or 'Facturador' in grupos_usuario %}
                                             <li>
                                                 <form action="{% url 'ventas:enviar_factura_prueba' venta.id_venta %}" method="POST">
