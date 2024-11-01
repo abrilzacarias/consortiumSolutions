@@ -117,19 +117,23 @@
                                             {% endif %}
                                             {% if request.user.is_superuser or 'Facturador' in grupos_usuario %}
                                             <li>
+                                                {% if venta.id_metodo_pago %}
                                                 <form action="{% url 'ventas:enviar_factura_prueba' venta.id_venta %}" method="POST">
                                                     {% csrf_token %}
                                                     <button type="submit"
                                                             class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
-                                                        <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg"
-                                                            viewbox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                                            <path d="M10 12a2 2 0 100-4 2 2 0 000 4z" />
-                                                            <path fill-rule="evenodd" clip-rule="evenodd"
-                                                                  d="M5 4a2 2 0 100 4 2 2 0 000-4zM2 10a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 10z" />
-                                                        </svg>
+                                                            <svg class="w-4 h-4 mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                                <path d="M16 4.00195C18.175 4.01406 19.3529 4.11051 20.1213 4.87889C21 5.75757 21 7.17179 21 10.0002V16.0002C21 18.8286 21 20.2429 20.1213 21.1215C19.2426 22.0002 17.8284 22.0002 15 22.0002H9C6.17157 22.0002 4.75736 22.0002 3.87868 21.1215C3 20.2429 3 18.8286 3 16.0002V10.0002C3 7.17179 3 5.75757 3.87868 4.87889C4.64706 4.11051 5.82497 4.01406 8 4.00195" stroke="#000000" stroke-width="1.5"></path>
+                                                                <path d="M8 14H16" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
+                                                                <path d="M7 10.5H17" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
+                                                                <path d="M9 17.5H15" stroke="#000000" stroke-width="1.5" stroke-linecap="round"></path>
+                                                                <path d="M8 3.5C8 2.67157 8.67157 2 9.5 2H14.5C15.3284 2 16 2.67157 16 3.5V4.5C16 5.32843 15.3284 6 14.5 6H9.5C8.67157 6 8 5.32843 8 4.5V3.5Z" stroke="#000000" stroke-width="1.5"></path>
+                                                            </svg>
+                                                            
                                                         Generar Factura
                                                     </button>
                                                 </form>
+                                                {% endif %}
                                             </li>
                                             {% endif %}
                                         </ul>

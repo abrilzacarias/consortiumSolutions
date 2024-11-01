@@ -50,7 +50,7 @@ class Venta(models.Model):
             """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            print(resultados)
+            
 
         ventas = {}
 
