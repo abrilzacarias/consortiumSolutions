@@ -114,10 +114,11 @@ def mostrar_clientes(request, method='GET'):
     servicios = list(
         Cliente.objects.select_related('id_persona')
         .filter(fecha_baja_cliente__isnull=True)
-        .values('id_cliente', 'id_persona_nombre_persona', 'id_persona_apellido_persona')
+        .values('id_cliente', 'id_persona__nombre_persona', 'id_persona__apellido_persona')  # Corrige aquí
     )
     
     return JsonResponse(servicios, safe=False)
+
 
 @login_required
 @permission_required('inicio.view_presupuesto', login_url='', raise_exception=True)
