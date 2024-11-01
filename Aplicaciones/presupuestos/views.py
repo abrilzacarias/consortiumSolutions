@@ -289,13 +289,16 @@ def eliminarDetallePresupuesto(request, id_detalle):
     if request.method == 'DELETE':
         # Obtener el detalle correspondiente
         detalle = get_object_or_404(DetallePresupuesto, id_detalle_presupuesto=id_detalle)
+        
 
         # Intentar eliminar el detalle
         try:
             detalle.delete()
             return JsonResponse({'message': 'El detalle de presupuesto se eliminó correctamente.'}, status=200)
         except Exception as e:
+            print("Error al eliminar detalle:", e)
             return JsonResponse({'message': f'Error al eliminar el detalle de presupuesto: {str(e)}'}, status=500)
+
 
     return JsonResponse({'message': 'Método no permitido.'}, status=405)
 
