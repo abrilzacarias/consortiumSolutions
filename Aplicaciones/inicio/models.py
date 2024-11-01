@@ -56,6 +56,20 @@ class Actividades():
                         persona p ON p.id_persona = c.id_persona
                     WHERE 
                         c.fecha_baja_cliente IS NOT NULL
+                    
+                        UNION ALL
+
+                    -- Alta cliente
+                    SELECT 
+                        'Alta cliente' AS tipo_actividad,
+                        CONCAT('Cliente dado de alta: ', p.nombre_persona) AS descripcion,
+                        c.fecha_alta_cliente AS fecha_actividad
+                    FROM 
+                        cliente c 
+                    JOIN 
+                        persona p ON p.id_persona = c.id_persona
+                    WHERE 
+                        c.fecha_alta_cliente IS NOT NULL
 
                     UNION ALL
 

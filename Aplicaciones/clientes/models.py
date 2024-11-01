@@ -106,8 +106,8 @@ class Clientes():
                 connection.commit()
 
                 # Insertar en la tabla cliente
-                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula) VALUES (%s, %s, %s, %s);"
-                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula])
+                sqlInsertarCliente = "INSERT INTO cliente (clave_afgip_cliente, conversion_cliente, id_persona, id_matricula, fecha_alta_cliente) VALUES (%s, %s, %s, %s, %s);"
+                cursor.execute(sqlInsertarCliente, [clave_afgip_cliente, tipo_cliente, idPersona, idMatricula, current_datetime])
                 idCliente = cursor.lastrowid
                 connection.commit()
 
