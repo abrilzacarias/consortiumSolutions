@@ -97,7 +97,6 @@ def eliminarServicio(request, id_servicio):
     
     return redirect('/servicios/')
     
-   
 
 def editarServicio(request, id_servicio):
     if request.method == 'POST':
