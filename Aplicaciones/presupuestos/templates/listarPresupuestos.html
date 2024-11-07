@@ -99,6 +99,18 @@ stylesheet
                                                     Eliminar
                                                 </button>
                                             </li>
+                                            <li>
+                                                <form method="POST" action="{% url 'presupuestos:enviarVentas' id_presupuesto=presupuesto.id_presupuesto %}" class="w-full">
+
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-gray-700">
+                                                        <svg class="mr-2 w-4 h-4" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                            <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                                        </svg>
+                                                        Enviar a Ventas
+                                                    </button>
+                                                </form>                                 
+                                            </li>                                            
                                         </ul>
                                     </div>                                    
                                 </td>
@@ -212,12 +224,6 @@ stylesheet
                             </svg>
                             Guardar Presupuesto
                         </button>
-                        <button type="button" class="text-white bg-green-700 inline-flex items-center hover:bg-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
-                            <svg class="mr-1 w-6 h-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                            Enviar a Ventas
-                        </button>
                     </div>                    
                     
                 </form> 
@@ -330,14 +336,6 @@ stylesheet
                             <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd" />
                         </svg>
                         Editar Presupuesto
-                    </button>
-            
-                    <button type="submit" class="text-white bg-green-700 inline-flex items-center hover:bg-green-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center" 
-                        onclick="document.getElementById('action_type').value='enviarVentas';">
-                        <svg class="mr-1 w-6 h-6" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M6 12H18M18 12L13 7M18 12L13 17" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                        Enviar a Ventas
                     </button>
                 </div>
             </form>

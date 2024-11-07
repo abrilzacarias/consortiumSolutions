@@ -217,9 +217,6 @@ def editarPresupuesto(request):
                 messages.error(request, 'Hubo un error al actualizar el presupuesto.')
             return redirect('/presupuestos/')
 
-        elif action_type == 'enviarVentas':
-            # Redirigir a la vista de enviar a ventas
-            return redirect('presupuestos:enviarVentas', id_presupuesto=id_presupuesto)
 
     return redirect('/presupuestos/')
 
@@ -282,6 +279,7 @@ def enviarVentas(request, id_presupuesto):
     else:
         print("Error al crear la venta.")  # Imprimir mensaje de error
         return redirect('/presupuestos/')
+    
 
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
