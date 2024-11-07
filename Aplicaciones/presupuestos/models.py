@@ -344,7 +344,7 @@ class DetallePresupuesto(models.Model):
                     'id_presupuesto': resultado[4],
                     'id_servicio': resultado[5],
                     'nombre_servicio': resultado[6],
-                    'precio_servicio': float(resultado[7]),  # Agrega el precio del servicio
+                    'precio_servicio': float(resultado[7]) if resultado[7] is not None else 0.0,  # Agrega 0.0 si es None
                     'observaciones': observaciones  # Agrega las observaciones
                 }
                 detalle_presupuesto.append(detalle_presupuesto_modificado)

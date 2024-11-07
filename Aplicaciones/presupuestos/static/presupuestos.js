@@ -56,7 +56,7 @@ function detallesPresupuesto(buttonElement) {
                 // Agregar las celdas a la fila
                 row.innerHTML = `
                     <td class="px-4 py-3">${detalle.nombre_servicio || 'No disponible'}</td>
-                    <td class="px-4 py-3">${detalle.precio_servicio || 'No disponible'}</td>
+                    <td class="px-4 py-3">${detalle.precio_servicio || 'No requiere pago'}</td>
                     <td class="px-4 py-3">${detalle.cantidad_detalle_presupuesto || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.costo_extra_presupuesto || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.precio_total_detalle_presupuesto || 'No disponible'}</td>

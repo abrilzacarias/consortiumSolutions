@@ -7,6 +7,8 @@ from django.contrib import messages
 from django.forms.models import model_to_dict
 from django.contrib.auth.decorators import login_required
 from django.db import IntegrityError
+from decimal import Decimal, InvalidOperation
+
 
 @login_required
 def home(request):
@@ -18,7 +20,7 @@ def home(request):
 
     for servicio in servicios:
         servicio_dict = model_to_dict(servicio)
-        #print(servicio_dict)
+        print(f"Servicio {servicio.id_servicio} Precio Base: {servicio.precio_base_servicio} - Tipo: {type(servicio.precio_base_servicio)}")
         
     return render(request, 'serviciosviews.html', {'categorias': categorias, 'servicios': servicios})
 
@@ -103,21 +105,39 @@ def editarServicio(request, id_servicio):
         nombre_servicio = request.POST.get('nombre_servicio')
         requiere_pago = request.POST.get('requiere_pago') == '1' 
         precio_base = request.POST.get('precio_base_servicio')
+        
+        # Si hay un valor en precio_base, reemplazamos la coma por punto y limpiamos espacios innecesarios
+        if precio_base:
+            precio_base = precio_base.replace(',', '.').strip()  # Reemplazamos la coma por punto y eliminamos espacios
+
+        # Convierte precio_base_servicio a Decimal, manejando posibles errores
+        try:
+            if precio_base:  # Solo convertimos si hay un valor
+                precio_base = Decimal(precio_base)
+            else:
+                precio_base = None  # Si el precio es vacío, se establece como None
+        except (ValueError, InvalidOperation):
+            precio_base = None  # Si no es posible convertirlo a Decimal, asignamos None
+        
+        # Obtenemos la categoría
         categoria_id = request.POST.get('categoria_servicio')
         categoria_servicio = get_object_or_404(CategoriaServicio, pk=categoria_id)
   
-        
+        # Si no requiere pago, asignamos None al precio
         if not requiere_pago:
             precio_base = None
         
+        # Obtenemos el servicio para actualizar
         servicio = get_object_or_404(Servicio, id_servicio=id_servicio)
         servicio.nombre_servicio = nombre_servicio
         servicio.requiere_pago_servicio = requiere_pago
         servicio.precio_base_servicio = precio_base
         servicio.id_categoria_servicio = categoria_servicio  
-    
+        
+        # Guardamos los cambios en el servicio
         servicio.save()
         return redirect(reverse('servicios:home'))
+
 
     
 def buscarServicioOCategoria(request):

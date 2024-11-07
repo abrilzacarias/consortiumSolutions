@@ -9,6 +9,8 @@
   <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.js"></script>
   <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.1/css/all.css" integrity="sha384-50oBUHEmvpQ+1lW4y57PTFmhCaXp0ML5d60M1M7uH2+nqUivzIebhndOJK28anvf" crossorigin="anonymous">
   <script src="https://kit.fontawesome.com/05c2be17c9.js" crossorigin="anonymous"></script>
+  <script src="{% static 'js/validaciones_servicios.js' %}"></script>
+
  
   
   <style>
@@ -193,45 +195,42 @@
                   </div>
         
                   <!-- Add Servicio Modal -->
-                <div id="addServicioModal-{{ forloop.counter }}" class="modal hidden">
-        <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
-            
-            <div class="flex justify-between items-center mb-4">
-                
-                <h5 class="text-lg">Agregar Servicio </h5>
-                <button type="button" class="text-white" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">&times;</button>
-            </div>
-            <div>
-                <form id="agregarServicioForm-{{ forloop.counter }}" action="{% url 'servicios:agregarServicio' %}" method="POST">
-                    {% csrf_token %}
-                    <div class="mb-4">
-                        <label for="nombre_servicio" class="block mb-1">Servicio:</label>
-                        <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="nombre_servicio" name="nombre_servicio" placeholder="Ingrese el nombre del servicio" required>
-                        <div class="invalid-feedback text-red-500 mt-1"></div>
-                    </div>
-                    <div class="mb-4">
-                        <label for="requiere_pago" class="block mb-1">¿Requiere pago?</label>
-                        <div class="col-sm-9">
-                          <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
-                            <option value="1">Sí</option>
-                            <option value="0">No</option>
-                          </select>
+        <div id="addServicioModal-{{ forloop.counter }}" class="modal hidden">
+            <div class="modal-content p-6 rounded-lg shadow-lg" style="background-color: #2d3748; color: rgb(255, 255, 255);">
+                <div class="flex justify-between items-center mb-4">
+                    <h5 class="text-lg">Agregar Servicio </h5>
+                    <button type="button" class="text-white" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">&times;</button>
+                </div>
+                <div>
+                    <form id="agregarServicioForm-{{ forloop.counter }}" action="{% url 'servicios:agregarServicio' %}" method="POST">
+                        {% csrf_token %}
+                        <div class="mb-4">
+                            <label for="nombre_servicio" class="block mb-1">Servicio:</label>
+                            <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="nombre_servicio-{{ forloop.counter }}" name="nombre_servicio" placeholder="Ingrese el nombre del servicio" required>
+                            <div id="errorNombre-{{ forloop.counter }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                         </div>
-                    </div>
-                    <div class="mb-4"> 
-                        <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
-                        <input type="text" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="precio_base_servicio" name="precio_base_servicio" placeholder="Ingrese el precio base del servicio" required>
-                        <div class="invalid-feedback text-red-500 mt-1"></div>
-                    </div>
-                    <div class="flex justify-end">
-                        <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">Cerrar</button>
-                        <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Agregar Servicio</button>
-                    </div>
-                    <input type="hidden" id="categoria_id" name="categoria_id" value="{{ categoria.id_categoria_servicio }}">
-                </form>
+                        <div class="mb-4">
+                            <label for="requiere_pago" class="block mb-1">¿Requiere pago?</label>
+                            <div class="col-sm-9">
+                                <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago-{{ forloop.counter }}" name="requiere_pago" required>
+                                    <option value="1">Sí</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="mb-4">
+                            <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
+                            <input type="number" step="0.01" class="w-full px-3 py-2 bg-gray-900 border border-gray-800 rounded-md" id="precio_base_servicio-{{ forloop.counter }}" name="precio_base_servicio" placeholder="Ingrese el precio base del servicio" required>
+                            <div id="errorPrecioBase-{{ forloop.counter }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                        </div>
+                        <div class="flex justify-end">
+                            <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.remove('show')">Cerrar</button>
+                            <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Agregar Servicio</button>
+                        </div>
+                        <input type="hidden" id="categoria_id" name="categoria_id" value="{{ categoria.id_categoria_servicio }}">
+                    </form>
+                </div>
             </div>
-        </div>
-        
         </div>
                 <table class="min-w-full bg-gray-800 text-white">
                     <thead>
@@ -271,43 +270,51 @@
                                         </div>
                                         <div>
                                             <form id="editServicioModal{{ servicio.id_servicio }}" action="{% url 'servicios:editarServicio' servicio.id_servicio %}" method="POST">
-                                            {% csrf_token %}
-                                            <div class="mb-4">
-                                                <label for="nombre_servicio" class="block mb-1">Servicio:</label>
-                                                <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="nombre_servicio" name="nombre_servicio" value="{{ servicio.nombre_servicio }}" required placeholder="Ingrese el nombre del servicio">
-                                                <div class="invalid-feedback text-red-500 mt-1"></div>
-                                            </div>
-                                            <div class="mb-4">
-                                                <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
-                                                    <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
-                                                    <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
-                                                </select>
-                                            <div class="mb-4">
-                                                <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
-                                                <input type="number" step="0.01" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" id="precio_base_servicio" name="precio_base_servicio" value="{{ servicio.precio_base_servicio }}" required placeholder="Ingrese el precio de base">
-                                                <div class="invalid-feedback text-red-500 mt-1"></div>
-                                            </div>
-                                            <div class="mb-4"></div>
-                                                <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
-                                                <div class="col-sm-9">
-                                                    <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="categoria_servicio" name="categoria_servicio" required>
-                                                        {% for categoria in categorias %}
-                                                        <option value="{{ categoria.id_categoria_servicio }}" 
-                                                        {% if categoria.id_categoria_servicio == servicio.id_categoria_servicio_id %} 
-                                                            selected 
-                                                        {% endif %}>
-                                                        {{ categoria.nombre_categoria_servicio }}
-                                                    </option>
-                                                        {% endfor %}
-                                                    </select>
+                                                {% csrf_token %}
+                                                <div class="mb-4">
+                                                    <label for="nombre_servicio_{{ servicio.id_servicio }}" class="block mb-1">Servicio:</label>
+                                                    <!-- Aquí corregí el atributo id con las llaves {{ servicio.id_servicio }} -->
+                                                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md" 
+                                                           id="nombre_servicio_{{ servicio.id_servicio }}" name="nombre_servicio" value="{{ servicio.nombre_servicio }}" required placeholder="Ingrese el nombre del servicio">
                                                     
+                                                    <!-- Corregí el id en el div de error también -->
+                                                    <div id="errorNombre_{{ servicio.id_servicio }}" class="invalid-feedback text-red-500 mt-1 hidden"></div>
                                                 </div>
-                                            <div class="flex justify-end">
-                                                <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('editServicioModal{{ servicio.id_servicio }}').classList.remove('show')">Cerrar</button>
-                                                <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
-                                            </div>
-                                            
-                                            </form>
+                                                <div class="mb-4">
+                                                    <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
+                                                        <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
+                                                        <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
+                                                    </select>
+                                                    <p>Precio Base: {% if servicio.precio_base_servicio %}{{ servicio.precio_base_servicio }}{% else %}No disponible{% endif %}</p>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
+                                                    <input type="text" class="w-full px-3 py-2 border border-gray-600 bg-gray-700 text-white placeholder-white rounded-md"
+                                                    id="precio_base_servicio" name="precio_base_servicio"
+                                                    value="{{ servicio.precio_base_servicio|default:'0.00'|floatformat:2 }}"
+                                                    required placeholder="Ingrese el precio de base">
+                                                    <div id="errorPrecioBase" class="invalid-feedback text-red-500 mt-1 hidden"></div>
+                                                </div>
+                                                <div class="mb-4">
+                                                    <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>
+                                                    <div class="col-sm-9">
+                                                        <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="categoria_servicio" name="categoria_servicio" required>
+                                                            {% for categoria in categorias %}
+                                                            <option value="{{ categoria.id_categoria_servicio }}" 
+                                                            {% if categoria.id_categoria_servicio == servicio.id_categoria_servicio_id %} 
+                                                                selected 
+                                                            {% endif %}>
+                                                            {{ categoria.nombre_categoria_servicio }}
+                                                            </option>
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="flex justify-end">
+                                                    <button type="button" class="bg-gray-500 text-white px-4 py-2 rounded-md mr-2" onclick="document.getElementById('editServicioModal{{ servicio.id_servicio }}').classList.remove('show')">Cerrar</button>
+                                                    <button type="submit" class="bg-green-500 text-white px-4 py-2 rounded-md">Guardar Cambios</button>
+                                                </div>
+                                            </form>                                            
                                         </div>
                                         </div>
                                     </div>
