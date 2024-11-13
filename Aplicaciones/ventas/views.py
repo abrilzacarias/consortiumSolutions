@@ -128,17 +128,29 @@ def enviar_factura_prueba(request, id_venta):
 @login_required
 def editarMetodoPago(request, id_venta):
     if request.method == 'POST':
-        # Imprimir todos los datos que llegan en el POST
-        print(request.POST)  # Esto te mostrará todos los datos enviados por el formulario
+        try:
+            # Imprimir todos los datos que llegan en el POST
+            print(request.POST)  # Esto te mostrará todos los datos enviados por el formulario
 
-        # Obtener el nuevo método de pago del formulario
-        id_nuevo_metodo_pago = request.POST.get('metodo_pago')  # Cambia 'id_metodo_pago' por 'metodo_pago'
-        
-        # Llama al método de clase para actualizar el método de pago
-        Venta.actualizarMetodoPago(id_nuevo_metodo_pago, id_venta)
-        
+            # Obtener el nuevo método de pago del formulario
+            id_nuevo_metodo_pago = request.POST.get('metodo_pago')
+
+            # Llama al método de clase para actualizar el método de pago
+            actualizado = Venta.actualizarMetodoPago(id_nuevo_metodo_pago, id_venta)
+
+            if actualizado:
+                # Mensaje de éxito si la actualización fue correcta
+                messages.success(request, 'El método de pago se actualizó correctamente.')
+            else:
+                # Mensaje de error si la actualización falló
+                messages.error(request, 'Hubo un error al actualizar el método de pago.')
+
+        except Exception as e:
+            # Capturar excepciones inesperadas y notificar al usuario
+            messages.error(request, f'Hubo un problema al actualizar el método de pago: {str(e)}')
+
         # Redirige a la vista principal de ventas
-        return redirect('ventas:home')  # Asegúrate de que 'ventas:home' esté definido en tus URLs
+        return redirect('ventas:home')
 
     else:
         # En caso de que sea un GET, obtén los métodos de pago y la venta

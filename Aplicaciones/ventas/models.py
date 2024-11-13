@@ -126,6 +126,8 @@ class Venta(models.Model):
                 WHERE id_venta = %s
             ''', [id_nuevo_metodo_pago, id_venta])  # Aquí se utiliza id_venta
 
+        return cursor.rowcount > 0
+
 
 # Llamada al método para probarlo
 #hola = MetodoPago.obtenerMetodosPago()
