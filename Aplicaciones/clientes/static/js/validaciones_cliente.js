@@ -4,8 +4,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     function containsInvalidCharacters(str) {
-        return /[^a-zA-Z0-9°\s]/.test(str); // Permite letras, números, espacios y el símbolo °
+        // Permite solo letras, números, espacios y el símbolo °
+        const regex = /^[a-zA-Z0-9°\s]*$/;
+        return !regex.test(str); // Si contiene caracteres no permitidos, devuelve true
     }
+
 
     // Función para mostrar un mensaje de validación
     function showValidationMessage(input, errorId, message) {
@@ -334,4 +337,86 @@ document.addEventListener("DOMContentLoaded", function() {
             });
         }
     });
+
+    // Validación para el formulario de agregar edificio
+    const agregarEdificioForm = document.querySelector("#agregarEdificioForm");
+    if (agregarEdificioForm) {
+        const nombreEdificioInput = agregarEdificioForm.querySelector("#nombre_edificio");
+        const direccionEdificioInput = agregarEdificioForm.querySelector("#direccion_edificio");
+        const cuilEdificioInput = agregarEdificioForm.querySelector("#cuit_edificio");
+
+        agregarEdificioForm.addEventListener("submit", function(event) {
+            let isValid = true;
+
+            // Validación en tiempo real para nombre de edificio
+            if (containsInvalidCharacters(nombreEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(nombreEdificioInput, "errorNombreEdificio", "El nombre del edificio solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(nombreEdificioInput, "errorNombreEdificio");
+            }
+
+            // Validación de dirección
+            if (containsInvalidCharacters(direccionEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(direccionEdificioInput, "errorDireccionEdificio", "La dirección solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(direccionEdificioInput, "errorDireccionEdificio");
+            }
+
+            // Validación de CUIL/CUIT
+            if (cuilEdificioInput.value.length !== 11 || isNaN(cuilEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(cuilEdificioInput, "errorCuitl", "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
+            } else {
+                hideValidationMessage(cuilEdificioInput, "errorCuitl");
+            }
+
+            // Previene el envío del formulario si hay errores
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+
+        // Validación en tiempo real para nombre de edificio
+        if (nombreEdificioInput) {
+            nombreEdificioInput.addEventListener("input", function() {
+                console.log("Valor ingresado:", this.value); // Muestra lo que el usuario ingresa
+                if (containsInvalidCharacters(this.value)) {
+                    showValidationMessage(this, "errorNombreEdificio", "El nombre del edificio solo puede contener letras, números, espacios y el símbolo °.");
+                } else {
+                    hideValidationMessage(this, "errorNombreEdificio");
+                }
+            });
+        }
+
+        // Validación en tiempo real para dirección de edificio
+        if (direccionEdificioInput) {
+            direccionEdificioInput.addEventListener("input", function() {
+                if (containsInvalidCharacters(this.value)) {
+                    showValidationMessage(this, "errorDireccionEdificio", "La dirección solo puede contener letras, números, espacios y el símbolo °.");
+                } else {
+                    hideValidationMessage(this, "errorDireccionEdificio");
+                }
+            });
+        }
+
+        if (cuilEdificioInput) {
+            cuilEdificioInput.addEventListener("input", function() {
+                console.log("Valor actual del CUIT:", this.value);
+        
+                // Validación usando expresión regular
+                if (!/^\d{11}$/.test(this.value)) {
+                    showValidationMessage(this, "errorCuitl", "El CUIL/CUIT debe tener exactamente 11 dígitos numéricos.");
+                } else {
+                    hideValidationMessage(this, "errorCuitl");
+                }
+            });
+        }
+          
+        
+    } else {
+        console.error("No se encontró el formulario con el id 'agregarEdificioForm'");
+    }
+        
 });

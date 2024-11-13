@@ -278,14 +278,14 @@
                                                            id="nombre_servicio_{{ servicio.id_servicio }}" name="nombre_servicio" value="{{ servicio.nombre_servicio }}" required placeholder="Ingrese el nombre del servicio">
                                                     
                                                     <!-- Corregí el id en el div de error también -->
-                                                    <div id="errorNombre_{{ servicio.id_servicio }}" class="invalid-feedback text-red-500 mt-1 hidden"></div>
+                                                    <div id="errorNombre_{{ servicio.id_servicio }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
+                                                    
                                                 </div>
                                                 <div class="mb-4">
                                                     <select class="w-1/3 px-3 py-2 border border-gray-300 rounded-md bg-gray-700 text-white" id="requiere_pago" name="requiere_pago" required>
                                                         <option value="1" {% if servicio.requiere_pago_servicio %} selected {% endif %}>Sí</option>
                                                         <option value="0" {% if not servicio.requiere_pago_servicio %} selected {% endif %}>No</option>
                                                     </select>
-                                                    <p>Precio Base: {% if servicio.precio_base_servicio %}{{ servicio.precio_base_servicio }}{% else %}No disponible{% endif %}</p>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label for="precio_base_servicio" class="block mb-1">Precio Base:</label>
@@ -293,7 +293,7 @@
                                                     id="precio_base_servicio" name="precio_base_servicio"
                                                     value="{{ servicio.precio_base_servicio|default:'0.00'|floatformat:2 }}"
                                                     required placeholder="Ingrese el precio de base">
-                                                    <div id="errorPrecioBase" class="invalid-feedback text-red-500 mt-1 hidden"></div>
+                                                    <div id="errorPrecioBase_{{ servicio.id_servicio }}" class="text-red-500 text-sm font-semibold mt-1 hidden"></div>
                                                 </div>
                                                 <div class="mb-4">
                                                     <label for="categoria_servicio" class="col-sm-3 col-form-label">Categoría de servicio:</label>

@@ -1,7 +1,8 @@
 from django.db import models
 from django.db import connection
 from django.utils.timezone import now
-
+from django.utils import timezone
+from datetime import datetime
         
 class Presupuesto(models.Model):
     id_presupuesto = models.AutoField(primary_key=True)

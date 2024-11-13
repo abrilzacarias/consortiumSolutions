@@ -56,7 +56,7 @@ function addNewService(servicios) {
     nuevoServicio.innerHTML = `
         <div class="w-1/3">
             <input type="hidden" name="id_detalles_editar[]" value="${null}">
-            <select name="servicios_editar[]" class="select2 service-dropdown-editar w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" data-precio="">
+            <select name="servicios_editar[]" class="select2 service-dropdown-editar w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" data-precio="" required>
                 ${Object.values(servicios).map(servicio => {
                     // Si el servicio ya fue seleccionado, no incluirlo en el select
                     if (serviciosSeleccionados.includes(servicio.id.toString())) {
