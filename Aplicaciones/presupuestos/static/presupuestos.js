@@ -5,21 +5,17 @@ function detallesPresupuesto(buttonElement) {
     .then(response => response.json())
     .then(data => {
         // Limpiar el contenido previo de la tabla
+
+            // Limpiar modales existentes antes de crear nuevos
+        const existingModals = document.querySelectorAll('[id^="observacionesPresupuestoModal_"], [id^="agregarObservacionModal_"]');
+        existingModals.forEach(modal => modal.remove());
         const tbody = document.querySelector('#detalleBody');
         tbody.innerHTML = '';
 
         if (Array.isArray(data) && data.length > 0) {
-            // Primero, eliminar cualquier modal existente para evitar duplicados
             data.forEach(detalle => {
-                const existingModal = document.querySelector(`#observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}`);
-                if (existingModal) {
-                    existingModal.remove();
-                }
-            });
-
-            data.forEach(detalle => {
-                // Crear el modal HTML para cada detalle
-                const modalHTML = `
+                // Crear el modal de observaciones existentes
+                const observacionesModalHTML = `
                     <div id="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}" 
                          tabindex="-1" 
                          aria-hidden="true" 
@@ -28,32 +24,107 @@ function detallesPresupuesto(buttonElement) {
                             <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
                                 <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
                                     <h3 class="text-lg font-semibold text-white">Observaciones de ${detalle.nombre_servicio}</h3>
-                                    <button type="button" 
-                                            class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-4 inline-flex items-center" 
-                                            data-modal-hide="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}">
-                                        <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                                        </svg>
-                                        <span class="sr-only">Cerrar</span>
-                                    </button>
+                                    <div class="flex items-center">
+                                        <button type="button" 
+                                                class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+                                                data-modal-target="agregarObservacionModal_${detalle.id_detalle_presupuesto}"
+                                                data-modal-toggle="agregarObservacionModal_${detalle.id_detalle_presupuesto}">
+                                            <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                                <path clip-rule="evenodd" fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" />
+                                            </svg>
+                                            Añadir Observación
+                                        </button>
+                                        <button type="button" 
+                                                class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-4 inline-flex items-center" 
+                                                data-modal-hide="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}">
+                                            <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                            </svg>
+                                            <span class="sr-only">Cerrar</span>
+                                        </button>
+                                    </div>
                                 </div>
-                                <!-- Aquí puedes agregar el contenido del modal -->
-                                <div class="space-y-4">
-                                    <p class="text-white">Contenido del modal para el detalle ${detalle.id_detalle_presupuesto}</p>
+                                <div class="overflow-x-auto">
+                                    <table class="w-full text-sm text-left text-gray-400">
+                                        <thead class="text-xs text-white-700 uppercase bg-gray-700">
+                                            <tr class="border-b">
+                                                <th scope="col" class="px-4 py-4">Fecha</th>
+                                                <th scope="col" class="px-4 py-4">Hora</th>
+                                                <th scope="col" class="px-4 py-4">Descripción</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            ${detalle.observaciones ? detalle.observaciones.map(obs => `
+                                                <tr class="border-b">
+                                                    <td class="px-4 py-3">${obs.fecha_observacion || ''}</td>
+                                                    <td class="px-4 py-3">${obs.hora_observacion || ''}</td>
+                                                    <td class="px-4 py-3">${obs.descripcion_observacion || ''}</td>
+                                                </tr>
+                                            `).join('') : '<tr><td colspan="3" class="px-4 py-3 text-center">No hay observaciones registradas</td></tr>'}
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
                     </div>
                 `;
 
-                // Agregar el modal al body del documento
-                document.body.insertAdjacentHTML('beforeend', modalHTML);
+                // El modal de agregar observación permanece igual
+                const agregarObservacionModalHTML = `
+                <div id="agregarObservacionModal_${detalle.id_detalle_presupuesto}" 
+                     tabindex="-1" 
+                     aria-hidden="true" 
+                     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                    <div class="relative p-4 w-full max-w-2xl max-h-full">
+                        <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
+                            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                                <h3 class="text-lg font-semibold text-white">Agregar Observación a ${detalle.nombre_servicio}</h3>
+                                <button type="button" 
+                                        class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
+                                        data-modal-hide="agregarObservacionModal_${detalle.id_detalle_presupuesto}">
+                                    <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                        <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                                    </svg>
+                                    <span class="sr-only">Cerrar</span>
+                                </button>
+                            </div>
+                            <form id="ObservacionForm_${detalle.id_detalle_presupuesto}" 
+                                  action="/presupuestos/agregarObservacionPresupuesto/${detalle.id_detalle_presupuesto}/"
+                                  method="POST">
+                                <div class="grid gap-4 mb-4 sm:grid-cols-2">
+                                    <input type="hidden" name="csrfmiddlewaretoken" value="${document.querySelector('[name=csrfmiddlewaretoken]').value}">
+                                    <div class="mb-0">
+                                        <label for="descripcion_observacion_${detalle.id_detalle_presupuesto}" class="block mb-2 text-sm font-medium text-white">Descripción</label>
+                                        <textarea name="descripcion_observacion" 
+                                                  id="descripcion_observacion_${detalle.id_detalle_presupuesto}" 
+                                                  class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 placeholder-gray-400 text-white" 
+                                                  placeholder="Ingrese su observación aquí..." 
+                                                  required></textarea>
+                                    </div>
+                                    <input type="hidden" name="id_presupuesto" value="${idPresupuesto}">
+                                    <input type="hidden" name="id_detalle_presupuesto" value="${detalle.id_detalle_presupuesto}">
+                                    <div class="flex justify-end mb-4">
+                                        <button type="submit" class="text-white bg-green-800 inline-flex items-center hover:bg-green-900 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
+                                            <svg class="mr-1 w-6 h-6" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                                <path fill-rule="evenodd" d="M10 5a1 1 0 011 1v3h3a1 1 0 110 2h-3v3a1 1 0 11-2 0v-3H6a1 1 0 110-2h3V6a1 1 0 011-1z" clip-rule="evenodd"/>
+                                            </svg>
+                                            Agregar Observación
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            `;
 
-                // Crear una nueva fila
+                // Insertar ambos modales en el DOM
+                document.body.insertAdjacentHTML('beforeend', observacionesModalHTML);
+                document.body.insertAdjacentHTML('beforeend', agregarObservacionModalHTML);
+
+                // El resto del código para crear la fila permanece igual
                 const row = document.createElement('tr');
                 row.classList.add('border-b');
-
-                // Agregar las celdas a la fila
                 row.innerHTML = `
                     <td class="px-4 py-3">${detalle.nombre_servicio || 'No disponible'}</td>
                     <td class="px-4 py-3">${detalle.precio_servicio || 'No requiere pago'}</td>
@@ -66,7 +137,7 @@ function detallesPresupuesto(buttonElement) {
                                 class="inline-flex items-center text-sm font-medium hover:bg-gray-100 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none" 
                                 type="button">
                             <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
+                                <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z"/>
                             </svg>
                         </button>
                         <div id="${detalle.id_detalle_presupuesto}-dropdown" 
@@ -89,43 +160,27 @@ function detallesPresupuesto(buttonElement) {
                     </td>
                 `;
 
-                // Agregar la fila al tbody
                 tbody.appendChild(row);
             });
+
+            // Inicializar Flowbite después de agregar los elementos al DOM
+            initFlowbite();
         } else {
             tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-3 text-center">No se encontraron detalles para este presupuesto.</td></tr>';
         }
 
-        // Mostrar el modal principal
-        const modal = document.querySelector('#readProductModal');
-        if (modal) {
-            modal.classList.remove('hidden');
-        }
+            // Mostrar el modal usando Flowbite
+            const modalElement = document.getElementById('readProductModal');
+            const modal = new Modal(modalElement);
+            modal.show();
 
-        // Reinicializar Flowbite después de agregar los nuevos elementos
-        initFlowbite();
-
-        // Agregar manejadores de eventos para los dropdowns
-        data.forEach(detalle => {
-            const dropdownButton = document.getElementById(`${detalle.id_detalle_presupuesto}-dropdown-button`);
-            const modalButton = document.querySelector(`[data-modal-target="observacionesPresupuestoModal_${detalle.id_detalle_presupuesto}"]`);
-            
-            if (modalButton) {
-                modalButton.addEventListener('click', () => {
-                    // Cerrar el dropdown cuando se abre el modal
-                    const dropdown = document.getElementById(`${detalle.id_detalle_presupuesto}-dropdown`);
-                    if (dropdown) {
-                        dropdown.classList.add('hidden');
-                    }
-                });
-            }
-        });
+            // Inicializar Flowbite
+            initFlowbite();
     })
     .catch(error => {
-        console.error('Error fetching data:', error);
+        console.error("Error al cargar los detalles del presupuesto:", error);
     });
 }
-
 
 function initializeSelect2Components() {
     initializeSelect2('#vendedor_asignado', '/presupuestos/vendedores/', vendedorFormatter);
