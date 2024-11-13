@@ -46,7 +46,6 @@ def listarActividades(request):
         act_modificadas.append(act_modificada)
     
     context = paginacionTablas(request, act_modificadas, nombre_variable='act_modificadas')
-
    
     return render(request, 'index.html', context)
 

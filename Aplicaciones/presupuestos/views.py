@@ -77,6 +77,7 @@ def agregarPresupuesto(request):
     else:
         presupuestos = Presupuesto.listarPresupuestos()
         return render(request, {'presupuestos': presupuestos})
+    
 
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
