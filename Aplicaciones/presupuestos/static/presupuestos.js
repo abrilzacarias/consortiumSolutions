@@ -326,7 +326,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     function crearDropdownServicios(servicios, currentValue = '') {
-        let selectHtml = '<select name="servicios[]" class="select2 service-dropdown w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
+        let selectHtml = '<select name="servicios[]" required class="select2 service-dropdown w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white">';
         selectHtml += '<option value="">Seleccione un servicio</option>';
     
         servicios.forEach(categoria => {
@@ -356,57 +356,77 @@ document.addEventListener('DOMContentLoaded', function() {
         return selectHtml;
     }
 
-    // Función para agregar un nuevo servicio
-    function agregarServicio(servicios) {
-        const serviciosContainer = document.getElementById('serviciosContainer');
-        const nuevoServicio = document.createElement('div');
-        
-        // Añadir diseño en columna para dispositivos móviles
-        nuevoServicio.className = 'flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 w-full';
+    function actualizarEstadoInputs(servicioElement) {
+        const select = servicioElement.querySelector('.select2');
+        const cantidadInput = servicioElement.querySelector('input[name="cantidades[]"]');
+        const costoExtraInput = servicioElement.querySelector('input[name="costos_extra[]"]');
     
-        nuevoServicio.innerHTML = `
-            <div class="w-full">
-                ${crearDropdownServicios(servicios)}
-            </div>
-    
-            <div class="w-full md:w-1/6">
-                <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1">
-            </div>
-            <div class="w-full md:w-1/5">
-                <input name="costos_extra[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0">
-            </div>
-            <div class="w-full md:w-1/5">
-                <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
-                <input type="hidden" name="precios_unitarios[]" class="precios-unitarios" value="0.00">
-                <input name="subtotales[]" type="hidden" class="subtotal-service-value" value="0.00">
-            </div>
-            <div class="w-full md:w-auto flex-shrink-0">
-                <button type="button" class="px-3 py-2 w-full md:w-auto text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
-            </div>
-        `;
-    
-        serviciosContainer.appendChild(nuevoServicio);
-    
-        // Inicializar Select2 en el nuevo dropdown.
-        initSelect2(nuevoServicio.querySelector('.select2'));
-
-        // Agregar listener para el cambio
-        $(nuevoServicio).find('.select2').on('change', function() {
-            const previousValue = this.getAttribute('data-previous-value');
-            if (previousValue) {
-                serviciosSeleccionados.delete(previousValue);
-            }
-            
-            const selectedValue = this.value;
-            if (selectedValue) {
-                serviciosSeleccionados.add(selectedValue);
-                this.setAttribute('data-previous-value', selectedValue);
-            }
-            
-            actualizarTodosLosDropdowns(servicios);
-            calcularTotal();
-        });  
+        const isServiceSelected = select.value !== '';
+        cantidadInput.disabled = !isServiceSelected;
+        costoExtraInput.disabled = !isServiceSelected;
     }
+
+
+// Función para agregar un nuevo servicio
+function agregarServicio(servicios) {
+    const serviciosContainer = document.getElementById('serviciosContainer');
+    const nuevoServicio = document.createElement('div');
+    
+    nuevoServicio.className = 'flex flex-col md:flex-row md:items-center space-y-2 md:space-y-0 md:space-x-2 w-full';
+
+    nuevoServicio.innerHTML = `
+        <div class="w-full">
+            ${crearDropdownServicios(servicios)}
+        </div>
+
+        <div class="w-full md:w-1/6">
+            <input name="cantidades[]" type="number" class="quantity-service w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Cantidad" value="1" min="1" disabled>
+        </div>
+        <div class="w-full md:w-1/5">
+            <input name="costos_extra[]" type="number" class="extra-cost w-full text-sm rounded-lg bg-gray-700 border-gray-600 text-white" placeholder="Costo extra" min="0" disabled>
+        </div>
+        <div class="w-full md:w-1/5">
+            <span name="subtotales[]" class="subtotal-service text-sm text-white">Subtotal: $0.00</span>
+            <input type="hidden" name="precios_unitarios[]" class="precios-unitarios" value="0.00">
+            <input name="subtotales[]" type="hidden" class="subtotal-service-value" value="0.00">
+        </div>
+        <div class="w-full md:w-auto flex-shrink-0">
+            <button type="button" class="px-3 py-2 w-full md:w-auto text-sm font-medium text-white bg-red-800 rounded-lg hover:bg-red-400 remove-service-btn">-</button>
+        </div>
+    `;
+
+    serviciosContainer.appendChild(nuevoServicio);
+
+    // Inicializar Select2 en el nuevo dropdown
+    initSelect2(nuevoServicio.querySelector('.select2'));
+
+    // Actualizar estado de inputs inicialmente
+    actualizarEstadoInputs(nuevoServicio);
+
+    // Añadir listener para actualizar el estado de los inputs cuando cambie el select
+    $(nuevoServicio).find('.select2').on('change', function() {
+        const previousValue = this.getAttribute('data-previous-value');
+        if (previousValue) {
+            serviciosSeleccionados.delete(previousValue);
+        }
+        
+        const selectedValue = this.value;
+        if (selectedValue) {
+            serviciosSeleccionados.add(selectedValue);
+            this.setAttribute('data-previous-value', selectedValue);
+        }
+
+        actualizarTodosLosDropdowns(servicios);
+        actualizarEstadoInputs(nuevoServicio); // Llamar para habilitar/deshabilitar inputs
+        calcularTotal();
+    });
+
+    // Agregar evento de eliminación
+    nuevoServicio.querySelector('.remove-service-btn').addEventListener('click', function() {
+        nuevoServicio.remove();
+        calcularTotal();
+    });
+}
 
     // Función mejorada para actualizar todos los dropdowns
     function actualizarTodosLosDropdowns(servicios) {
