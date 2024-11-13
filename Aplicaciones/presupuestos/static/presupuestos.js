@@ -74,7 +74,7 @@ function detallesPresupuesto(buttonElement) {
                 <div id="agregarObservacionModal_${detalle.id_detalle_presupuesto}" 
                      tabindex="-1" 
                      aria-hidden="true" 
-                     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
+                     class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full" style="top: -220px; /* Ajusta este valor según lo que necesites */">
                     <div class="relative p-4 w-full max-w-2xl max-h-full">
                         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
                             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
