@@ -141,7 +141,7 @@ def obtener_servicios(request):
             {
                 'id': servicio.id_servicio,
                 'nombre': servicio.nombre_servicio,
-                'precio': float(servicio.precio_base_servicio)
+                'precio': float(servicio.precio_base_servicio) if servicio.precio_base_servicio is not None else 0.0
             }
             for servicio in servicios
         ]
@@ -150,7 +150,9 @@ def obtener_servicios(request):
             'servicios': servicios_data
         })
 
+    print("Servicios cargados:", response_data)  # Imprime la respuesta para debug
     return JsonResponse(response_data, safe=False)
+
 
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
@@ -218,9 +220,6 @@ def editarPresupuesto(request):
                 messages.error(request, 'Hubo un error al actualizar el presupuesto.')
             return redirect('/presupuestos/')
 
-        elif action_type == 'enviarVentas':
-            # Redirigir a la vista de enviar a ventas
-            return redirect('presupuestos:enviarVentas', id_presupuesto=id_presupuesto)
 
     return redirect('/presupuestos/')
 
@@ -283,6 +282,7 @@ def enviarVentas(request, id_presupuesto):
     else:
         print("Error al crear la venta.")  # Imprimir mensaje de error
         return redirect('/presupuestos/')
+    
 
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)

@@ -142,16 +142,16 @@ class DetalleVenta(models.Model):
         return f'Detalle Venta {self.id_detalle_venta}'
     
     @classmethod
-    def agregarObservacionDetalleVenta(cls, id_detalle_venta, descripcion_observacion, id_detalle_preventa=None, id_cliente=None):
+    def agregarObservacionDetalleVenta(cls, id_detalle_venta, descripcion_observacion, id_detalle_presupuesto=None, id_cliente=None):
         try:
             with connection.cursor() as cursor:
                 sqlInsertarObservacionVenta = """
-                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_venta, id_detalle_preventa, id_cliente)
+                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_venta, id_detalle_presupuesto, id_cliente)
                     VALUES (%s, %s, %s, %s, %s, %s);
                 """
                 current_date = timezone.localtime(timezone.now()).date()
                 current_time = timezone.localtime(timezone.now()).time()
-                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_venta, id_detalle_preventa, id_cliente])
+                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_venta, id_detalle_presupuesto, id_cliente])
                 idObservacion = cursor.lastrowid
                 connection.commit()
                 return idObservacion

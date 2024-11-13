@@ -330,9 +330,9 @@
                         <label for="tipo_cliente" class="block mb-2 text-sm font-medium text-white">Tipo</label>
                         <select name="tipo_cliente" id="tipo_cliente_{{ cliente.id_cliente }}" class="text-sm rounded-lg block w-full p-2.5 bg-gray-700 border-gray-600 text-white">
                             <option value="1" {% if cliente.tipo_cliente == 1 %}selected{% endif %}>Cliente</option>
-                            <option value="0" {% if cliente.tipo_cliente == 0 %}selected{% endif %}>Prospecto</option>
+                            <option value="0" {% if cliente.tipo_cliente == 0 %}selected{% endif %} {% if cliente.tipo_cliente == 1 %}disabled{% endif %}>Prospecto</option>
                         </select>
-                    </div>
+                    </div>                    
                     <div class="mb-6 flex flex-col space-y-4">
                         <label for="vendedor_asignado" class="block text-sm font-medium text-gray-200">Vendedor Asignado:</label>
                         <select class="text-sm rounded-lg block w-full p-2.5 {% if es_vendedor %}bg-gray-700 border-gray-700 text-gray-300 cursor-not-allowed {% else %}bg-gray-700 border-gray-600 placeholder-gray-400 text-white {% endif %}" name="vendedor_asignado" {% if es_vendedor %}disabled{% endif %}>

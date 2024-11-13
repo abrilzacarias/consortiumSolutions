@@ -136,8 +136,38 @@ class Presupuesto(models.Model):
                 """
                 cursor.execute(sqlPresupuesto, [id_presupuesto])
                 presupuesto = cursor.fetchone()
-
+                        
                 if presupuesto:
+                    # Obtener el id_cliente a partir del id_edificio
+                    sqlObtenerCliente = """
+                        SELECT id_cliente 
+                        FROM edificio
+                        WHERE id_edificio = %s;
+                    """
+                    cursor.execute(sqlObtenerCliente, [presupuesto[3]])  # `presupuesto[3]` es el `id_edificio`
+                    cliente_id = cursor.fetchone()
+
+                    if cliente_id:
+                        id_cliente = cliente_id[0]  # Extraer el valor del `id_cliente`
+                        print("id_cliente:", id_cliente)  # Para verificar qué `id_cliente` está llegando
+
+                        # Verificar y actualizar `conversion_cliente` si es necesario
+                        sqlVerificarCliente = """
+                            SELECT conversion_cliente 
+                            FROM cliente 
+                            WHERE id_cliente = %s;
+                        """
+                        cursor.execute(sqlVerificarCliente, [id_cliente])
+                        cliente = cursor.fetchone()
+
+                        if cliente and cliente[0] == 0:  # Si `conversion_cliente` es 0
+                            sqlActualizarConversion = """
+                                UPDATE cliente 
+                                SET conversion_cliente = 1 
+                                WHERE id_cliente = %s;
+                            """
+                            cursor.execute(sqlActualizarConversion, [id_cliente])
+
                     # Generar número de factura en el formato FACT-001
                     numeroFactura = cls.generarNumeroFactura()  
 
@@ -168,12 +198,11 @@ class Presupuesto(models.Model):
 
                         id_detalle_venta = cursor.lastrowid  # Obtener el último ID de detalle_venta insertado
 
-                        # Ahora insertar en la tabla intermedia de estado de venta
+                        # Insertar en la tabla intermedia de estado de venta
                         sqlInsertarEstadoVenta = """
                             INSERT INTO registro_estado_venta (fecha_hora_registro_estado_venta, id_detalle_venta, id_estado_venta, id_empleado)
                             VALUES (%s, %s, %s, %s);
                         """
-                        
                         try:
                             cursor.execute(sqlInsertarEstadoVenta, [
                                 None,  # fecha_hora_registro_estado_venta inicial nulo
@@ -195,6 +224,7 @@ class Presupuesto(models.Model):
             print("Error al enviar ventas:", str(e))
             connection.rollback()
             return None
+
     
     @classmethod
     def filtrarVendedores(self):
@@ -314,7 +344,7 @@ class DetallePresupuesto(models.Model):
                     'id_presupuesto': resultado[4],
                     'id_servicio': resultado[5],
                     'nombre_servicio': resultado[6],
-                    'precio_servicio': float(resultado[7]),  # Agrega el precio del servicio
+                    'precio_servicio': float(resultado[7]) if resultado[7] is not None else 0.0,  # Agrega 0.0 si es None
                     'observaciones': observaciones  # Agrega las observaciones
                 }
                 detalle_presupuesto.append(detalle_presupuesto_modificado)
