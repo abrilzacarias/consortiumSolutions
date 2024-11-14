@@ -50,8 +50,7 @@ class Venta(models.Model):
             """
             cursor.execute(sqlListarVentas)
             resultados = cursor.fetchall()
-            
-
+        
         ventas = {}
 
         for resultado in resultados:
@@ -87,10 +86,12 @@ class Venta(models.Model):
                 'observaciones': []  # Inicializa con una lista vacía
             }
 
-            ids_observaciones = resultado[22].split(',') if resultado[22] else []  # Asegúrate de que el índice sea correcto
+            # Asegúrate de que estos índices son los correctos y coinciden con el SELECT
+            ids_observaciones = resultado[22].split(',') if resultado[22] else []
             descripciones_observaciones = resultado[23].split(', ') if resultado[23] else []
             fechas_observaciones = resultado[24].split(', ') if resultado[24] else []
             horas_observaciones = resultado[25].split(', ') if resultado[25] else []
+            nombres_observadores = resultado[26].split(', ') if resultado[26] else []  # Añadido: nombre del empleado que hizo la observación
 
             # Crea una lista de diccionarios para las observaciones
             observaciones = []
@@ -102,6 +103,7 @@ class Venta(models.Model):
                         'descripcion_observacion': descripciones_observaciones[i] if i < len(descripciones_observaciones) else None,
                         'fecha_observacion': fechas_observaciones[i] if i < len(fechas_observaciones) else None,
                         'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else None,
+                        'nombre_observador': nombres_observadores[i] if i < len(nombres_observadores) else None  # Añadido
                     }
                     observaciones.append(observacion)
 
@@ -111,10 +113,9 @@ class Venta(models.Model):
             # Agrega el detalle a la lista de detalles de la venta
             ventas[numero_factura]['detalles'].append(detalle)
             
-            
-
         # Devuelve la lista de ventas
         return list(ventas.values())
+
 
                 
     @classmethod
@@ -142,16 +143,16 @@ class DetalleVenta(models.Model):
         return f'Detalle Venta {self.id_detalle_venta}'
     
     @classmethod
-    def agregarObservacionDetalleVenta(cls, id_detalle_venta, descripcion_observacion, id_detalle_presupuesto=None, id_cliente=None):
+    def agregarObservacionDetalleVenta(cls, id_detalle_venta, descripcion_observacion, id_empleado, id_detalle_presupuesto=None, id_cliente=None):
         try:
             with connection.cursor() as cursor:
                 sqlInsertarObservacionVenta = """
-                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_venta, id_detalle_presupuesto, id_cliente)
-                    VALUES (%s, %s, %s, %s, %s, %s);
+                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_venta, id_detalle_presupuesto, id_cliente, id_empleado)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
                 """
                 current_date = timezone.localtime(timezone.now()).date()
                 current_time = timezone.localtime(timezone.now()).time()
-                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_venta, id_detalle_presupuesto, id_cliente])
+                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_venta, id_detalle_presupuesto, id_cliente, id_empleado])
                 idObservacion = cursor.lastrowid
                 connection.commit()
                 return idObservacion

@@ -349,6 +349,7 @@
                                     <th scope="col" class="px-4 py-4">Fecha</th>
                                     <th scope="col" class="px-4 py-4">Hora</th>
                                     <th scope="col" class="px-4 py-4">Descripción</th>
+                                    <th scope="col" class="px-4 py-4">Empleado que realizo</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -357,6 +358,7 @@
                                     <td class="px-4 py-3"> {{ observacion.fecha_observacion }}</td>
                                     <td class="px-4 py-3"> {{ observacion.hora_observacion }}</td>
                                     <td class="px-4 py-3"> {{ observacion.descripcion_observacion }}</td>
+                                    <td class="px-4 py-3">{{ observacion.nombre_observador }}</td>
                                 </tr>
                                 {% endfor %}
                             </tbody>

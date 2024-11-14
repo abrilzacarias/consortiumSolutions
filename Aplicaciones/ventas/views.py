@@ -173,5 +173,6 @@ def cambiarEstadoRegistroVenta(request, id_detalle_venta):
 def agregarObservacionDetalleVenta(request, id_detalle_venta):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
-        DetalleVenta.agregarObservacionDetalleVenta(id_detalle_venta, descripcion_observacion)
+        id_empleado = request.user.id_usuario  # Cambia a id_usuario
+        DetalleVenta.agregarObservacionDetalleVenta(id_detalle_venta, descripcion_observacion, id_empleado)
     return redirect('/ventas/')
