@@ -19,7 +19,7 @@ class Presupuesto(models.Model):
     def listarPresupuestos(cls):
         with connection.cursor() as cursor:
             sqlListarPresupuestos = """
-                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, per.nombre_persona, pr.monto_total_presupuesto, pr.estado_presupuesto, emp.id_empleado FROM presupuesto pr
+                    SELECT pr.id_presupuesto, pr.fecha_hora_presupuesto, e.nombre_edificio, CONCAT(per.nombre_persona, ' ', per.apellido_persona) AS nombre_empleado, pr.monto_total_presupuesto, pr.estado_presupuesto, emp.id_empleado FROM presupuesto pr
                     JOIN edificio e ON e.id_edificio = pr.id_edificio
                     JOIN empleado emp ON emp.id_empleado = pr.id_empleado
                     JOIN persona per ON per.id_persona = emp.id_persona
@@ -33,7 +33,7 @@ class Presupuesto(models.Model):
                 'id_presupuesto': resultado[0],
                 'fecha_hora_presupuesto': resultado[1],
                 'nombre_edificio': resultado[2],
-                'nombre_persona': resultado[3],
+                'nombre_empleado': resultado[3],
                 'monto_total_presupuesto': resultado[4],
                 'id_empleado': resultado[6],
             }
