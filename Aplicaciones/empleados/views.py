@@ -103,6 +103,7 @@ def editarEmpleado(request, id_empleado):
                 'tipo_contacto_id': 1,  # Asumiendo que 1 es para correo
                 'descripcion_contacto': correo_descripcion
             })
+
         for key, value in request.POST.items():
             if key.startswith('tipo_contacto_'):
                 contacto_id = key.split('_')[-1]
@@ -129,7 +130,7 @@ def editarEmpleado(request, id_empleado):
                     })
 
         # Llamada al método para actualizar el empleado
-        Empleado().editarEmpleado(
+        actualizado = Empleado().editarEmpleado(
             id_empleado,
             nombre_persona,
             apellido_persona,
@@ -139,12 +140,31 @@ def editarEmpleado(request, id_empleado):
             contactos_data  # Pasa todos los contactos para su procesamiento
         )
 
-    return redirect('empleados:home')
+        if actualizado:
+            messages.success(request, 'El empleado se editó correctamente.')
+        else:
+            messages.error(request, 'Hubo un error al editar el empleado.')
 
+        return redirect('empleados:home')
+
+    else:
+        messages.error(request, 'Método no permitido.')
+        return redirect('empleados:home')
+
+
+from django.contrib import messages
 
 def eliminarEmpleado(request, id_empleado):
-    Empleado().eliminarEmpleado(id_empleado)
+    empleado = Empleado()
+    eliminado = empleado.eliminarEmpleado(id_empleado)  # Se asume que devuelve True si se elimina correctamente
+
+    if eliminado:
+        messages.success(request, 'El empleado se eliminó correctamente.')
+    else:
+        messages.error(request, 'Hubo un error al intentar eliminar el empleado.')
+
     return redirect('/empleados/')
+
 
 
 def eliminarContactoEmpleado(request, id_contacto):

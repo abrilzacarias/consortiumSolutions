@@ -31,16 +31,34 @@ def agregarCategoria(request):
             CategoriaServicio.agregarCategoria(categoria)  
     return redirect(reverse('servicios:home'))  
 
+from django.contrib import messages
+from django.shortcuts import redirect, get_object_or_404
+from django.urls import reverse
+
 def agregarServicio(request):
     if request.method == 'POST':
-        nombre_servicio = request.POST.get('nombre_servicio')
-        requiere_pago = request.POST.get('requiere_pago') == '1'  
-        precio_base = request.POST.get('precio_base_servicio')
-        categoria_id = request.POST.get('categoria_id')  
-        categoria_servicio = get_object_or_404(CategoriaServicio, pk=categoria_id)
-        print(categoria_id)
-        print(categoria_servicio)
-        Servicio.objects.create(nombre_servicio=nombre_servicio, requiere_pago_servicio=requiere_pago, precio_base_servicio=precio_base,id_categoria_servicio=categoria_servicio)
+        try:
+            nombre_servicio = request.POST.get('nombre_servicio')
+            requiere_pago = request.POST.get('requiere_pago') == '1'
+            precio_base = request.POST.get('precio_base_servicio')
+            categoria_id = request.POST.get('categoria_id')
+            categoria_servicio = get_object_or_404(CategoriaServicio, pk=categoria_id)
+
+            # Creación del servicio
+            Servicio.objects.create(
+                nombre_servicio=nombre_servicio,
+                requiere_pago_servicio=requiere_pago,
+                precio_base_servicio=precio_base,
+                id_categoria_servicio=categoria_servicio
+            )
+
+            # Mensaje de éxito
+            messages.success(request, 'El servicio se agregó correctamente.')
+
+        except Exception as e:
+            # Mensaje de error si ocurre un problema
+            messages.error(request, f'Hubo un error al agregar el servicio: {str(e)}')
+
     return redirect(reverse('servicios:home'))
 
 def aumentarPrecio(request):
