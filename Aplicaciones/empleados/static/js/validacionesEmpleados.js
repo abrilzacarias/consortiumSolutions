@@ -73,7 +73,14 @@ document.addEventListener("DOMContentLoaded", function() {
                 errorId: 'errorDireccion',
                 validate: isValidDireccion,
                 message: "La dirección solo puede contener letras, números, espacios y el carácter especial '°'."
+            },
+            {
+                inputName: 'correo_electronico',
+                errorId: 'errorCorreo',
+                validate: isValidEmail,
+                message: "Por favor, ingresa un correo electrónico válido."
             }
+
         ];
 
         // Agregar validación específica para el correo electrónico

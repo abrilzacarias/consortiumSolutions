@@ -51,6 +51,7 @@ function detallesPresupuesto(buttonElement) {
                                                 <th scope="col" class="px-4 py-4">Fecha</th>
                                                 <th scope="col" class="px-4 py-4">Hora</th>
                                                 <th scope="col" class="px-4 py-4">Descripción</th>
+                                                <th scope="col" class="px-4 py-4">Observador</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -59,6 +60,7 @@ function detallesPresupuesto(buttonElement) {
                                                     <td class="px-4 py-3">${obs.fecha_observacion || ''}</td>
                                                     <td class="px-4 py-3">${obs.hora_observacion || ''}</td>
                                                     <td class="px-4 py-3">${obs.descripcion_observacion || ''}</td>
+                                                    <td class="px-4 py-3">${obs.nombre_observador || ''}</td>
                                                 </tr>
                                             `).join('') : '<tr><td colspan="3" class="px-4 py-3 text-center">No hay observaciones registradas</td></tr>'}
                                         </tbody>
