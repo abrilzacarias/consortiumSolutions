@@ -7,11 +7,25 @@ from django.contrib import messages
 from django.shortcuts import redirect
 from ..inicio.views import paginacionTablas
 from django.contrib.auth.decorators import login_required, permission_required
+from django.db.models import Q
 current_datetime = timezone.localtime(timezone.now())
 
 @login_required
 def home(request):
+    query = request.GET.get('busquedaEmpleado', '')  # Toma el parámetro 'q' del GET
+    
+    # Llamar a `mostrarEmpleados` para obtener todos los empleados de una vez
     empleados = Empleado().mostrarEmpleados()
+    
+    if query:
+        query = query.lower()
+        empleados = [
+            empleado for empleado in empleados
+            if empleado['nombre_persona'].lower().startswith(query) or
+                empleado['apellido_persona'].lower().startswith(query) or
+                empleado['cuitl_persona'].startswith(query)
+            ]
+
     for empleado in empleados:
         contactos = Contacto.objects.filter(id_persona=empleado['id_persona'])
         empleado['contactos'] = [
@@ -23,10 +37,14 @@ def home(request):
             }
             for contacto in contactos
         ]
+    
+    # Obtener los tipos de empleados solo una vez
     tipoEmpleados = TipoEmpleado.objects.all()
 
+    # Paginación y contexto
     context = paginacionTablas(request, empleados, 'empleados')
     context['tipo_empleados'] = tipoEmpleados
+    
     return render(request, 'empleadoViews.html', context)
 
 

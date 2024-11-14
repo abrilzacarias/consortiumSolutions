@@ -2,10 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Clientes, Contacto, Edificio
 from ..empleados.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
-from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-from datetime import datetime
 from ..inicio.views import paginacionTablas
 
 empleado = Empleado()
@@ -14,19 +12,20 @@ clientes = Clientes()
 @login_required
 @permission_required('inicio.view_cliente', raise_exception=False)
 def listarClientes(request):
-    es_vendedor = request.user.groups.filter(name='Vendedor').exists()  # Ajusta según tu lógica para identificar vendedores
+    query = request.GET.get('busquedaCliente', '').lower()  
+    es_vendedor = request.user.groups.filter(name='Vendedor').exists()  
     resultados = clientes.listarClientes()
     empleados = empleado.mostrarEmpleados()
     resultados_modificados = []
-    # Obtén el ID del vendedor si es vendedor
+
     if es_vendedor:
         try:
             vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
             id_vendedor_user = vendedorUsuario.id_empleado
-            print("El vendedor existe.")
         except Empleado.DoesNotExist:
             pass
-    # Filtra clientes si es un vendedor
+
+    # Procesa cada cliente y estructura su información
     for cliente in resultados:
         if len(cliente) > 10:
             id_edificios = cliente[12].split(', ') if cliente[12] else []
@@ -62,8 +61,6 @@ def listarClientes(request):
         fechas_observaciones = cliente[23].split(', ') if cliente[23] else []
         horas_observaciones  = cliente[24].split(', ') if cliente[24] else []
 
-        
-        
         observaciones = []
         for i in range(len(ids_observaciones)):
             observacion = {
@@ -112,11 +109,20 @@ def listarClientes(request):
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
 
+    # Filtra resultados_modificados usando query
+    if query:
+        resultados_modificados = [
+            cliente for cliente in resultados_modificados
+            if cliente['nombre_cliente'].lower().startswith(query) or
+               cliente['apellido_cliente'].lower().startswith(query) or
+               cliente['cuit_cliente'].startswith(query)
+        ]
+
     context = paginacionTablas(request, resultados_modificados, 'resultados')
     context['empleados'] = empleados
     context['es_vendedor'] = es_vendedor
-    print(context)
     return render(request, 'clientesviews.html', context)
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser, login_url='')

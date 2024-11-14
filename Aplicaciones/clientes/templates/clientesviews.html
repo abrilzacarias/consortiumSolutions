@@ -22,17 +22,17 @@
                 <!-- Start coding here -->
                 <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                     <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                        <div class="w-full md:w-1/2">
-                            <form class="flex items-center">
-                                <label for="simple-search" class="sr-only">Search</label>
-                                <div class="relative w-full">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <input type="text" id="simple-search" class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
-                                </div>
+                        <div class="w-full">
+                            <form class="flex items-center" method="get">
+                              <label for="simple-search" class="sr-only">Buscar Cliente</label>
+                              <div class="relative w-full flex">
+                                <input type="text" id="simple-search" class="text-sm rounded-l-lg w-full p-2 bg-gray-700 placeholder-gray-400 text-white" placeholder="Buscar cliente por nombre, apellido, CUIT/CUIL" name="busquedaCliente">
+                                <button type="submit" class="flex items-center justify-center px-3 bg-gray-700 hover:bg-gray-600 rounded-r-lg">
+                                  <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                              </div>
                             </form>
                         </div>
                         {% if request.user.is_superuser %}
@@ -46,7 +46,7 @@
                         </div>
                         {% endif %}
                     </div>
-                    <div class="flex flex-wrap justify-center space-x-2 mt-2 mb-3">
+                    <div class="flex flex-wrap justify-center space-x-2 mb-3">
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-todos">Todos</button>
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-prospectos">Prospectos</button>
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded " id="btn-clientes">Clientes</button>

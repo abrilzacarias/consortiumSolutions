@@ -16,22 +16,21 @@
     <body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
         <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
             <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
-                <!-- Start coding here -->
                 <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                     <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                        <div class="w-full md:w-1/2">
-                            <form class="flex items-center">
-                                <label for="simple-search" class="sr-only">Search</label>
-                                <div class="relative w-full">
-                                    <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                        <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
-                                        </svg>
-                                    </div>
-                                    <input type="text" id="simple-search" class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white dark:focus:ring-primary-500 dark:focus:border-primary-500" placeholder="Search" required="">
-                                </div>
+                        <div class="w-full">
+                            <form class="flex items-center" method="get">
+                              <label for="simple-search" class="sr-only">Buscar empleado</label>
+                              <div class="relative w-full flex">
+                                <input type="text" id="simple-search" class="text-sm rounded-l-lg w-full p-2 bg-gray-700 placeholder-gray-400 text-white" placeholder="Buscar empleado por nombre, apellido, CUIT/CUIL" name="busquedaEmpleado">
+                                <button type="submit" class="flex items-center justify-center px-3 bg-gray-700 hover:bg-gray-600 rounded-r-lg">
+                                  <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                                  </svg>
+                                </button>
+                              </div>
                             </form>
-                        </div>
+                          </div>
                         <div class="w-full md:w-auto flex flex-col md:flex-row space-y-2 md:space-y-0 items-stretch md:items-center justify-end md:space-x-3 flex-shrink-0">
                             <button type="button" id="agregarEmpleadoBoton" data-modal-target="agregarEmpleadoModal" data-modal-toggle="agregarEmpleadoModal" class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800">
                                 <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">

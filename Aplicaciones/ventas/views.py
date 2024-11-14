@@ -11,13 +11,22 @@ from django.contrib.auth.decorators import login_required, permission_required
 #TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN
 @login_required
 def home(request):
+    query = request.GET.get('busquedaVenta', '').lower()  
     ventas = Venta.listarVentas()
     metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
     estados_venta = EstadoVenta.obtenerEstadosVenta()
+
+    if query:
+        ventas = [
+            venta for venta in ventas
+            if venta['numero_factura'].lower().startswith(query) or
+               venta['nombre_empleado'].lower().startswith(query) or
+               venta['nombre_edificio'].lower().startswith(query)
+        ]
+
     context = paginacionTablas(request, ventas, 'ventas')
     context['metodos_pago'] = metodos_pago  # Agrega métodos de pago al contexto
     context['estados_venta'] = estados_venta
-    # Asegúrate de que en tu vista 'home' o en la vista correspondiente
     #context['detalles'] = detalle_venta_queryset  # Asegúrate de que incluye el id_estado_venta
     return render(request, 'ventasViews.html', context)
 
