@@ -118,6 +118,6 @@ def actualizar_estado_factura(request, id_factura):
         else:
             messages.error(request, 'Debe seleccionar un estado válido.')
 
-        return redirect(reverse('facturas:listarFacturas'))
+        return redirect('/facturas/')
 
-    return redirect(reverse('facturas:listarFacturas'))
+    return redirect('/facturas/')

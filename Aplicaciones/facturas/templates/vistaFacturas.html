@@ -224,11 +224,9 @@
 </div>
 {% endfor %}
 <!-- Elemento para almacenar el estado de los mensajes -->
-<div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" class="hidden"></div>
-
-<!-- Small Modal -->
-<div id="small-modal" tabindex="-1" data-modal-target="small-modal" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-900 bg-opacity-50">
-    <div class="relative w-full max-w-md max-h-full mx-auto mt-20">
+<div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" style="display: none;"></div>
+<div id="small-modal" tabindex="-1" data-modal-target="small-modal"class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-md max-h-full">
         <!-- Modal content -->
         <div class="relative rounded-lg shadow bg-gray-700">
             <!-- Modal header -->
@@ -247,7 +245,7 @@
             <div class="p-4 md:p-5 space-y-4">
                 {% if messages %}
                     {% for message in messages %}
-                        <p class="text-base leading-relaxed text-gray-300 {% if message.tags %}{{ message.tags }}{% endif %}">
+                        <p class="text-base leading-relaxed text-gray-400">
                             {{ message }}
                         </p>
                     {% endfor %}
