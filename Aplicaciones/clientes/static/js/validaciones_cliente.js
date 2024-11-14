@@ -9,21 +9,30 @@ document.addEventListener("DOMContentLoaded", function() {
         return !regex.test(str); // Si contiene caracteres no permitidos, devuelve true
     }
 
-
-    // Función para mostrar un mensaje de validación
-    function showValidationMessage(input, errorId, message) {
-        const errorElement = document.getElementById(errorId);
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
-        input.classList.add('border-red-500');
+    function containsOnlyLettersAndAccents(value) {
+        // Expresión regular que permite únicamente letras (con tildes) y espacios
+        const regex = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+        return regex.test(value);
     }
 
-    // Función para ocultar un mensaje de validación
-    function hideValidationMessage(input, errorId) {
-        const errorElement = document.getElementById(errorId);
-        errorElement.textContent = '';
-        errorElement.classList.add('hidden');
-        input.classList.remove('border-red-500');
+    // Función para mostrar el mensaje de validación
+    function showValidationMessage(inputElement, errorElementId, message) {
+        const errorElement = document.getElementById(errorElementId);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove("hidden");  // Muestra el mensaje de error
+            inputElement.classList.add("border-red-500"); // Agrega un borde rojo al campo
+        }
+    }
+
+    // Función para ocultar el mensaje de validación
+    function hideValidationMessage(inputElement, errorElementId) {
+        const errorElement = document.getElementById(errorElementId);
+        if (errorElement) {
+            errorElement.textContent = "";
+            errorElement.classList.add("hidden"); // Oculta el mensaje de error
+            inputElement.classList.remove("border-red-500"); // Remueve el borde rojo del campo
+        }
     }
 
     function isValidEmail(email) {
@@ -50,17 +59,18 @@ document.addEventListener("DOMContentLoaded", function() {
             let isValid = true;
 
             // Validación de nombre
-            if (containsNumbers(nombreInput.value)) {
+            // Validación del campo de nombre
+            if (!containsOnlyLettersAndAccents(nombreInput.value)) {
                 isValid = false;
-                showValidationMessage(nombreInput, "errorNombre", "El nombre no puede contener números.");
+                showValidationMessage(nombreInput, "errorNombre", "El nombre solo puede contener letras y tildes.");
             } else {
                 hideValidationMessage(nombreInput, "errorNombre");
             }
 
             // Validación de apellido
-            if (containsNumbers(apellidoInput.value)) {
+            if (!containsOnlyLettersAndAccents(apellidoInput.value)) {
                 isValid = false;
-                showValidationMessage(apellidoInput, "errorApellido", "El apellido no puede contener números.");
+                showValidationMessage(apellidoInput, "errorApellido", "El apellido solo puede contener letras y tildes.");
             } else {
                 hideValidationMessage(apellidoInput, "errorApellido");
             }
@@ -111,18 +121,18 @@ document.addEventListener("DOMContentLoaded", function() {
         });
 
         // Validación en tiempo real para el nombre
-        nombreInput.addEventListener("input", function() {
-            if (containsNumbers(nombreInput.value)) {
-                showValidationMessage(nombreInput, "errorNombre", "El nombre no puede contener números.");
+        nombreInput.addEventListener('input', function() {
+            if (!containsOnlyLettersAndAccents(this.value.trim())) {
+                showValidationMessage(this, "errorNombre", "El nombre solo puede contener letras y tildes.");
             } else {
-                hideValidationMessage(nombreInput, "errorNombre");
+                hideValidationMessage(this, "errorNombre");
             }
         });
 
         // Validación en tiempo real para el apellido
         apellidoInput.addEventListener("input", function() {
-            if (containsNumbers(apellidoInput.value)) {
-                showValidationMessage(apellidoInput, "errorApellido", "El apellido no puede contener números.");
+            if (!containsOnlyLettersAndAccents(apellidoInput.value)) {
+                showValidationMessage(apellidoInput, "errorApellido", "El apellido solo puede contener letras y tildes.");
             } else {
                 hideValidationMessage(apellidoInput, "errorApellido");
             }
@@ -204,17 +214,17 @@ document.addEventListener("DOMContentLoaded", function() {
             let isValid = true;
 
             // Validación de nombre
-            if (nombreInputEditar && containsNumbers(nombreInputEditar.value)) {
+            if (nombreInputEditar && !containsOnlyLettersAndAccents(nombreInputEditar.value)) {
                 isValid = false;
-                showValidationMessage(nombreInputEditar, `errorNombre_${clienteId}`, "El nombre no puede contener números.");
+                showValidationMessage(nombreInputEditar, `errorNombre_${clienteId}`, "El nombre solo puede contener letras y tildes.");
             } else if (nombreInputEditar) {
                 hideValidationMessage(nombreInputEditar, `errorNombre_${clienteId}`);
             }
 
             // Validación de apellido
-            if (apellidoInputEditar && containsNumbers(apellidoInputEditar.value)) {
+            if (apellidoInputEditar && !containsOnlyLettersAndAccents(apellidoInputEditar.value)) {
                 isValid = false;
-                showValidationMessage(apellidoInputEditar, `errorApellido_${clienteId}`, "El apellido no puede contener números.");
+                showValidationMessage(apellidoInputEditar, `errorApellido_${clienteId}`, "El solo puede contener letras y tildes.");
             } else if (apellidoInputEditar) {
                 hideValidationMessage(apellidoInputEditar, `errorApellido_${clienteId}`);
             }
@@ -268,8 +278,8 @@ document.addEventListener("DOMContentLoaded", function() {
         // Validaciones en tiempo real
         if (nombreInputEditar) {
             nombreInputEditar.addEventListener("input", function() {
-                if (containsNumbers(this.value)) {
-                    showValidationMessage(this, `errorNombre_${clienteId}`, "El nombre no puede contener números.");
+                if (!containsOnlyLettersAndAccents(this.value)) {
+                    showValidationMessage(this, `errorNombre_${clienteId}`, "El nombre solo puede contener letras y tildes.");
                 } else {
                     hideValidationMessage(this, `errorNombre_${clienteId}`);
                 }
@@ -278,8 +288,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
         if (apellidoInputEditar) {
             apellidoInputEditar.addEventListener("input", function() {
-                if (containsNumbers(this.value)) {
-                    showValidationMessage(this, `errorApellido_${clienteId}`, "El apellido no puede contener números.");
+                if (!containsOnlyLettersAndAccents(this.value)) {
+                    showValidationMessage(this, `errorApellido_${clienteId}`, "El apellido solo puede contener letras y tildes.");
                 } else {
                     hideValidationMessage(this, `errorApellido_${clienteId}`);
                 }
@@ -365,11 +375,11 @@ document.addEventListener("DOMContentLoaded", function() {
             }
 
             // Validación de CUIL/CUIT
-            if (cuilEdificioInput.value.length !== 11 || isNaN(cuilEdificioInput.value)) {
+            if (cuilEdificioInput.value.length !== 11 || isNaN(cuilInput.value)) {
                 isValid = false;
-                showValidationMessage(cuilEdificioInput, "errorCuitl", "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
+                showValidationMessage(cuilInput, "errorCuitlEdificio", "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
             } else {
-                hideValidationMessage(cuilEdificioInput, "errorCuitl");
+                hideValidationMessage(cuilInput, "errorCuitlEdificio");
             }
 
             // Previene el envío del formulario si hay errores
@@ -405,18 +415,89 @@ document.addEventListener("DOMContentLoaded", function() {
             cuilEdificioInput.addEventListener("input", function() {
                 console.log("Valor actual del CUIT:", this.value);
         
-                // Validación usando expresión regular
-                if (!/^\d{11}$/.test(this.value)) {
-                    showValidationMessage(this, "errorCuitl", "El CUIL/CUIT debe tener exactamente 11 dígitos numéricos.");
+                // Validación usando expresión regular para solo números y longitud de 11 caracteres
+                if (cuilEdificioInput.value.length !== 11 || isNaN(cuilEdificioInput.value)) {
+                    showValidationMessage(cuilEdificioInput, "errorCuitlEdificio", "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
                 } else {
-                    hideValidationMessage(this, "errorCuitl");
+                    hideValidationMessage(cuilEdificioInput, "errorCuitlEdificio");
                 }
             });
         }
-          
         
     } else {
         console.error("No se encontró el formulario con el id 'agregarEdificioForm'");
     }
         
+    const editarEdificioForms = document.querySelectorAll('form[id^="editarEdificioModal_"]');
+
+    editarEdificioForms.forEach(function(editarForm) {
+        const edificioId = editarForm.id.replace('editarEdificioModal_', '');
+        
+        const nombreEdificioInput = editarForm.querySelector(`#nombre_edificio_${edificioId}`);
+        const direccionEdificioInput = editarForm.querySelector(`#direccion_edificio_${edificioId}`);
+        const cuitEdificioInput = editarForm.querySelector(`#cuit_edificio_${edificioId}`);
+    
+        // Validación cuando se envía el formulario
+        editarForm.addEventListener("submit", function(event) {
+            let isValid = true;
+    
+            // Validación en tiempo real para nombre de edificio
+            if (containsInvalidCharacters(nombreEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(nombreEdificioInput, `errorNombre_${edificioId}`, "El nombre del edificio solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(nombreEdificioInput, `errorNombre_${edificioId}`);
+            }
+    
+            // Validación de dirección
+            if (containsInvalidCharacters(direccionEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(direccionEdificioInput, `errorDirecion_${edificioId}`, "La dirección solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(direccionEdificioInput, `errorDirecion_${edificioId}`);
+            }
+    
+            // Validación de CUIL/CUIT
+            if (cuitEdificioInput.value.length !== 11 || isNaN(cuitEdificioInput.value)) {
+                isValid = false;
+                showValidationMessage(cuitEdificioInput, `errorCuit_${edificioId}`, "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
+            } else {
+                hideValidationMessage(cuitEdificioInput, `errorCuit_${edificioId}`);
+            }
+    
+            // Previene el envío del formulario si hay errores
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    
+        // Validación en tiempo real para el nombre de edificio
+        nombreEdificioInput.addEventListener("input", function() {
+            if (containsInvalidCharacters(this.value)) {
+                showValidationMessage(this, `errorNombre_${edificioId}`, "El nombre del edificio solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(this, `errorNombre_${edificioId}`);
+            }
+        });
+    
+        // Validación en tiempo real para la dirección de edificio
+        direccionEdificioInput.addEventListener("input", function() {
+            if (containsInvalidCharacters(this.value)) {
+                showValidationMessage(this, `errorDirecion_${edificioId}`, "La dirección solo puede contener letras, números, espacios y el símbolo °.");
+            } else {
+                hideValidationMessage(this, `errorDirecion_${edificioId}`);
+            }
+        });
+    
+        // Validación en tiempo real para el CUIL/CUIT
+        cuitEdificioInput.addEventListener("input", function() {
+            if (cuitEdificioInput.value.length !== 11 || isNaN(cuitEdificioInput.value)) {
+                showValidationMessage(cuitEdificioInput, `errorCuit_${edificioId}`, "El CUIL/CUIT debe tener exactamente 11 dígitos y no puede contener letras.");
+            } else {
+                hideValidationMessage(cuitEdificioInput, `errorCuit_${edificioId}`);
+            }
+        });
+    
+    });
+    
 });
