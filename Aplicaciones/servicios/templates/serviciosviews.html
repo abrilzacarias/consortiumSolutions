@@ -60,13 +60,13 @@
 <div id="small-modal" tabindex="-1" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
     <div class="relative w-full max-w-md max-h-full">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-lg shadow dark:bg-gray-700">
+        <div class="relative bg-white rounded-lg shadow">
             <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t dark:border-gray-600">
-                <h3 class="text-xl font-medium text-gray-900 dark:text-white">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t">
+                <h3 class="text-xl font-medium text-gray-900">
                     ANUNCIO
                 </h3>
-                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-gray-600 dark:hover:text-white" data-modal-hide="small-modal">
+                <button type="button" class="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center" data-modal-hide="small-modal">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
                         <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
                     </svg>
@@ -77,15 +77,15 @@
             <div class="p-4 md:p-5 space-y-4">
                 {% if messages %}
                     {% for message in messages %}
-                        <p class="text-base leading-relaxed text-gray-500 dark:text-gray-400">
+                        <p class="text-base leading-relaxed text-gray-500">
                             {{ message }}
                         </p>
                     {% endfor %}
                 {% endif %}
             </div>
             <!-- Modal footer -->
-            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b dark:border-gray-600">
-                <button data-modal-hide="small-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Aceptar</button>
+            <div class="flex items-center p-4 md:p-5 border-t border-gray-200 rounded-b">
+                <button data-modal-hide="small-modal" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Aceptar</button>
             </div>
         </div>
     </div>
@@ -97,10 +97,10 @@
     <div class="flex items-center justify-between mb-4 mt-8">
         <h2 class="text-2xl font-bold mb-4 text-white">Categoría de Servicios</h2>
         <div class="btn-group flex space-x-2" role="group" aria-label="Botones de acción">
-            <button id="defaultModalButton" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addCategoriaModal').classList.toggle('show')" type="button">
+            <button id="defaultModalButton" class="block text-white bg-green-800 hover:bg-green-900 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right" onclick="document.getElementById('addCategoriaModal').classList.toggle('show')" type="button">
               Agregar Categoría
             </button>
-            <button id="defaultModalButton" class="block text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-blue-600 dark:hover:bg-blue-700 " onclick="document.getElementById('aumentarPrecioModal').classList.toggle('show')" type="button">
+            <button id="defaultModalButton" class="block text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-4 py-2 text-right" onclick="document.getElementById('aumentarPrecioModal').classList.toggle('show')" type="button">
               Aumentar Precio Base
             </button>
           </div>
@@ -169,7 +169,7 @@
     {% for categoria in categorias %}
     <div id="accordion-arrow-icon-{{ forloop.counter }}" data-accordion="collapse">
         <h2 id="accordion-arrow-icon-heading-{{ forloop.counter }}">
-            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-gray-900 bg-gray-900 border border-b-0 border-gray-800 rounded-t-xl focus:ring-4 focus:ring-gray-800 dark:focus:ring-gray-800 dark:border-gray-700 dark:text-white dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-800" 
+            <button type="button" class="flex items-center justify-between w-full p-5 font-medium text-gray-900 bg-gray-900 border border-b-0 border-gray-800 rounded-t-xl focus:ring-4 focus:ring-gray-800" 
                 data-accordion-target="#accordion-arrow-icon-body-{{ forloop.counter }}" 
                 aria-expanded="true" 
                 aria-controls="accordion-arrow-icon-body-{{ forloop.counter }}">
@@ -181,15 +181,15 @@
         </h2>
         
         <div id="accordion-arrow-icon-body-{{ forloop.counter }}" class="hidden bg-gray-800"  aria-labelledby="accordion-arrow-icon-heading-{{ forloop.counter }}">
-            <div class="p-5 border border-b-0 border-gray-200 dark:border-gray-700 dark:bg-gray-900">
+            <div class="p-5 border border-b-0 border-gray-700 bg-gray-900">
                 <div class="flex justify-end items-center mb-6 space-x-2">
                     <!-- Button trigger modal -->
                     <a href="eliminarCategoria/{{categoria.id_categoria_servicio}}" 
            onclick="return confirm('¿Está seguro de que desea eliminar esta categoría?');"
-           class="block text-white bg-red-600 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-red-600 dark:hover:bg-red-700 dark:focus:ring-red-800">
+           class="block text-white bg-red-800 hover:bg-red-700 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-lg text-sm px-4 py-2 text-right">
            Eliminar Categoría de {{categoria.nombre_categoria_servicio}}
         </a>
-                    <button id="defaultModalButton-{{ forloop.counter }}" class="block text-white bg-green-600 hover:bg-green-700 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right dark:bg-green-600 dark:hover:bg-green-700 dark:focus:ring-green-800" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.toggle('show')" type="button">
+                    <button id="defaultModalButton-{{ forloop.counter }}" class="block text-white bg-green-800 hover:bg-green-900 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 text-right" onclick="document.getElementById('addServicioModal-{{ forloop.counter }}').classList.toggle('show')" type="button">
                         Agregar Servicio a {{categoria.nombre_categoria_servicio}}
                       </button>
                   </div>

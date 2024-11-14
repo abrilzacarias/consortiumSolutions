@@ -22,11 +22,11 @@ function detallesPresupuesto(buttonElement) {
                          class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 items-center justify-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full">
                         <div class="relative p-4 w-full max-w-2xl max-h-full">
                             <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
-                                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                                <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
                                     <h3 class="text-lg font-semibold text-white">Observaciones de ${detalle.nombre_servicio}</h3>
                                     <div class="flex items-center">
                                         <button type="button" 
-                                                class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 dark:bg-green-600 dark:hover:bg-green-700 focus:outline-none dark:focus:ring-green-800"
+                                                class="flex items-center justify-center text-white bg-green-700 hover:bg-green-800 focus:ring-4 focus:ring-green-300 font-medium rounded-lg text-sm px-4 py-2 focus:outline-none"
                                                 data-modal-target="agregarObservacionModal_${detalle.id_detalle_presupuesto}"
                                                 data-modal-toggle="agregarObservacionModal_${detalle.id_detalle_presupuesto}">
                                             <svg class="h-3.5 w-3.5 mr-2" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
@@ -77,7 +77,7 @@ function detallesPresupuesto(buttonElement) {
                      class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full" style="top: -220px; /* Ajusta este valor según lo que necesites */">
                     <div class="relative p-4 w-full max-w-2xl max-h-full">
                         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
-                            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
+                            <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
                                 <h3 class="text-lg font-semibold text-white">Agregar Observación a ${detalle.nombre_servicio}</h3>
                                 <button type="button" 
                                         class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" 
