@@ -2,10 +2,8 @@ from django.shortcuts import render, redirect
 from .models import Clientes, Contacto, Edificio
 from ..empleados.models import Empleado
 from django.http import HttpResponse, HttpResponseNotAllowed, JsonResponse
-from django.utils import timezone
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
-from datetime import datetime
 from ..inicio.views import paginacionTablas
 
 empleado = Empleado()
@@ -14,19 +12,20 @@ clientes = Clientes()
 @login_required
 @permission_required('inicio.view_cliente', raise_exception=False)
 def listarClientes(request):
-    es_vendedor = request.user.groups.filter(name='Vendedor').exists()  # Ajusta según tu lógica para identificar vendedores
+    query = request.GET.get('busquedaCliente', '').lower()  
+    es_vendedor = request.user.groups.filter(name='Vendedor').exists()  
     resultados = clientes.listarClientes()
     empleados = empleado.mostrarEmpleados()
     resultados_modificados = []
-    # Obtén el ID del vendedor si es vendedor
+
     if es_vendedor:
         try:
             vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
             id_vendedor_user = vendedorUsuario.id_empleado
-            print("El vendedor existe.")
         except Empleado.DoesNotExist:
             pass
-    # Filtra clientes si es un vendedor
+
+    # Procesa cada cliente y estructura su información
     for cliente in resultados:
         if len(cliente) > 10:
             id_edificios = cliente[12].split(', ') if cliente[12] else []
@@ -62,8 +61,6 @@ def listarClientes(request):
         fechas_observaciones = cliente[23].split(', ') if cliente[23] else []
         horas_observaciones  = cliente[24].split(', ') if cliente[24] else []
 
-        
-        
         observaciones = []
         for i in range(len(ids_observaciones)):
             observacion = {
@@ -112,11 +109,20 @@ def listarClientes(request):
     if es_vendedor:
         resultados_modificados = [cliente for cliente in resultados_modificados if cliente['id_vendedor_asignado'] == id_vendedor_user]
 
+    # Filtra resultados_modificados usando query
+    if query:
+        resultados_modificados = [
+            cliente for cliente in resultados_modificados
+            if cliente['nombre_cliente'].lower().startswith(query) or
+               cliente['apellido_cliente'].lower().startswith(query) or
+               cliente['cuit_cliente'].startswith(query)
+        ]
+
     context = paginacionTablas(request, resultados_modificados, 'resultados')
     context['empleados'] = empleados
     context['es_vendedor'] = es_vendedor
-    print(context)
     return render(request, 'clientesviews.html', context)
+
 
 @login_required
 @user_passes_test(lambda u: u.is_superuser, login_url='')
@@ -181,9 +187,6 @@ def editarCliente(request, id_cliente):
 
         print(f"ID Cliente recibido: {id_cliente}")  # Verifica el ID del cliente
         
-        print(f"Vendedor asignado recibido: {vendedor_asignado}")
-        
-        
         # Recopilación de los contactos existentes y nuevos
         contactos_data = []
         for key, value in request.POST.items():
@@ -191,53 +194,48 @@ def editarCliente(request, id_cliente):
                 contacto_id = key.split('_')[-1]
                 tipo_contacto_id = value
                 descripcion_contacto = request.POST.get(f'contacto_{contacto_id}')
-                
-                # Solo agregamos si la descripción no está vacía
                 if descripcion_contacto:
                     contactos_data.append({
-                        'id_contacto': contacto_id,  # Mantén el ID si es un contacto existente
+                        'id_contacto': contacto_id,
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-
             elif key.startswith('nuevo_contacto_tipo_'):
                 unique_id = key.split('_')[-1]
                 tipo_contacto_id = value
                 descripcion_contacto = request.POST.get(f'nuevo_contacto_descripcion_{unique_id}')
-                
                 if descripcion_contacto:
                     contactos_data.append({
-                        'id_contacto': None,  # Nuevo contacto, sin ID
+                        'id_contacto': None,
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-
         
         # Verificar que el cliente existe
         cliente_actual = clientes.obtenerClientePorId(id_cliente)
         if not cliente_actual:
-            return HttpResponse("El cliente no existe")
+            messages.error(request, 'El cliente no existe.')
+            return render(request, 'clientesviews.html', {'error': 'El cliente no existe'})
 
         vendedor_actual = cliente_actual.get('id_vendedor_asignado')
 
         # Manejar la designación de vendedores
         if vendedor_asignado:
-            # Verifica si el vendedor asignado es diferente al actual
             if vendedor_actual != vendedor_asignado:
                 if vendedor_actual:
-                    # Eliminar la designación del vendedor actual
                     if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                        return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
-                # Asignar el nuevo vendedor
+                        messages.error(request, 'Hubo un error al eliminar la designación del vendedor actual.')
+                        return render(request, 'clientesviews.html', {'error': 'Hubo un error al eliminar la designación del vendedor actual.'})
                 if not clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
-                    return HttpResponse("Hubo un error al asignar el nuevo vendedor.")
+                    messages.error(request, 'Hubo un error al asignar el nuevo vendedor.')
+                    return render(request, 'clientesviews.html', {'error': 'Hubo un error al asignar el nuevo vendedor.'})
         else:
-            # Si no se ha asignado un vendedor, elimina la designación actual
             if vendedor_actual:
                 if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                    return HttpResponse("Hubo un error al eliminar la designación del vendedor actual.")
+                    messages.error(request, 'Hubo un error al eliminar la designación del vendedor actual.')
+                    return render(request, 'clientesviews.html', {'error': 'Hubo un error al eliminar la designación del vendedor actual.'})
 
-        # Llamar a la función editarCliente para realizar la actualización
+        # Editar el cliente
         actualizado = clientes.editarCliente(
             id_cliente, 
             nombre_persona, 
@@ -252,12 +250,13 @@ def editarCliente(request, id_cliente):
         )
 
         if not actualizado:
-            return HttpResponse("Hubo un error al editar el cliente.")
-        
+            messages.error(request, 'Hubo un error al editar el cliente.')
+            return render(request, 'clientesviews.html', {'error': 'Hubo un error al editar el cliente.'})
+
+        messages.success(request, 'El cliente se editó correctamente.')
         return redirect('/clientes/')
     
     else:
-        # Obtener los datos del cliente y los empleados para mostrar en el formulario
         cliente = clientes.obtenerClientePorId(id_cliente)
         empleados = Empleado().mostrarEmpleados()
         return render(request, 'clientesviews.html', {'cliente': cliente, 'empleados': empleados})

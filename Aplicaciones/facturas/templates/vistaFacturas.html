@@ -21,22 +21,17 @@
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                 <div class="flex flex-col md:flex-row items-center justify-between space-y-3 md:space-y-0 md:space-x-4 p-4">
-                    <div class="w-full md:w-1/2">
-                        <form class="flex items-center">
-                            <label for="simple-search" class="sr-only">Buscar</label>
-                            <div class="relative w-full">
-                                <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
-                                    <svg aria-hidden="true" class="w-5 h-5 text-gray-500" fill="currentColor"
-                                        viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                                        <path fill-rule="evenodd"
-                                            d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z"
-                                            clip-rule="evenodd" />
-                                    </svg>
-                                </div>
-                                <input type="text" id="simple-search"
-                                    class="border border-gray-300 text-sm rounded-lg focus:ring-primary-500 focus:border-primary-500 block w-full pl-10 p-2 bg-gray-700 placeholder-gray-400 text-white"
-                                    placeholder="Buscar facturas" required>
-                            </div>
+                    <div class="w-full">
+                        <form class="flex items-center" method="get">
+                          <label for="simple-search" class="sr-only">Buscar Factura</label>
+                          <div class="relative w-full flex">
+                            <input type="text" id="simple-search" class="text-sm rounded-l-lg w-full p-2 bg-gray-700 placeholder-gray-400 text-white" placeholder="Buscar venta por N° de factura, nombre de edificio o nombre de empleado" name="busquedaFactura">
+                            <button type="submit" class="flex items-center justify-center px-3 bg-gray-700 hover:bg-gray-600 rounded-r-lg">
+                              <svg aria-hidden="true" class="w-5 h-5 text-gray-400" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd" />
+                              </svg>
+                            </button>
+                          </div>
                         </form>
                     </div>
                 </div>
@@ -153,7 +148,7 @@
         <div class="relative p-4 rounded-lg shadow bg-gray-800 sm:p-5">
             <!-- Modal header -->
             <div class="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 dark:border-gray-600">
-                <h3 class="text-lg font-semibold text-white">Cambiar Estado</h3>
+                <h3 class="text-lg font-semibold text-white">Cambiar Factura</h3>
                 <button type="button" class="text-gray-200 bg-transparent hover:text-gray-700 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center" data-modal-target="editarFacturaModal_{{ factura.id_factura }}" data-modal-toggle="editarFacturaModal_{{ factura.id_factura }}">
                     <svg aria-hidden="true" class="w-5 h-5" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -229,11 +224,9 @@
 </div>
 {% endfor %}
 <!-- Elemento para almacenar el estado de los mensajes -->
-<div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" class="hidden"></div>
-
-<!-- Small Modal -->
-<div id="small-modal" tabindex="-1" data-modal-target="small-modal" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full bg-gray-900 bg-opacity-50">
-    <div class="relative w-full max-w-md max-h-full mx-auto mt-20">
+<div id="messages-data" data-has-messages="{% if messages %}true{% else %}false{% endif %}" style="display: none;"></div>
+<div id="small-modal" tabindex="-1" data-modal-target="small-modal"class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full">
+    <div class="relative w-full max-w-md max-h-full">
         <!-- Modal content -->
         <div class="relative rounded-lg shadow bg-gray-700">
             <!-- Modal header -->
@@ -252,7 +245,7 @@
             <div class="p-4 md:p-5 space-y-4">
                 {% if messages %}
                     {% for message in messages %}
-                        <p class="text-base leading-relaxed text-gray-300 {% if message.tags %}{{ message.tags }}{% endif %}">
+                        <p class="text-base leading-relaxed text-gray-400">
                             {{ message }}
                         </p>
                     {% endfor %}
