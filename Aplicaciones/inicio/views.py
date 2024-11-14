@@ -40,4 +40,16 @@ def listarActividades(request):
    
     return render(request, 'index.html', context)
 
+def mostrarPerfil(request):
+    usuario = request.user
+    roles = usuario.groups.all()  
+
+    print(f"Roles del usuario: {roles}")
+    print(f"Usuario: {usuario}")
+
+    return render(request, 'perfil.html', {
+        'usuario': usuario,
+        'roles': roles,
+    })
+
     
