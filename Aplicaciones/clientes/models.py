@@ -272,16 +272,16 @@ class Clientes():
             return False
 
         
-    def agregarObservacion(self, id_cliente, descripcion_observacion):
+    def agregarObservacion(self, id_cliente, descripcion_observacion, id_empleado):
         try:
             with connection.cursor() as cursor:
                 # Agrega el marcador de posición para la hora
-                sqlInsertarObservacionCliente = "INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_preventa, id_detalle_venta, id_cliente) VALUES (%s, %s, %s, NULL, NULL, %s);"
+                sqlInsertarObservacionCliente = "INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_presupuesto, id_detalle_venta, id_cliente, id_empleado) VALUES (%s, %s, %s, NULL, NULL, %s, %s);"
                 
                 current_date = timezone.localtime(timezone.now()).date()
                 current_time = timezone.localtime(timezone.now()).time()
                 # Ahora pasas los tres valores que corresponden a los tres marcadores de posición
-                cursor.execute(sqlInsertarObservacionCliente, [descripcion_observacion, current_date, current_time, id_cliente])
+                cursor.execute(sqlInsertarObservacionCliente, [descripcion_observacion, current_date, current_time, id_cliente, id_empleado])
                 
                 idObservacion = cursor.lastrowid  # Obtiene el ID de la última fila insertada
                 connection.commit()  # Asegura que se realice la inserción
@@ -291,7 +291,6 @@ class Clientes():
             print("Error al insertar:", str(e))
             return None
         
-  
 
 
         

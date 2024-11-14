@@ -60,6 +60,7 @@ def listarClientes(request):
         descripciones_observaciones = cliente[22].split('|') if cliente[22] else []
         fechas_observaciones = cliente[23].split(', ') if cliente[23] else []
         horas_observaciones  = cliente[24].split(', ') if cliente[24] else []
+        nombres_observadores = cliente[25].split(', ') if cliente[24] else []
 
         observaciones = []
         for i in range(len(ids_observaciones)):
@@ -67,7 +68,8 @@ def listarClientes(request):
                 'id_observacion': ids_observaciones[i] if i < len(ids_observaciones) else '',
                 'descripcion_observacion': descripciones_observaciones[i] if i < len(descripciones_observaciones) else '',
                 'fecha_observacion': fechas_observaciones[i] if i < len(fechas_observaciones) else '',
-                'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else ''
+                'hora_observacion': horas_observaciones[i] if i < len(horas_observaciones) else '',
+                'nombre_observador': nombres_observadores[i] if i < len(nombres_observadores) else '',
             }
             observaciones.append(observacion)
         
@@ -306,7 +308,8 @@ def agregarDesignacionVendedor(request, id_cliente):
 def agregarObservacionCliente(request, id_cliente):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
-        clientes.agregarObservacion(id_cliente, descripcion_observacion)
+        id_empleado = request.user.id_usuario  # Cambia a id_usuario
+        clientes.agregarObservacion(id_cliente, descripcion_observacion, id_empleado)
     return redirect('/clientes/')
 
 @login_required

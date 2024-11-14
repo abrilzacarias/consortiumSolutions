@@ -279,23 +279,29 @@ class Observacion(models.Model):
                     o.id_observacion,
                     o.descripcion_observacion,
                     o.fecha_observacion,
-                    o.hora_observacion
+                    o.hora_observacion,
+                    CONCAT(p.nombre_persona, ' ', p.apellido_persona) AS nombre_completo
                 FROM observacion o
+                JOIN empleado e ON o.id_empleado = e.id_empleado
+                JOIN persona p ON e.id_persona = p.id_persona
                 WHERE o.id_detalle_presupuesto = %s;
             """
             cursor.execute(sqlListarObservaciones, [id_detalle_presupuesto])
             resultados = cursor.fetchall()
             observaciones = []
-        
+
         for resultado in resultados:
             observaciones.append({
                 'id_observacion': resultado[0],
                 'descripcion_observacion': resultado[1],
                 'fecha_observacion': resultado[2],
                 'hora_observacion': resultado[3],
+                'nombre_observador': resultado[4],
             })
-        
+
         return observaciones
+
+
 
 class DetallePresupuesto(models.Model):
     id_detalle_presupuesto = models.AutoField(primary_key=True)
@@ -356,19 +362,20 @@ class DetallePresupuesto(models.Model):
         
 
     @classmethod
-    def agregarObservacionPresupuesto(cls, id_detalle_presupuesto, descripcion_observacion, id_detalle_venta=None, id_cliente=None):
+    def agregarObservacionPresupuesto(cls, id_detalle_presupuesto, descripcion_observacion, id_empleado, id_detalle_venta=None, id_cliente=None):
         try:
             with connection.cursor() as cursor:
-                sqlInsertarObservacionVenta = """
-                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_detalle_presupuesto, id_detalle_venta, id_cliente)
-                    VALUES (%s, %s, %s, %s, %s, %s);
+                sqlInsertarObservacionPresupuesto = """
+                    INSERT INTO observacion (descripcion_observacion, fecha_observacion, hora_observacion, id_empleado, id_detalle_presupuesto, id_detalle_venta, id_cliente)
+                    VALUES (%s, %s, %s, %s, %s, %s, %s);
                 """
                 current_date = timezone.localtime(timezone.now()).date()
                 current_time = timezone.localtime(timezone.now()).time()
-                cursor.execute(sqlInsertarObservacionVenta, [descripcion_observacion, current_date, current_time, id_detalle_presupuesto, id_detalle_venta, id_cliente])
+                cursor.execute(sqlInsertarObservacionPresupuesto, [descripcion_observacion, current_date, current_time, id_empleado, id_detalle_presupuesto, id_detalle_venta, id_cliente])
                 idObservacion = cursor.lastrowid
                 connection.commit()
                 return idObservacion
         except Exception as e:
             print("Error al insertar:", str(e))
             return None
+

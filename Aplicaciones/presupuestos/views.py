@@ -310,8 +310,11 @@ def eliminarDetallePresupuesto(request, id_detalle):
 
     return JsonResponse({'message': 'Método no permitido.'}, status=405)
 
+@login_required
 def agregarObservacionPresupuesto(request, id_detalle_presupuesto):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
-        DetallePresupuesto.agregarObservacionPresupuesto(id_detalle_presupuesto, descripcion_observacion)
+        id_empleado = request.user.id_usuario  # Cambia a id_usuario
+        DetallePresupuesto.agregarObservacionPresupuesto(id_detalle_presupuesto, descripcion_observacion, id_empleado)
     return redirect('/presupuestos/')
+
