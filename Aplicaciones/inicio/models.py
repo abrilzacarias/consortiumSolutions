@@ -1,6 +1,8 @@
 from django.db import models
 from django.db import connection
 from ..login.models import MyUser
+import json
+
 class Actividades(): 
     def listarActividades(self):
         with connection.cursor() as cursor:
@@ -367,3 +369,40 @@ class Venta(models.Model):
     class Meta:
         managed = False
         db_table = 'venta'
+
+class Graficos():
+    def serviciosMasVendidos(self):
+        try:
+            with connection.cursor() as cursor:
+                sql_servicios_mas_vendidos = """
+                    SELECT 
+                        s.nombre_servicio, 
+                        SUM(dv.cantidad_detalle_venta) AS total_vendido 
+                    FROM 
+                        detalle_venta dv 
+                    JOIN 
+                        venta v ON dv.id_venta = v.id_venta 
+                    JOIN 
+                        servicio s ON dv.id_servicio = s.id_servicio 
+                    GROUP BY 
+                        s.nombre_servicio 
+                    ORDER BY 
+                        total_vendido DESC;
+                """
+                cursor.execute(sql_servicios_mas_vendidos)
+                servicios = cursor.fetchall()
+
+                # Convertir el resultado a una lista de diccionarios
+                servicios_lista = [{'nombre_servicio': row[0], 'total_vendido': row[1]} for row in servicios]
+
+                # Imprimir el resultado para verificar
+                print("Servicios más vendidos:")
+                for servicio in servicios_lista:
+                    print(f"Servicio: {servicio['nombre_servicio']}, Total vendido: {servicio['total_vendido']}")
+
+            return servicios_lista
+            
+        except Exception as e:
+            print(f"Error al ejecutar la consulta: {e}")
+            return []
+
