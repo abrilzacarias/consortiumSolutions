@@ -9,26 +9,29 @@
     <title>Inicio</title>
     <link href="output.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
+    
     <script src="{% static 'js/index.js' %}"></script>
+
 </head>
 <body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
     <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
-        <div class="flex justify-center items-center gap-4">
-
+        <div class="container mx-auto p-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 "> <!-- Aumentado a gap-16 -->
             <!-- Card 1 -->
             <div class="bg-gray border border-gray-200 rounded-lg bg-gray-800 p-2" id="graficos_servicio" data-graficos="{{ graficos_data }}">
                 <canvas id="graficoServicios"></canvas>
             </div>
-
             <!-- Card 2 -->
-
-            <div class="bg-gray border border-gray-200 rounded-lg bg-gray-800 text-center p-6">
-                <h2 class="text-xl text-white font-semibold mb-4">Cliente con más compras</h2>
-                <p class="text-lg text-white mb-2"><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
-                <p class="text-lg text-white"><strong>Compras totales:</strong> <span id="totalComprado"></span></p>
+            <div class="flex flex-col items-center rounded-lg text-surface shadow-secondary-1 bg-surface-dark text-white md:max-w-xl md:flex-row border p-6 ml-4">
+                <img class="h-96 w-full rounded-t-lg object-cover md:h-auto md:w-40 md:!rounded-none md:!rounded-s-lg" src="../static/js/images/user.png" alt="" style="width: 300px;" />
+                <div class="flex flex-col justify-center text-center p-6">
+                    <h5 class="mb-4 text-2xl font-semibold">Cliente con más compras</h5> <!-- Agranda el título -->
+                    <p class="mb-4 text-lg"><strong>Nombre:</strong> <span id="nombreCliente"></span></p> <!-- Agranda el texto -->
+                    <p class="text-lg text-surface/75 dark:text-neutral-300"><strong>Compras totales:</strong> <span id="totalComprado"></span></p> <!-- Agranda el texto -->
+                </div>
             </div>
-
+        </div>
     </section>
+    
 
             <div class="container mx-auto p-4">
                 <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden border border-gray-500">
