@@ -12,9 +12,10 @@ from django.contrib.auth.decorators import login_required, permission_required
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def home(request):
+    query = request.GET.get('busquedaPresupuesto', '').lower()  
     es_vendedor = request.user.groups.filter(name='Vendedor').exists()
     presupuestos = Presupuesto.listarPresupuestos()
-    print(presupuestos)
+
     if es_vendedor:
         try:
             vendedorUsuario = Empleado.objects.get(id_usuario=request.user.id_usuario)
@@ -23,8 +24,14 @@ def home(request):
             pass
     
     if es_vendedor:
-        print("El vendedor existe.")
         presupuestos = [p for p in presupuestos if p['id_empleado'] == id_vendedor_user]
+
+    if query:
+        presupuestos = [
+            presupuesto for presupuesto in presupuestos
+            if presupuesto['nombre_edificio'].lower().startswith(query) or
+               presupuesto['nombre_persona'].lower().startswith(query) 
+        ]
 
     context = paginacionTablas(request, presupuestos, 'presupuestos')
     return render(request, 'listarPresupuestos.html', context)
@@ -303,8 +310,11 @@ def eliminarDetallePresupuesto(request, id_detalle):
 
     return JsonResponse({'message': 'Método no permitido.'}, status=405)
 
+@login_required
 def agregarObservacionPresupuesto(request, id_detalle_presupuesto):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
-        DetallePresupuesto.agregarObservacionPresupuesto(id_detalle_presupuesto, descripcion_observacion)
+        id_empleado = request.user.id_usuario  # Cambia a id_usuario
+        DetallePresupuesto.agregarObservacionPresupuesto(id_detalle_presupuesto, descripcion_observacion, id_empleado)
     return redirect('/presupuestos/')
+

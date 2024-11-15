@@ -15,6 +15,7 @@
 </head>
 <body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
     <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
+
         <div class="flex justify-center items-center gap-4">
             
             <!-- Card 1 -->
@@ -31,16 +32,16 @@
             
         </div>
     </section>    
-            <div class="container mx-auto p-4">
-                <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden border border-gray-500">
-                    <div class="p-4">
-                        <div class="flex flex-wrap justify-center space-x-2 mt-4">
-                            <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Todos">Todos</button>
-                            <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Alta empleado">Alta Empleado</button>
-                            <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Baja empleado">Baja Empleado</button>
-                            <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Alta cliente">Alta Cliente</button>
-                            <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Observacion">Observaciones</button>
-                        </div>
+        <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
+            <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
+                <div class="p-4">
+                    <div class="flex flex-wrap justify-center space-x-2 mt-4">
+                        <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Todos">Todos</button>
+                        <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Alta empleado">Alta Empleado</button>
+                        <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Baja empleado">Baja Empleado</button>
+                        <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Alta cliente">Alta Cliente</button>
+                        <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Observacion">Observaciones</button>
+
                     </div>
             
                     <div class="overflow-x-auto">
@@ -102,6 +103,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
     var graficosDataCliente = JSON.parse('{{ graficos_data|escapejs }}');
         
+
         // Acceder a los datos del cliente más compras
         var clienteNombre = graficosDataCliente.cliente_mas_compras.nombre_completo;
         var clienteTotalComprado = graficosDataCliente.cliente_mas_compras.total_comprado;
@@ -110,6 +112,35 @@ document.addEventListener("DOMContentLoaded", function() {
         document.getElementById('nombreCliente').innerText = clienteNombre;
         document.getElementById('totalComprado').innerText = clienteTotalComprado;
 });
+                <div class="overflow-x-auto">
+                    <div class="pagination-container"></div>
+                    <table id="tableActividades" class="min-w-full table-auto text-gray-400  text-sm rounded-l-lg">
+                        <thead class="text-xs text-gray-400 uppercase bg-gray-700">
+                            <tr>
+                                <th scope="col" class="px-4 py-4 text-left">Fecha</th>
+                                <th scope="col" class="px-4 py-3 text-left">Tipo de Actividad</th>
+                                <th scope="col" class="px-4 py-3 text-left">Descripción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabla-resultados">
+                            {% for actividad in act_modificadas %}
+                            <tr class="hover:bg-gray-700" data-tipo="{{ actividad.tipo_actividad }}">
+                                <td class="px-4 py-3 text-left">{{ actividad.fecha_actividad }}</td>
+                                <td class="px-4 py-3 text-left">{{ actividad.tipo_actividad }}</td>
+                                <td class="px-4 py-3 text-left">{{ actividad.descripcion_actividad }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    
+                    <!-- Paginación HTML -->
+                    {% include 'paginacion.html' %}
+                    
+                </div>
+                                        
+            </div>
+        </div>
+
 
 </script>
 

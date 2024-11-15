@@ -10,8 +10,21 @@ from django.contrib.auth.decorators import login_required, permission_required
 #TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN POR LOS PERMISOS
 @login_required
 def listarFacturas(request):
+    query = request.GET.get('busquedaFactura', '').lower() 
     facturas = Factura.listarFacturas()
     estados_factura = EstadoFactura.objects.all()
+
+    if query:
+        facturas = [
+            factura for factura in facturas
+            if (
+                query in str(factura['numero_comprobante']).lower() or
+                factura['nombre_cliente'].lower().startswith(query) or
+                factura['apellido_cliente'].lower().startswith(query) or
+                factura['nombre_edificio'].lower().startswith(query)
+            )
+        ]
+
     context = paginacionTablas(request, facturas, 'facturas')
     context['estados_factura'] = estados_factura 
     
@@ -105,6 +118,6 @@ def actualizar_estado_factura(request, id_factura):
         else:
             messages.error(request, 'Debe seleccionar un estado válido.')
 
-        return redirect(reverse('facturas:listarFacturas'))
+        return redirect('/facturas/')
 
-    return redirect(reverse('facturas:listarFacturas'))
+    return redirect('/facturas/')

@@ -175,6 +175,14 @@
           <div>
             <ul class="mb-8 text-sm font-medium">
               <li>
+                <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-yellow-400" href="{% url 'inicio:perfil' %}">
+                  <img class="vuesaxlinearlogout-icon" src="{% static 'public/perfil.svg' %}" alt="" />
+                  <span class="ml-3">
+                    Perfil
+                  </span>
+                </a>
+              </li>
+              <li>
                 <a class="flex items-center rounded py-3 pl-3 pr-4 text-gray-50 hover:bg-gray-700 hover:border-l-4 hover:border-red-700" href="{% url 'logout' %}">
                   <img class="vuesaxlinearlogout-icon" src="{% static 'public/cerrarsesion-1.svg' %}" alt="" />
                   <span class="ml-3">Cerrar Sesión</span>

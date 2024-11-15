@@ -11,13 +11,22 @@ from django.contrib.auth.decorators import login_required, permission_required
 #TODO @permission_required('inicio.view_detalleventa', login_url='', raise_exception=True) AGREGAR A TODAS PERO PRIMERO HAY QUE CONFIGURAR ADMIN BIEN
 @login_required
 def home(request):
+    query = request.GET.get('busquedaVenta', '').lower()  
     ventas = Venta.listarVentas()
     metodos_pago = MetodoPago.obtenerMetodosPago() # Asegúrate de incluir esto
     estados_venta = EstadoVenta.obtenerEstadosVenta()
+
+    if query:
+        ventas = [
+            venta for venta in ventas
+            if venta['numero_factura'].lower().startswith(query) or
+               venta['nombre_empleado'].lower().startswith(query) or
+               venta['nombre_edificio'].lower().startswith(query)
+        ]
+
     context = paginacionTablas(request, ventas, 'ventas')
     context['metodos_pago'] = metodos_pago  # Agrega métodos de pago al contexto
     context['estados_venta'] = estados_venta
-    # Asegúrate de que en tu vista 'home' o en la vista correspondiente
     #context['detalles'] = detalle_venta_queryset  # Asegúrate de que incluye el id_estado_venta
     return render(request, 'ventasViews.html', context)
 
@@ -128,17 +137,29 @@ def enviar_factura_prueba(request, id_venta):
 @login_required
 def editarMetodoPago(request, id_venta):
     if request.method == 'POST':
-        # Imprimir todos los datos que llegan en el POST
-        print(request.POST)  # Esto te mostrará todos los datos enviados por el formulario
+        try:
+            # Imprimir todos los datos que llegan en el POST
+            print(request.POST)  # Esto te mostrará todos los datos enviados por el formulario
 
-        # Obtener el nuevo método de pago del formulario
-        id_nuevo_metodo_pago = request.POST.get('metodo_pago')  # Cambia 'id_metodo_pago' por 'metodo_pago'
-        
-        # Llama al método de clase para actualizar el método de pago
-        Venta.actualizarMetodoPago(id_nuevo_metodo_pago, id_venta)
-        
+            # Obtener el nuevo método de pago del formulario
+            id_nuevo_metodo_pago = request.POST.get('metodo_pago')
+
+            # Llama al método de clase para actualizar el método de pago
+            actualizado = Venta.actualizarMetodoPago(id_nuevo_metodo_pago, id_venta)
+
+            if actualizado:
+                # Mensaje de éxito si la actualización fue correcta
+                messages.success(request, 'El método de pago se actualizó correctamente.')
+            else:
+                # Mensaje de error si la actualización falló
+                messages.error(request, 'Hubo un error al actualizar el método de pago.')
+
+        except Exception as e:
+            # Capturar excepciones inesperadas y notificar al usuario
+            messages.error(request, f'Hubo un problema al actualizar el método de pago: {str(e)}')
+
         # Redirige a la vista principal de ventas
-        return redirect('ventas:home')  # Asegúrate de que 'ventas:home' esté definido en tus URLs
+        return redirect('ventas:home')
 
     else:
         # En caso de que sea un GET, obtén los métodos de pago y la venta
@@ -173,5 +194,6 @@ def cambiarEstadoRegistroVenta(request, id_detalle_venta):
 def agregarObservacionDetalleVenta(request, id_detalle_venta):
     if request.method == 'POST':
         descripcion_observacion = request.POST.get('descripcion_observacion')
-        DetalleVenta.agregarObservacionDetalleVenta(id_detalle_venta, descripcion_observacion)
+        id_empleado = request.user.id_usuario  # Cambia a id_usuario
+        DetalleVenta.agregarObservacionDetalleVenta(id_detalle_venta, descripcion_observacion, id_empleado)
     return redirect('/ventas/')

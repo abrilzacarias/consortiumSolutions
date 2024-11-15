@@ -1,0 +1,42 @@
+{% extends 'layout.html' %}
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Perfil</title>
+    {% load static %}
+</head>
+
+<body class="min-h-screen bg-opacity-100 flex items-center justify-center">
+    <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 11rem;">
+        <div class="max-w-md mx-auto px-4 lg:px-12">
+            <div class="bg-gray-800 shadow-md sm:rounded-lg overflow-hidden">
+                <div class="p-6 text-white">
+                <p class="mb-4"><strong>Email:</strong> {{ usuario }}</p>
+
+                <h2>Roles Asignados:</h2>
+                <ul>
+                    {% for role in roles %}
+                        <li>{{ role.name }}</li>
+                    {% empty %}
+                        <li>Usted es un administrador del sistema.</li>
+                    {% endfor %}
+                </ul>
+
+                <div class="pt-6 text-center">
+                    <button type="submit" class="block w-full px-4 py-2 bg-blue-900 hover:bg-blue-700 rounded text-center mx-auto">
+                        <a href="{% url 'passwordReset' %}" class="text-white">Cambiar Contraseña</a>
+                    </button>
+                </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>
+    
+{% endblock %}
