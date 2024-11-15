@@ -1,6 +1,8 @@
 {% extends 'layout.html' %}
 {% load static %}
 {% block content %}
+
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +10,28 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Inicio</title>
     <link href="output.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.1/dist/flowbite.min.css" rel="stylesheet" />
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1/dist/chart.umd.min.js"></script>
     <script src="{% static 'js/index.js' %}"></script>
 </head>
 <body class="min-h-screen bg-gray-900 bg-opacity-100 text-white">
     <section class="bg-gray-900 p-3 sm:p-5 antialiased" style="margin-top: 4rem;">
+
+        <div class="flex justify-center items-center gap-4">
+            
+            <!-- Card 1 -->
+            <div class="bg-gray border border-gray-200 rounded-lg bg-gray-800 p-2" id="graficos_servicio" data-graficos="{{ graficos_data }}">
+                <canvas id="graficoServicios"></canvas>
+            </div>
+            
+            <!-- Card 2 -->
+            <div class="bg-gray border border-gray-200 rounded-lg bg-gray-800 text-center p-6">
+                <h2 class="text-xl text-white font-semibold mb-4">Cliente con más compras</h2>
+                <p class="text-lg text-white mb-2"><strong>Nombre:</strong> <span id="nombreCliente"></span></p>
+                <p class="text-lg text-white"><strong>Compras totales:</strong> <span id="totalComprado"></span></p>
+            </div>
+            
+        </div>
+    </section>    
         <div class="mx-auto max-w-screen-xl px-4 lg:px-12">
             <div class="bg-gray-800 relative shadow-md sm:rounded-lg overflow-hidden">
                 <div class="p-4">
@@ -24,9 +41,77 @@
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Baja empleado">Baja Empleado</button>
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Alta cliente">Alta Cliente</button>
                         <button class="btn-filtro bg-gray-600 hover:bg-gray-700 text-white font-semibold py-2 px-4 rounded btn-filtro" data-filtro="Observacion">Observaciones</button>
+
                     </div>
+            
+                    <div class="overflow-x-auto">
+                        <div class="pagination-container"></div>
+                        <table id="tableActividades" class="min-w-full table-auto text-white">
+                            <thead class="text-based text-gray-900 uppercase bg-gray-500 	tracking-wide">
+                                <tr>
+                                    <th scope="col" class="px-4 py-4 text-left">Fecha</th>
+                                    <th scope="col" class="px-4 py-3 text-left">Tipo de Actividad</th>
+                                    <th scope="col" class="px-4 py-3 text-left">Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabla-resultados">
+                                {% for actividad in act_modificadas %}
+                                <tr class="hover:bg-gray-700 border border-gray-700" ata-tipo="{{ actividad.tipo_actividad }}">
+                                    <td class="px-4 py-3 text-left">{{ actividad.fecha_actividad }}</td>
+                                    <td class="px-4 py-3 text-left">{{ actividad.tipo_actividad }}</td>
+                                    <td class="px-4 py-3 text-left">{{ actividad.descripcion_actividad }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        
+                        <!-- Paginación HTML -->
+                        {% include 'paginacion.html' %}
+                        
+                    </div>              
                 </div>
+            </div>    
+    </div>
+</body>
+</html>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Obtener los datos del data-attribute
+    const graficosData = JSON.parse(document.getElementById('graficos_servicio').getAttribute('data-graficos'));
+
+    // Configuración del gráfico
+    const ctx = document.getElementById('graficoServicios').getContext('2d');
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: graficosData.servicios_mas_vendidos.labels,
+            datasets: [{
+                label: 'Servicios Más Vendidos',
+                data: graficosData.servicios_mas_vendidos.data,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    var graficosDataCliente = JSON.parse('{{ graficos_data|escapejs }}');
         
+
+        // Acceder a los datos del cliente más compras
+        var clienteNombre = graficosDataCliente.cliente_mas_compras.nombre_completo;
+        var clienteTotalComprado = graficosDataCliente.cliente_mas_compras.total_comprado;
+        
+        // Insertar los datos en los elementos HTML
+        document.getElementById('nombreCliente').innerText = clienteNombre;
+        document.getElementById('totalComprado').innerText = clienteTotalComprado;
+});
                 <div class="overflow-x-auto">
                     <div class="pagination-container"></div>
                     <table id="tableActividades" class="min-w-full table-auto text-gray-400  text-sm rounded-l-lg">
@@ -57,8 +142,7 @@
         </div>
 
 
-    </section>
-</body>
-</html>
+</script>
+
 <script src="https://cdn.datatables.net/v/dt/dt-2.0.7/datatables.min.js"></script>
 {% endblock %}

@@ -1,11 +1,11 @@
+import json
 from django.shortcuts import render
-from .models import Actividades
+from .models import Actividades, Graficos
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
 from django.core.paginator import Paginator
 from Aplicaciones.empleados.models import Empleado, TipoEmpleado
-
 
 
 def paginacionTablas(request, datos, nombre_variable, items_por_pagina=10):
@@ -36,7 +36,17 @@ def listarActividades(request):
         }
         act_modificadas.append(act_modificada)
     
+    datos_servicios = Graficos().serviciosMasVendidos()
+    datos_cliente = Graficos().clienteMasCompras()
+    # Crear diccionario de datos para el contexto
+    graficos_data = {
+        "servicios_mas_vendidos": datos_servicios,
+        'cliente_mas_compras': datos_cliente
+    }
+    
     context = paginacionTablas(request, act_modificadas, nombre_variable='act_modificadas')
+    context['graficos_data'] = json.dumps(graficos_data)
+    print(graficos_data)
    
     return render(request, 'index.html', context)
 

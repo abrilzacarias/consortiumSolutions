@@ -28,7 +28,7 @@
       top: 3rem; 
     }
   
-    ul.breadcrumb li + li::before {
+    ul.breadcrumb li + li {
       content: "\276F";
       padding-left: 8px;
       padding-right: 4px;
@@ -73,9 +73,28 @@
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
         </svg>
       </button>
-      <ul class="breadcrumb flex justify-end items-center text-lg text-white w-full">
+      <ul class="breadcrumb flex justify-end items-center text-lg text-white w-full space-x-4">
+        <!-- Campana de notificaciones -->
+        <li class="relative inline" style="margin-top:8px;">
+          <button id="notificationBell" class="text-white focus:outline-none">
+            <!-- Ícono de campana -->
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.5 6.5 0 10-13 0v3.159c0 .217-.07.428-.195.597L3 17h5m7 0a3 3 0 01-6 0" />
+            </svg>
+          </button>
+      
+          <!-- Menú desplegable -->
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-2 w-64 bg-gray-800 text-white rounded shadow-lg z-50">
+            <div class="px-4 py-2 border-b border-gray-700">Notificaciones</div>
+            <ul class="py-1">
+              <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Notificación 1</li>
+              <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Notificación 2</li>
+              <li class="px-4 py-2 hover:bg-gray-700 cursor-pointer">Notificación 3</li>
+            </ul>
+          </div>
+        </li>
         <li class="inline">
-          <p class="text-right text-sm sm:text-lg">Bienvenido, {{ request.user }}</p>
+          <p class="text-right text-sm sm:text-xl font-semibold">Bienvenido, {{ request.user }}</p>
         </li>
       </ul>
     </nav>
@@ -199,6 +218,21 @@
 
       // Ajusta la posición del sidebar en función de la altura del navbar
       sidebar.style.top = navbar.clientHeight + "px";
+
+
+      const bell = document.getElementById("notificationBell");
+  const dropdown = document.getElementById("notificationDropdown");
+
+  bell.addEventListener("click", () => {
+    dropdown.classList.toggle("hidden");
+  });
+
+  // Cierra el menú al hacer clic fuera de él
+  document.addEventListener("click", (event) => {
+    if (!bell.contains(event.target) && !dropdown.contains(event.target)) {
+      dropdown.classList.add("hidden");
+    }
+  });
     });
     </script>
   </body>
