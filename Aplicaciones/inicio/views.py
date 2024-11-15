@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from .models import Actividades
+from .models import Actividades, Graficos
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.contrib.auth.decorators import login_required
 from datetime import datetime
