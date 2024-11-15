@@ -370,7 +370,7 @@ class Venta(models.Model):
         managed = False
         db_table = 'venta'
 
-class Graficos():
+class Graficos:
     def serviciosMasVendidos(self):
         try:
             with connection.cursor() as cursor:
@@ -392,17 +392,20 @@ class Graficos():
                 cursor.execute(sql_servicios_mas_vendidos)
                 servicios = cursor.fetchall()
 
-                # Convertir el resultado a una lista de diccionarios
-                servicios_lista = [{'nombre_servicio': row[0], 'total_vendido': row[1]} for row in servicios]
+                # Convertir el resultado a una lista de diccionarios y convertir Decimal a float
+                servicios_lista = [{'nombre_servicio': row[0], 'total_vendido': float(row[1])} for row in servicios]
 
                 # Imprimir el resultado para verificar
                 print("Servicios más vendidos:")
                 for servicio in servicios_lista:
                     print(f"Servicio: {servicio['nombre_servicio']}, Total vendido: {servicio['total_vendido']}")
 
-            return servicios_lista
-            
+            datos_json = {
+                "labels": [servicio['nombre_servicio'] for servicio in servicios_lista],
+                "data": [servicio['total_vendido'] for servicio in servicios_lista]
+            }
+
+            return datos_json
         except Exception as e:
             print(f"Error al ejecutar la consulta: {e}")
             return []
-
