@@ -54,7 +54,7 @@
                             </thead>
                             <tbody id="tabla-resultados">
                                 {% for actividad in act_modificadas %}
-                                <tr class="hover:bg-gray-700 border border-gray-700" ata-tipo="{{ actividad.tipo_actividad }}">
+                                <tr class="hover:bg-gray-700 border border-gray-700" data-tipo="{{ actividad.tipo_actividad }}">
                                     <td class="px-4 py-3 text-left">{{ actividad.fecha_actividad }}</td>
                                     <td class="px-4 py-3 text-left">{{ actividad.tipo_actividad }}</td>
                                     <td class="px-4 py-3 text-left">{{ actividad.descripcion_actividad }}</td>
