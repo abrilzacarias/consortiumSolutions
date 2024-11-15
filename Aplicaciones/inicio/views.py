@@ -7,7 +7,6 @@ from django.core.paginator import Paginator
 from Aplicaciones.empleados.models import Empleado, TipoEmpleado
 
 
-
 def paginacionTablas(request, datos, nombre_variable, items_por_pagina=10):
     paginator = Paginator(datos, items_por_pagina)
     page = request.GET.get('page') or 1
