@@ -136,7 +136,7 @@ class Clientes():
             return None
 
         
-    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, contactos_data):
+    def editarCliente(self, id_cliente, nombre_persona, apellido_persona, cuitl_persona, direccion_persona, clave_afgip_cliente, tipo_cliente, matricula_cliente, vencimiento_matricula, correo_electronico, contactos_data):
         with connection.cursor() as cursor:
             cursor.execute("""
                 SELECT id_persona, id_matricula FROM cliente WHERE id_cliente = %s;
@@ -169,6 +169,15 @@ class Clientes():
                 WHERE id_cliente = %s;
             """, [clave_afgip_cliente, tipo_cliente, id_cliente])
 
+        # Corregir la sentencia SQL para actualizar el correo electrónico
+            sqlActualizarCorreo = """
+                UPDATE contacto 
+                SET descripcion_contacto = %s, id_tipo_contacto = %s 
+                WHERE id_persona = %s;
+            """
+            cursor.execute(sqlActualizarCorreo, [correo_electronico, 1, id_persona])
+            connection.commit()
+            
             # Actualizar o crear contactos
             for contacto_data in contactos_data:
                 contacto_id = contacto_data.get('id_contacto')
@@ -245,12 +254,21 @@ class Clientes():
                 id_designacion, id_empleado_actual = designacion_existente
                 if id_empleado_actual != id_empleado:
                     # Si existe una designación activa pero con un empleado diferente,
-                    # actualizamos el empleado y la fecha de alta
+                    # damos de baja la designación actual antes de crear una nueva
                     cursor.execute("""
                         UPDATE designacion 
-                        SET id_empleado = %s, fecha_alta_designacion = %s
+                        SET fecha_baja_designacion = %s 
                         WHERE id_designacion = %s
-                    """, [id_empleado, timezone.now().date(), id_designacion])
+                    """, [timezone.now().date(), id_designacion])
+
+                    # Crear una nueva designación para el nuevo vendedor
+                    id_administrador = 1  # Este valor debe ser adecuado según tu contexto
+                    fecha_alta_designacion = timezone.now().date()
+
+                    cursor.execute("""
+                        INSERT INTO designacion (id_empleado, id_cliente, fecha_alta_designacion, id_administrador)
+                        VALUES (%s, %s, %s, %s)
+                    """, [id_empleado, id_cliente, fecha_alta_designacion, id_administrador])
                 else:
                     # Si el empleado es el mismo, no hacemos nada
                     return True
@@ -271,6 +289,23 @@ class Clientes():
             connection.rollback()
             return False
 
+        
+    def eliminarDesignacionVendedor(self, id_cliente, id_empleado):
+        try:
+            with connection.cursor() as cursor:
+                # Actualizar la tabla designacion para establecer la fecha de baja
+                cursor.execute("""
+                    UPDATE designacion 
+                    SET fecha_baja_designacion = %s 
+                    WHERE id_cliente = %s AND id_empleado = %s AND fecha_baja_designacion IS NULL;
+                """, [current_datetime, id_cliente, id_empleado])
+
+                # Guardar los cambios en la base de datos
+                connection.commit()
+                return True
+        except Exception as e:
+            print("Error al eliminar designación de vendedor:", str(e))
+            return False
         
     def agregarObservacion(self, id_cliente, descripcion_observacion, id_empleado):
         try:

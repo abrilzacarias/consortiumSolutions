@@ -94,7 +94,7 @@
                                         {% else %}
                                             -
                                         {% endif %}</td>
-                                        <td class="px-4 py-3">{{cliente.vendedor_asignado}}</td>
+                                        <td class="px-4 py-3">{{cliente.vendedor_asignado| default_if_none:"-"}}</td>
                                         <td class="px-4 py-3 flex items-center justify-end">
                                     <button id="{{cliente.id_cliente}}-dropdown-button" data-dropdown-toggle="{{cliente.id_cliente}}-dropdown" class="inline-flex items-center text-sm font-medium hover:bg-gray-100 p-1.5 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none" type="button">
                                         <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
@@ -893,6 +893,8 @@
                 closeAllDropdowns();
             }
         });
+
+        
     });
 </script>
 </body>

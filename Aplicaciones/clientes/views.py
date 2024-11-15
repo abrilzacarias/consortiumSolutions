@@ -144,6 +144,8 @@ def agregarCliente(request):
         tipos_contacto = request.POST.getlist('tipo_contacto[]')
         contactos = request.POST.getlist('contacto[]')
         
+        nombre_cliente = nombre_cliente.capitalize()
+        apellido_cliente = apellido_cliente.capitalize()
 
         # Crear una lista de contactos como tuplas (tipo_contacto, contacto)
         lista_contactos = list(zip(tipos_contacto, contactos))
@@ -176,7 +178,7 @@ def editarCliente(request, id_cliente):
     clientes = Clientes()
     
     if request.method == 'POST':
-        # Obtener los datos del formulario
+        # Obtener datos del formulario
         nombre_persona = request.POST.get('nombre_persona')
         apellido_persona = request.POST.get('apellido_persona')
         cuitl_persona = request.POST.get('cuitl_persona')
@@ -185,11 +187,13 @@ def editarCliente(request, id_cliente):
         tipo_cliente = request.POST.get('tipo_cliente')
         matricula_cliente = request.POST.get('matricula_cliente')
         vencimiento_matricula = request.POST.get('vencimiento_matricula')
-        vendedor_asignado = request.POST.get('vendedor_asignado')  
+        vendedor_asignado = request.POST.get('vendedor_asignado')
+        correo_electronico = request.POST.get('descripcion_contacto_correo')
+        print(correo_electronico)
 
-        print(f"ID Cliente recibido: {id_cliente}")  # Verifica el ID del cliente
-        
-        # Recopilación de los contactos existentes y nuevos
+        nombre_persona = nombre_persona.capitalize()
+        apellido_persona = apellido_persona.capitalize()
+        # Recopilar los datos de contactos
         contactos_data = []
         for key, value in request.POST.items():
             if key.startswith('tipo_contacto_'):
@@ -212,7 +216,7 @@ def editarCliente(request, id_cliente):
                         'tipo_contacto_id': tipo_contacto_id,
                         'descripcion_contacto': descripcion_contacto
                     })
-        
+
         # Verificar que el cliente existe
         cliente_actual = clientes.obtenerClientePorId(id_cliente)
         if not cliente_actual:
@@ -221,21 +225,24 @@ def editarCliente(request, id_cliente):
 
         vendedor_actual = cliente_actual.get('id_vendedor_asignado')
 
-        # Manejar la designación de vendedores
+        # Manejar cambio de vendedor
         if vendedor_asignado:
             if vendedor_actual != vendedor_asignado:
+                # Dar de baja la designación anterior, si existe
                 if vendedor_actual:
                     if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                        messages.error(request, 'Hubo un error al eliminar la designación del vendedor actual.')
-                        return render(request, 'clientesviews.html', {'error': 'Hubo un error al eliminar la designación del vendedor actual.'})
+                        messages.error(request, 'Error al eliminar la designación del vendedor actual.')
+                        return render(request, 'clientesviews.html', {'error': 'Error al eliminar la designación del vendedor actual.'})
+                
+                # Asignar nuevo vendedor
                 if not clientes.agregarDesignacionVendedor(vendedor_asignado, id_cliente):
-                    messages.error(request, 'Hubo un error al asignar el nuevo vendedor.')
-                    return render(request, 'clientesviews.html', {'error': 'Hubo un error al asignar el nuevo vendedor.'})
+                    messages.error(request, 'Error al asignar el nuevo vendedor.')
+                    return render(request, 'clientesviews.html', {'error': 'Error al asignar el nuevo vendedor.'})
         else:
             if vendedor_actual:
                 if not clientes.eliminarDesignacionVendedor(id_cliente, vendedor_actual):
-                    messages.error(request, 'Hubo un error al eliminar la designación del vendedor actual.')
-                    return render(request, 'clientesviews.html', {'error': 'Hubo un error al eliminar la designación del vendedor actual.'})
+                    messages.error(request, 'Error al eliminar la designación del vendedor actual.')
+                    return render(request, 'clientesviews.html', {'error': 'Error al eliminar la designación del vendedor actual.'})
 
         # Editar el cliente
         actualizado = clientes.editarCliente(
@@ -247,7 +254,8 @@ def editarCliente(request, id_cliente):
             clave_afgip_cliente, 
             tipo_cliente, 
             matricula_cliente, 
-            vencimiento_matricula, 
+            vencimiento_matricula,
+            correo_electronico,
             contactos_data
         )
 
@@ -262,6 +270,7 @@ def editarCliente(request, id_cliente):
         cliente = clientes.obtenerClientePorId(id_cliente)
         empleados = Empleado().mostrarEmpleados()
         return render(request, 'clientesviews.html', {'cliente': cliente, 'empleados': empleados})
+
 
 
 @login_required
