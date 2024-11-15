@@ -46,15 +46,15 @@ def listarActividades(request):
         act_modificadas.append(act_modificada)
     
     datos_servicios = Graficos().serviciosMasVendidos()
-
+    datos_cliente = Graficos().clienteMasCompras()
     # Crear diccionario de datos para el contexto
     graficos_data = {
-        "servicios_mas_vendidos": datos_servicios
+        "servicios_mas_vendidos": datos_servicios,
+        'cliente_mas_compras': datos_cliente
     }
     
     context = paginacionTablas(request, act_modificadas, nombre_variable='act_modificadas')
     context['graficos_data'] = json.dumps(graficos_data)
-    print('graficos_data')
     print(graficos_data)
    
     return render(request, 'index.html', context)

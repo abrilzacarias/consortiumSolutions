@@ -392,13 +392,7 @@ class Graficos:
                 cursor.execute(sql_servicios_mas_vendidos)
                 servicios = cursor.fetchall()
 
-                # Convertir el resultado a una lista de diccionarios y convertir Decimal a float
                 servicios_lista = [{'nombre_servicio': row[0], 'total_vendido': float(row[1])} for row in servicios]
-
-                # Imprimir el resultado para verificar
-                print("Servicios más vendidos:")
-                for servicio in servicios_lista:
-                    print(f"Servicio: {servicio['nombre_servicio']}, Total vendido: {servicio['total_vendido']}")
 
             datos_json = {
                 "labels": [servicio['nombre_servicio'] for servicio in servicios_lista],
@@ -440,12 +434,9 @@ class Graficos:
                 # Verificar si se obtuvo un cliente
                 if cliente:
                     cliente_dict = {
-                        'nombre_cliente': cliente[0], 
-                        'apellido_cliente': cliente[1], 
-                        'total_comprado': cliente[2]
+                        'nombre_completo': f"{cliente[0]} {cliente[1]}",  # Concatenamos nombre y apellido
+                        'total_comprado': float(cliente[2])
                     }
-                    print("Cliente con más compras:")
-                    print(f"Cliente: {cliente_dict['nombre_cliente']} {cliente_dict['apellido_cliente']}, Total comprado: {cliente_dict['total_comprado']}")
                     return cliente_dict
                 else:
                     print("No se encontró ningún cliente.")
