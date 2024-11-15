@@ -409,3 +409,49 @@ class Graficos:
         except Exception as e:
             print(f"Error al ejecutar la consulta: {e}")
             return []
+    
+    def clienteMasCompras(self):
+        try:
+            with connection.cursor() as cursor:
+                sql_cliente_mas_compras = """
+                    SELECT 
+                        p.nombre_persona, 
+                        p.apellido_persona,
+                        SUM(dv.cantidad_detalle_venta) AS total_comprado
+                    FROM 
+                        detalle_venta dv
+                    JOIN 
+                        venta v ON dv.id_venta = v.id_venta
+                    JOIN 
+                        edificio e ON v.id_edificio = e.id_edificio
+                    JOIN 
+                        cliente c ON e.id_cliente = c.id_cliente
+                    JOIN 
+                        persona p ON c.id_persona = p.id_persona
+                    GROUP BY 
+                        p.nombre_persona, p.apellido_persona
+                    ORDER BY 
+                        total_comprado DESC
+                    LIMIT 1;  -- Solo obtenemos al cliente con más compras
+                """
+                cursor.execute(sql_cliente_mas_compras)
+                cliente = cursor.fetchone()  # Obtenemos un solo cliente
+
+                # Verificar si se obtuvo un cliente
+                if cliente:
+                    cliente_dict = {
+                        'nombre_cliente': cliente[0], 
+                        'apellido_cliente': cliente[1], 
+                        'total_comprado': cliente[2]
+                    }
+                    print("Cliente con más compras:")
+                    print(f"Cliente: {cliente_dict['nombre_cliente']} {cliente_dict['apellido_cliente']}, Total comprado: {cliente_dict['total_comprado']}")
+                    return cliente_dict
+                else:
+                    print("No se encontró ningún cliente.")
+                    return None
+
+        except Exception as e:
+            print(f"Error al ejecutar la consulta: {e}")
+            return None
+
