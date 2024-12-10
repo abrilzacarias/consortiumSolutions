@@ -113,15 +113,19 @@ class Presupuesto(models.Model):
     def generarNumeroFactura():
         # Obtener el número secuencial más alto ya existente en la base de datos
         with connection.cursor() as cursor:
-            cursor.execute("SELECT MAX(numero_factura) FROM venta;")
+            cursor.execute("SELECT MAX(numero_factura) FROM venta WHERE numero_factura != '0' AND numero_factura IS NOT NULL;")
             resultado = cursor.fetchone()
-            if resultado[0] is not None:
-                ultimo_numero_factura = int(resultado[0].split('-')[1])  # Extraer el número
+            
+            if resultado[0] is not None and resultado[0] != '0':
+                try:
+                    ultimo_numero_factura = int(resultado[0].split('-')[1])
+                except (IndexError, ValueError):
+                    ultimo_numero_factura = 0
             else:
-                ultimo_numero_factura = 0  # Si no hay facturas, empezar en 0
+                ultimo_numero_factura = 0  # Si no hay facturas válidas, empezar en 0
 
         nuevo_numero_factura = ultimo_numero_factura + 1  # Incrementar el número secuencial
-        return f"FACT-{str(nuevo_numero_factura).zfill(3)}"  # Formato FACT-001
+        return f"V-{str(nuevo_numero_factura).zfill(3)}"  # Formato V-001
 
 
     @classmethod
@@ -137,7 +141,7 @@ class Presupuesto(models.Model):
                 """
                 cursor.execute(sqlPresupuesto, [id_presupuesto])
                 presupuesto = cursor.fetchone()
-                        
+                print(presupuesto) 
                 if presupuesto:
                     # Obtener el id_cliente a partir del id_edificio
                     sqlObtenerCliente = """
@@ -174,12 +178,12 @@ class Presupuesto(models.Model):
 
                     # Insertar el presupuesto en la tabla de ventas
                     sqlInsertarVenta = """
-                        INSERT INTO venta (numero_factura, fecha_hora_venta, monto_total_venta, id_edificio, id_empleado, id_presupuesto)
+                        INSERT INTO venta (fecha_hora_venta, monto_total_venta, id_edificio, id_empleado, id_presupuesto, numero_factura)
                         VALUES (%s, %s, %s, %s, %s, %s);
                     """
-                    cursor.execute(sqlInsertarVenta, [numeroFactura, presupuesto[1], presupuesto[2], presupuesto[3], presupuesto[4], id_presupuesto])
+                    cursor.execute(sqlInsertarVenta, [presupuesto[1], presupuesto[2], presupuesto[3], presupuesto[4], id_presupuesto, numeroFactura])
                     id_venta = cursor.lastrowid
-
+                    print(id_venta)
                     # Obtener los detalles del presupuesto
                     sqlDetallePresupuesto = """
                         SELECT id_detalle_presupuesto, cantidad_detalle_presupuesto, costo_extra_presupuesto, precio_total_detalle_presupuesto, id_servicio
@@ -188,7 +192,7 @@ class Presupuesto(models.Model):
                     """
                     cursor.execute(sqlDetallePresupuesto, [id_presupuesto])
                     detalles_presupuesto = cursor.fetchall()
-
+                    print(f'detalles {detalles_presupuesto}')
                     # Insertar los detalles en detalle_venta
                     for detalle in detalles_presupuesto:
                         sqlInsertarDetalleVenta = """
@@ -222,7 +226,7 @@ class Presupuesto(models.Model):
                     print("No se encontró el presupuesto.")
                     return None
         except Exception as e:
-            print("Error al enviar ventas:", str(e))
+            print("Error al enviar a ventas en models:", str(e))
             connection.rollback()
             return None
 

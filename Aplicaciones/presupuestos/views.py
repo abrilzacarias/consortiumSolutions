@@ -157,7 +157,7 @@ def obtener_servicios(request):
             'servicios': servicios_data
         })
 
-    print("Servicios cargados:", response_data)  # Imprime la respuesta para debug
+    #print("Servicios cargados:", response_data)  # Imprime la respuesta para debug
     return JsonResponse(response_data, safe=False)
 
 
@@ -280,8 +280,9 @@ def obtenerPresupuesto(request, id_presupuesto):
 @login_required
 @permission_required('inicio.view_cliente', login_url='', raise_exception=True)
 def enviarVentas(request, id_presupuesto):
-    print(f"ID Presupuesto recibido en enviarVentas: {id_presupuesto}")  # Imprimir el id_presupuesto
+    print(f"ID Presupuesto recibido en enviarVentas view: {id_presupuesto}")  # Imprimir el id_presupuesto
     id_venta = Presupuesto.enviarVentas(id_presupuesto)
+    print(f'el id_venta en view : {id_venta}')
     if id_venta:
         print(f"Venta creada con ID: {id_venta}")  # Imprimir el id de la venta creada
         messages.success(request, 'El presupuesto se ha transferido a ventas exitosamente.')

@@ -128,6 +128,32 @@ class Venta(models.Model):
             ''', [id_nuevo_metodo_pago, id_venta])  # Aquí se utiliza id_venta
 
         return cursor.rowcount > 0
+    
+    @classmethod
+    def enviar_facturacion(cls, id_venta):
+        try:
+            
+            with connection.cursor() as cursor:
+                sqlVenta = """
+                    SELECT id_venta, fecha_hora_venta, monto_total_venta, id_edificio, id_empleado, id_presupuesto, numero_factura 
+                    FROM venta
+                    WHERE id_venta = %s;
+                """
+                cursor.execute(sqlVenta, [id_venta])
+                venta = cursor.fetchone()
+
+                sqlInsertarFactura = """
+                    INSERT INTO factura (numero_comprobante, fecha_emision_factura, id_venta, id_tipo_factura, id_estado_factura)
+                    VALUES (NULL, NULL, %s, %s, %s);
+                """
+                cursor.execute(sqlInsertarFactura, [ id_venta, 1 ,1])
+                id_factura = cursor.lastrowid
+
+                return id_factura
+        except Exception as e:
+            print("Error al enviar factura:", str(e))
+            connection.rollback()
+            return None
 
 
 # Llamada al método para probarlo
